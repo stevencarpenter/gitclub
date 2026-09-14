@@ -1,0 +1,4967 @@
+{
+  "started_at_unix": 1789344962.881526,
+  "url": "http://127.0.0.1:17732",
+  "configuration": {
+    "requests": 400,
+    "concurrency": 4,
+    "warmup_requests": 40,
+    "repositories": 40,
+    "git_rounds": 5,
+    "directory_only": false
+  },
+  "environment": {
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "cpu_count": 18,
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.1.8 ]",
+    "git": "git version 2.54.0",
+    "server_version": "Gleam 1.18.1; OTP 29; ERTS 17.0.6; native Erlang shipment, existing caches and export overhead included",
+    "build_seconds": 8.26
+  },
+  "limitations": [
+    "Local fixture measurements do not establish uptime or production capacity.",
+    "HTTP latencies include client scheduling and connection overhead; urllib uses fresh requests.",
+    "Repository-list results include any pre-existing server data; use isolated fresh data directories."
+  ],
+  "fixture": {
+    "seed": 1729,
+    "repositories": 40,
+    "source_files": 100,
+    "binary_payload_bytes": 1048576,
+    "binary_payload_sha256": "3fc9f1b948c9c40f2a25517cd638e297ed362143049b31ed4a0ffab1e114994c",
+    "default_branch_commits": 20,
+    "description": "One populated repository; all remaining repositories are empty. Populated default branch has 20 commits, 100 generated source files plus the base fixture, and a 1 MiB incompressible binary.",
+    "head_oid": "e62e56e2f981bd32fac1a62dd678a8b9f5a3f52f",
+    "pull_id": 1,
+    "group_id": 1
+  },
+  "fixture_setup_seconds": 7.475610833993414,
+  "implementation": "gleam",
+  "http_mix": [
+    {
+      "name": "repository_directory",
+      "path": "/api/repos"
+    },
+    {
+      "name": "repository_search",
+      "path": "/api/repos?q=benchmark"
+    },
+    {
+      "name": "tree",
+      "path": "/api/repos/1/tree?ref=trunk&path=src"
+    },
+    {
+      "name": "blob",
+      "path": "/api/repos/1/blob?ref=trunk&path=src/module_001.txt"
+    },
+    {
+      "name": "history",
+      "path": "/api/repos/1/commits?ref=trunk"
+    },
+    {
+      "name": "diff",
+      "path": "/api/repos/1/diff?base=trunk&head=benchmark-diff"
+    },
+    {
+      "name": "issues",
+      "path": "/api/repos/1/issues"
+    },
+    {
+      "name": "pull_review",
+      "path": "/api/repos/1/pulls/1"
+    },
+    {
+      "name": "groups",
+      "path": "/api/groups"
+    },
+    {
+      "name": "branches",
+      "path": "/api/repos/1/branches"
+    }
+  ],
+  "percentile_method": "nearest rank: sorted[ceil(p * sample_count) - 1]",
+  "http": {
+    "elapsed_seconds": 31.15792945798603,
+    "requests_per_second": 12.83782353186748,
+    "errors": 0,
+    "raw_samples": [
+      {
+        "index": 0,
+        "operation": "repository_directory",
+        "elapsed_ms": 30563.902624999173,
+        "error": null
+      },
+      {
+        "index": 1,
+        "operation": "repository_search",
+        "elapsed_ms": 26908.674417005386,
+        "error": null
+      },
+      {
+        "index": 2,
+        "operation": "tree",
+        "elapsed_ms": 31156.325040996308,
+        "error": null
+      },
+      {
+        "index": 3,
+        "operation": "blob",
+        "elapsed_ms": 124.07954200170934,
+        "error": null
+      },
+      {
+        "index": 4,
+        "operation": "history",
+        "elapsed_ms": 61.709041998256,
+        "error": null
+      },
+      {
+        "index": 5,
+        "operation": "diff",
+        "elapsed_ms": 117.75158398086205,
+        "error": null
+      },
+      {
+        "index": 6,
+        "operation": "issues",
+        "elapsed_ms": 1.4094999933149666,
+        "error": null
+      },
+      {
+        "index": 7,
+        "operation": "pull_review",
+        "elapsed_ms": 199.3213329988066,
+        "error": null
+      },
+      {
+        "index": 8,
+        "operation": "groups",
+        "elapsed_ms": 1.1685000208672136,
+        "error": null
+      },
+      {
+        "index": 9,
+        "operation": "branches",
+        "elapsed_ms": 27.09320798749104,
+        "error": null
+      },
+      {
+        "index": 10,
+        "operation": "repository_directory",
+        "elapsed_ms": 6.325999973341823,
+        "error": null
+      },
+      {
+        "index": 11,
+        "operation": "repository_search",
+        "elapsed_ms": 5.813874973682687,
+        "error": null
+      },
+      {
+        "index": 12,
+        "operation": "tree",
+        "elapsed_ms": 66.74258399289101,
+        "error": null
+      },
+      {
+        "index": 13,
+        "operation": "blob",
+        "elapsed_ms": 128.1315830128733,
+        "error": null
+      },
+      {
+        "index": 14,
+        "operation": "history",
+        "elapsed_ms": 67.01283299480565,
+        "error": null
+      },
+      {
+        "index": 15,
+        "operation": "diff",
+        "elapsed_ms": 123.73587500769645,
+        "error": null
+      },
+      {
+        "index": 16,
+        "operation": "issues",
+        "elapsed_ms": 1.5155000146478415,
+        "error": null
+      },
+      {
+        "index": 17,
+        "operation": "pull_review",
+        "elapsed_ms": 217.668124998454,
+        "error": null
+      },
+      {
+        "index": 18,
+        "operation": "groups",
+        "elapsed_ms": 1.5433329972438514,
+        "error": null
+      },
+      {
+        "index": 19,
+        "operation": "branches",
+        "elapsed_ms": 35.977916995761916,
+        "error": null
+      },
+      {
+        "index": 20,
+        "operation": "repository_directory",
+        "elapsed_ms": 9.535999997751787,
+        "error": null
+      },
+      {
+        "index": 21,
+        "operation": "repository_search",
+        "elapsed_ms": 7.77324999216944,
+        "error": null
+      },
+      {
+        "index": 22,
+        "operation": "tree",
+        "elapsed_ms": 68.79208300961182,
+        "error": null
+      },
+      {
+        "index": 23,
+        "operation": "blob",
+        "elapsed_ms": 126.50049998774193,
+        "error": null
+      },
+      {
+        "index": 24,
+        "operation": "history",
+        "elapsed_ms": 68.09549999888986,
+        "error": null
+      },
+      {
+        "index": 25,
+        "operation": "diff",
+        "elapsed_ms": 124.15166702703573,
+        "error": null
+      },
+      {
+        "index": 26,
+        "operation": "issues",
+        "elapsed_ms": 1.194458018289879,
+        "error": null
+      },
+      {
+        "index": 27,
+        "operation": "pull_review",
+        "elapsed_ms": 230.2595830115024,
+        "error": null
+      },
+      {
+        "index": 28,
+        "operation": "groups",
+        "elapsed_ms": 1.6432080010417849,
+        "error": null
+      },
+      {
+        "index": 29,
+        "operation": "branches",
+        "elapsed_ms": 33.107833995018154,
+        "error": null
+      },
+      {
+        "index": 30,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.28895899374038,
+        "error": null
+      },
+      {
+        "index": 31,
+        "operation": "repository_search",
+        "elapsed_ms": 7.142250018659979,
+        "error": null
+      },
+      {
+        "index": 32,
+        "operation": "tree",
+        "elapsed_ms": 66.56479099183343,
+        "error": null
+      },
+      {
+        "index": 33,
+        "operation": "blob",
+        "elapsed_ms": 126.19987499783747,
+        "error": null
+      },
+      {
+        "index": 34,
+        "operation": "history",
+        "elapsed_ms": 67.43191700661555,
+        "error": null
+      },
+      {
+        "index": 35,
+        "operation": "diff",
+        "elapsed_ms": 130.41354197775945,
+        "error": null
+      },
+      {
+        "index": 36,
+        "operation": "issues",
+        "elapsed_ms": 1.7150419880636036,
+        "error": null
+      },
+      {
+        "index": 37,
+        "operation": "pull_review",
+        "elapsed_ms": 220.93024998321198,
+        "error": null
+      },
+      {
+        "index": 38,
+        "operation": "groups",
+        "elapsed_ms": 1.6627919976599514,
+        "error": null
+      },
+      {
+        "index": 39,
+        "operation": "branches",
+        "elapsed_ms": 33.52475000428967,
+        "error": null
+      },
+      {
+        "index": 40,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.14837500709109,
+        "error": null
+      },
+      {
+        "index": 41,
+        "operation": "repository_search",
+        "elapsed_ms": 6.108625006163493,
+        "error": null
+      },
+      {
+        "index": 42,
+        "operation": "tree",
+        "elapsed_ms": 67.82491601188667,
+        "error": null
+      },
+      {
+        "index": 43,
+        "operation": "blob",
+        "elapsed_ms": 124.88462499459274,
+        "error": null
+      },
+      {
+        "index": 44,
+        "operation": "history",
+        "elapsed_ms": 73.15333301085047,
+        "error": null
+      },
+      {
+        "index": 45,
+        "operation": "diff",
+        "elapsed_ms": 124.77554098586552,
+        "error": null
+      },
+      {
+        "index": 46,
+        "operation": "issues",
+        "elapsed_ms": 1.2949170195497572,
+        "error": null
+      },
+      {
+        "index": 47,
+        "operation": "pull_review",
+        "elapsed_ms": 223.40587500366382,
+        "error": null
+      },
+      {
+        "index": 48,
+        "operation": "groups",
+        "elapsed_ms": 1.3803750043734908,
+        "error": null
+      },
+      {
+        "index": 49,
+        "operation": "branches",
+        "elapsed_ms": 35.0339169963263,
+        "error": null
+      },
+      {
+        "index": 50,
+        "operation": "repository_directory",
+        "elapsed_ms": 12.466124986531213,
+        "error": null
+      },
+      {
+        "index": 51,
+        "operation": "repository_search",
+        "elapsed_ms": 13.206458010245115,
+        "error": null
+      },
+      {
+        "index": 52,
+        "operation": "tree",
+        "elapsed_ms": 72.46733401552774,
+        "error": null
+      },
+      {
+        "index": 53,
+        "operation": "blob",
+        "elapsed_ms": 130.03649999154732,
+        "error": null
+      },
+      {
+        "index": 54,
+        "operation": "history",
+        "elapsed_ms": 71.40620800782926,
+        "error": null
+      },
+      {
+        "index": 55,
+        "operation": "diff",
+        "elapsed_ms": 124.01583400787786,
+        "error": null
+      },
+      {
+        "index": 56,
+        "operation": "issues",
+        "elapsed_ms": 1.4185410109348595,
+        "error": null
+      },
+      {
+        "index": 57,
+        "operation": "pull_review",
+        "elapsed_ms": 221.2857079866808,
+        "error": null
+      },
+      {
+        "index": 58,
+        "operation": "groups",
+        "elapsed_ms": 1.5647079853806645,
+        "error": null
+      },
+      {
+        "index": 59,
+        "operation": "branches",
+        "elapsed_ms": 34.665375016629696,
+        "error": null
+      },
+      {
+        "index": 60,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.059124996885657,
+        "error": null
+      },
+      {
+        "index": 61,
+        "operation": "repository_search",
+        "elapsed_ms": 6.080791994463652,
+        "error": null
+      },
+      {
+        "index": 62,
+        "operation": "tree",
+        "elapsed_ms": 67.16000000596978,
+        "error": null
+      },
+      {
+        "index": 63,
+        "operation": "blob",
+        "elapsed_ms": 124.09800000023097,
+        "error": null
+      },
+      {
+        "index": 64,
+        "operation": "history",
+        "elapsed_ms": 67.50049997936003,
+        "error": null
+      },
+      {
+        "index": 65,
+        "operation": "diff",
+        "elapsed_ms": 128.2710829982534,
+        "error": null
+      },
+      {
+        "index": 66,
+        "operation": "issues",
+        "elapsed_ms": 1.7134159861598164,
+        "error": null
+      },
+      {
+        "index": 67,
+        "operation": "pull_review",
+        "elapsed_ms": 229.63087499374524,
+        "error": null
+      },
+      {
+        "index": 68,
+        "operation": "groups",
+        "elapsed_ms": 1.2837499962188303,
+        "error": null
+      },
+      {
+        "index": 69,
+        "operation": "branches",
+        "elapsed_ms": 34.50170802534558,
+        "error": null
+      },
+      {
+        "index": 70,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.317874988075346,
+        "error": null
+      },
+      {
+        "index": 71,
+        "operation": "repository_search",
+        "elapsed_ms": 6.351083022309467,
+        "error": null
+      },
+      {
+        "index": 72,
+        "operation": "tree",
+        "elapsed_ms": 66.54920798609965,
+        "error": null
+      },
+      {
+        "index": 73,
+        "operation": "blob",
+        "elapsed_ms": 124.80024999240413,
+        "error": null
+      },
+      {
+        "index": 74,
+        "operation": "history",
+        "elapsed_ms": 67.90937497862615,
+        "error": null
+      },
+      {
+        "index": 75,
+        "operation": "diff",
+        "elapsed_ms": 138.02533398848027,
+        "error": null
+      },
+      {
+        "index": 76,
+        "operation": "issues",
+        "elapsed_ms": 1.6912079881876707,
+        "error": null
+      },
+      {
+        "index": 77,
+        "operation": "pull_review",
+        "elapsed_ms": 227.5416249758564,
+        "error": null
+      },
+      {
+        "index": 78,
+        "operation": "groups",
+        "elapsed_ms": 2.617082995129749,
+        "error": null
+      },
+      {
+        "index": 79,
+        "operation": "branches",
+        "elapsed_ms": 34.69237498939037,
+        "error": null
+      },
+      {
+        "index": 80,
+        "operation": "repository_directory",
+        "elapsed_ms": 9.749792021466419,
+        "error": null
+      },
+      {
+        "index": 81,
+        "operation": "repository_search",
+        "elapsed_ms": 14.821832999587059,
+        "error": null
+      },
+      {
+        "index": 82,
+        "operation": "tree",
+        "elapsed_ms": 77.24399998551235,
+        "error": null
+      },
+      {
+        "index": 83,
+        "operation": "blob",
+        "elapsed_ms": 130.24787500035018,
+        "error": null
+      },
+      {
+        "index": 84,
+        "operation": "history",
+        "elapsed_ms": 70.9109999879729,
+        "error": null
+      },
+      {
+        "index": 85,
+        "operation": "diff",
+        "elapsed_ms": 124.81524999020621,
+        "error": null
+      },
+      {
+        "index": 86,
+        "operation": "issues",
+        "elapsed_ms": 1.5265410183928907,
+        "error": null
+      },
+      {
+        "index": 87,
+        "operation": "pull_review",
+        "elapsed_ms": 222.48516700346954,
+        "error": null
+      },
+      {
+        "index": 88,
+        "operation": "groups",
+        "elapsed_ms": 1.4537090028170496,
+        "error": null
+      },
+      {
+        "index": 89,
+        "operation": "branches",
+        "elapsed_ms": 34.32383399922401,
+        "error": null
+      },
+      {
+        "index": 90,
+        "operation": "repository_directory",
+        "elapsed_ms": 6.92820901167579,
+        "error": null
+      },
+      {
+        "index": 91,
+        "operation": "repository_search",
+        "elapsed_ms": 6.572167010745034,
+        "error": null
+      },
+      {
+        "index": 92,
+        "operation": "tree",
+        "elapsed_ms": 67.81870799022727,
+        "error": null
+      },
+      {
+        "index": 93,
+        "operation": "blob",
+        "elapsed_ms": 126.0474169976078,
+        "error": null
+      },
+      {
+        "index": 94,
+        "operation": "history",
+        "elapsed_ms": 68.24937500641681,
+        "error": null
+      },
+      {
+        "index": 95,
+        "operation": "diff",
+        "elapsed_ms": 127.40770800155587,
+        "error": null
+      },
+      {
+        "index": 96,
+        "operation": "issues",
+        "elapsed_ms": 1.5831250057090074,
+        "error": null
+      },
+      {
+        "index": 97,
+        "operation": "pull_review",
+        "elapsed_ms": 225.2652089809999,
+        "error": null
+      },
+      {
+        "index": 98,
+        "operation": "groups",
+        "elapsed_ms": 1.5215000021271408,
+        "error": null
+      },
+      {
+        "index": 99,
+        "operation": "branches",
+        "elapsed_ms": 32.448750018374994,
+        "error": null
+      },
+      {
+        "index": 100,
+        "operation": "repository_directory",
+        "elapsed_ms": 6.722874997649342,
+        "error": null
+      },
+      {
+        "index": 101,
+        "operation": "repository_search",
+        "elapsed_ms": 7.231124996906146,
+        "error": null
+      },
+      {
+        "index": 102,
+        "operation": "tree",
+        "elapsed_ms": 67.50158299109899,
+        "error": null
+      },
+      {
+        "index": 103,
+        "operation": "blob",
+        "elapsed_ms": 123.76379102352075,
+        "error": null
+      },
+      {
+        "index": 104,
+        "operation": "history",
+        "elapsed_ms": 66.31158298114315,
+        "error": null
+      },
+      {
+        "index": 105,
+        "operation": "diff",
+        "elapsed_ms": 140.53854197845794,
+        "error": null
+      },
+      {
+        "index": 106,
+        "operation": "issues",
+        "elapsed_ms": 1.4785829989705235,
+        "error": null
+      },
+      {
+        "index": 107,
+        "operation": "pull_review",
+        "elapsed_ms": 224.1920419910457,
+        "error": null
+      },
+      {
+        "index": 108,
+        "operation": "groups",
+        "elapsed_ms": 1.9702079880516976,
+        "error": null
+      },
+      {
+        "index": 109,
+        "operation": "branches",
+        "elapsed_ms": 37.118540989467874,
+        "error": null
+      },
+      {
+        "index": 110,
+        "operation": "repository_directory",
+        "elapsed_ms": 9.942958015017211,
+        "error": null
+      },
+      {
+        "index": 111,
+        "operation": "repository_search",
+        "elapsed_ms": 6.662708008661866,
+        "error": null
+      },
+      {
+        "index": 112,
+        "operation": "tree",
+        "elapsed_ms": 68.91308299964294,
+        "error": null
+      },
+      {
+        "index": 113,
+        "operation": "blob",
+        "elapsed_ms": 126.51241599814966,
+        "error": null
+      },
+      {
+        "index": 114,
+        "operation": "history",
+        "elapsed_ms": 68.62262499635108,
+        "error": null
+      },
+      {
+        "index": 115,
+        "operation": "diff",
+        "elapsed_ms": 125.58604101650417,
+        "error": null
+      },
+      {
+        "index": 116,
+        "operation": "issues",
+        "elapsed_ms": 1.3443329953588545,
+        "error": null
+      },
+      {
+        "index": 117,
+        "operation": "pull_review",
+        "elapsed_ms": 222.66483298153616,
+        "error": null
+      },
+      {
+        "index": 118,
+        "operation": "groups",
+        "elapsed_ms": 1.226708001922816,
+        "error": null
+      },
+      {
+        "index": 119,
+        "operation": "branches",
+        "elapsed_ms": 33.44025000114925,
+        "error": null
+      },
+      {
+        "index": 120,
+        "operation": "repository_directory",
+        "elapsed_ms": 6.987250002566725,
+        "error": null
+      },
+      {
+        "index": 121,
+        "operation": "repository_search",
+        "elapsed_ms": 6.154292001156136,
+        "error": null
+      },
+      {
+        "index": 122,
+        "operation": "tree",
+        "elapsed_ms": 67.87287499173544,
+        "error": null
+      },
+      {
+        "index": 123,
+        "operation": "blob",
+        "elapsed_ms": 125.18545798957348,
+        "error": null
+      },
+      {
+        "index": 124,
+        "operation": "history",
+        "elapsed_ms": 68.6115830030758,
+        "error": null
+      },
+      {
+        "index": 125,
+        "operation": "diff",
+        "elapsed_ms": 128.41462501091883,
+        "error": null
+      },
+      {
+        "index": 126,
+        "operation": "issues",
+        "elapsed_ms": 1.7607499903533608,
+        "error": null
+      },
+      {
+        "index": 127,
+        "operation": "pull_review",
+        "elapsed_ms": 224.23300001537427,
+        "error": null
+      },
+      {
+        "index": 128,
+        "operation": "groups",
+        "elapsed_ms": 1.5290410083252937,
+        "error": null
+      },
+      {
+        "index": 129,
+        "operation": "branches",
+        "elapsed_ms": 34.417209011735395,
+        "error": null
+      },
+      {
+        "index": 130,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.249916990986094,
+        "error": null
+      },
+      {
+        "index": 131,
+        "operation": "repository_search",
+        "elapsed_ms": 6.253250001464039,
+        "error": null
+      },
+      {
+        "index": 132,
+        "operation": "tree",
+        "elapsed_ms": 68.7317909905687,
+        "error": null
+      },
+      {
+        "index": 133,
+        "operation": "blob",
+        "elapsed_ms": 124.34854201273993,
+        "error": null
+      },
+      {
+        "index": 134,
+        "operation": "history",
+        "elapsed_ms": 73.27066699508578,
+        "error": null
+      },
+      {
+        "index": 135,
+        "operation": "diff",
+        "elapsed_ms": 127.23645797814243,
+        "error": null
+      },
+      {
+        "index": 136,
+        "operation": "issues",
+        "elapsed_ms": 1.6344159957952797,
+        "error": null
+      },
+      {
+        "index": 137,
+        "operation": "pull_review",
+        "elapsed_ms": 225.90870800195262,
+        "error": null
+      },
+      {
+        "index": 138,
+        "operation": "groups",
+        "elapsed_ms": 1.7487500153947622,
+        "error": null
+      },
+      {
+        "index": 139,
+        "operation": "branches",
+        "elapsed_ms": 34.521249996032566,
+        "error": null
+      },
+      {
+        "index": 140,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.04370898893103,
+        "error": null
+      },
+      {
+        "index": 141,
+        "operation": "repository_search",
+        "elapsed_ms": 8.805749996099621,
+        "error": null
+      },
+      {
+        "index": 142,
+        "operation": "tree",
+        "elapsed_ms": 69.25120801315643,
+        "error": null
+      },
+      {
+        "index": 143,
+        "operation": "blob",
+        "elapsed_ms": 130.81254198914394,
+        "error": null
+      },
+      {
+        "index": 144,
+        "operation": "history",
+        "elapsed_ms": 69.79045900516212,
+        "error": null
+      },
+      {
+        "index": 145,
+        "operation": "diff",
+        "elapsed_ms": 128.62766699981876,
+        "error": null
+      },
+      {
+        "index": 146,
+        "operation": "issues",
+        "elapsed_ms": 1.5949160151649266,
+        "error": null
+      },
+      {
+        "index": 147,
+        "operation": "pull_review",
+        "elapsed_ms": 222.422542021377,
+        "error": null
+      },
+      {
+        "index": 148,
+        "operation": "groups",
+        "elapsed_ms": 1.7082080012187362,
+        "error": null
+      },
+      {
+        "index": 149,
+        "operation": "branches",
+        "elapsed_ms": 34.79375000461005,
+        "error": null
+      },
+      {
+        "index": 150,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.055624999338761,
+        "error": null
+      },
+      {
+        "index": 151,
+        "operation": "repository_search",
+        "elapsed_ms": 6.006582989357412,
+        "error": null
+      },
+      {
+        "index": 152,
+        "operation": "tree",
+        "elapsed_ms": 69.10233397502452,
+        "error": null
+      },
+      {
+        "index": 153,
+        "operation": "blob",
+        "elapsed_ms": 127.53104098374024,
+        "error": null
+      },
+      {
+        "index": 154,
+        "operation": "history",
+        "elapsed_ms": 69.63558300049044,
+        "error": null
+      },
+      {
+        "index": 155,
+        "operation": "diff",
+        "elapsed_ms": 127.13916701613925,
+        "error": null
+      },
+      {
+        "index": 156,
+        "operation": "issues",
+        "elapsed_ms": 1.388792006764561,
+        "error": null
+      },
+      {
+        "index": 157,
+        "operation": "pull_review",
+        "elapsed_ms": 229.0238749992568,
+        "error": null
+      },
+      {
+        "index": 158,
+        "operation": "groups",
+        "elapsed_ms": 1.5681250079069287,
+        "error": null
+      },
+      {
+        "index": 159,
+        "operation": "branches",
+        "elapsed_ms": 34.6351659973152,
+        "error": null
+      },
+      {
+        "index": 160,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.429374993080273,
+        "error": null
+      },
+      {
+        "index": 161,
+        "operation": "repository_search",
+        "elapsed_ms": 6.506208999780938,
+        "error": null
+      },
+      {
+        "index": 162,
+        "operation": "tree",
+        "elapsed_ms": 68.50691602448933,
+        "error": null
+      },
+      {
+        "index": 163,
+        "operation": "blob",
+        "elapsed_ms": 127.07983399741352,
+        "error": null
+      },
+      {
+        "index": 164,
+        "operation": "history",
+        "elapsed_ms": 71.33387500653043,
+        "error": null
+      },
+      {
+        "index": 165,
+        "operation": "diff",
+        "elapsed_ms": 126.03620899608359,
+        "error": null
+      },
+      {
+        "index": 166,
+        "operation": "issues",
+        "elapsed_ms": 1.3852909905835986,
+        "error": null
+      },
+      {
+        "index": 167,
+        "operation": "pull_review",
+        "elapsed_ms": 223.69837501901202,
+        "error": null
+      },
+      {
+        "index": 168,
+        "operation": "groups",
+        "elapsed_ms": 1.661334012169391,
+        "error": null
+      },
+      {
+        "index": 169,
+        "operation": "branches",
+        "elapsed_ms": 35.55054098251276,
+        "error": null
+      },
+      {
+        "index": 170,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.110500009730458,
+        "error": null
+      },
+      {
+        "index": 171,
+        "operation": "repository_search",
+        "elapsed_ms": 6.748458981746808,
+        "error": null
+      },
+      {
+        "index": 172,
+        "operation": "tree",
+        "elapsed_ms": 68.0852500081528,
+        "error": null
+      },
+      {
+        "index": 173,
+        "operation": "blob",
+        "elapsed_ms": 126.2883749732282,
+        "error": null
+      },
+      {
+        "index": 174,
+        "operation": "history",
+        "elapsed_ms": 69.4135420199018,
+        "error": null
+      },
+      {
+        "index": 175,
+        "operation": "diff",
+        "elapsed_ms": 125.99629198666662,
+        "error": null
+      },
+      {
+        "index": 176,
+        "operation": "issues",
+        "elapsed_ms": 1.7085410072468221,
+        "error": null
+      },
+      {
+        "index": 177,
+        "operation": "pull_review",
+        "elapsed_ms": 222.41283301264048,
+        "error": null
+      },
+      {
+        "index": 178,
+        "operation": "groups",
+        "elapsed_ms": 1.2651659781113267,
+        "error": null
+      },
+      {
+        "index": 179,
+        "operation": "branches",
+        "elapsed_ms": 33.555833011632785,
+        "error": null
+      },
+      {
+        "index": 180,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.886875013355166,
+        "error": null
+      },
+      {
+        "index": 181,
+        "operation": "repository_search",
+        "elapsed_ms": 6.863916001748294,
+        "error": null
+      },
+      {
+        "index": 182,
+        "operation": "tree",
+        "elapsed_ms": 71.96600001771003,
+        "error": null
+      },
+      {
+        "index": 183,
+        "operation": "blob",
+        "elapsed_ms": 125.84616598905995,
+        "error": null
+      },
+      {
+        "index": 184,
+        "operation": "history",
+        "elapsed_ms": 73.44429200747982,
+        "error": null
+      },
+      {
+        "index": 185,
+        "operation": "diff",
+        "elapsed_ms": 127.42095900466666,
+        "error": null
+      },
+      {
+        "index": 186,
+        "operation": "issues",
+        "elapsed_ms": 1.7660409794189036,
+        "error": null
+      },
+      {
+        "index": 187,
+        "operation": "pull_review",
+        "elapsed_ms": 226.34254198055714,
+        "error": null
+      },
+      {
+        "index": 188,
+        "operation": "groups",
+        "elapsed_ms": 1.6419999883510172,
+        "error": null
+      },
+      {
+        "index": 189,
+        "operation": "branches",
+        "elapsed_ms": 34.35995799372904,
+        "error": null
+      },
+      {
+        "index": 190,
+        "operation": "repository_directory",
+        "elapsed_ms": 6.9850409927312285,
+        "error": null
+      },
+      {
+        "index": 191,
+        "operation": "repository_search",
+        "elapsed_ms": 6.290708988672122,
+        "error": null
+      },
+      {
+        "index": 192,
+        "operation": "tree",
+        "elapsed_ms": 67.86449998617172,
+        "error": null
+      },
+      {
+        "index": 193,
+        "operation": "blob",
+        "elapsed_ms": 124.46724998881109,
+        "error": null
+      },
+      {
+        "index": 194,
+        "operation": "history",
+        "elapsed_ms": 67.49595899600536,
+        "error": null
+      },
+      {
+        "index": 195,
+        "operation": "diff",
+        "elapsed_ms": 126.08504100353457,
+        "error": null
+      },
+      {
+        "index": 196,
+        "operation": "issues",
+        "elapsed_ms": 1.6465829976368695,
+        "error": null
+      },
+      {
+        "index": 197,
+        "operation": "pull_review",
+        "elapsed_ms": 230.10941699612886,
+        "error": null
+      },
+      {
+        "index": 198,
+        "operation": "groups",
+        "elapsed_ms": 1.7485000134911388,
+        "error": null
+      },
+      {
+        "index": 199,
+        "operation": "branches",
+        "elapsed_ms": 34.898834011983126,
+        "error": null
+      },
+      {
+        "index": 200,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.653292006580159,
+        "error": null
+      },
+      {
+        "index": 201,
+        "operation": "repository_search",
+        "elapsed_ms": 7.330874999752268,
+        "error": null
+      },
+      {
+        "index": 202,
+        "operation": "tree",
+        "elapsed_ms": 69.19958401704207,
+        "error": null
+      },
+      {
+        "index": 203,
+        "operation": "blob",
+        "elapsed_ms": 125.3889589861501,
+        "error": null
+      },
+      {
+        "index": 204,
+        "operation": "history",
+        "elapsed_ms": 68.43924999702722,
+        "error": null
+      },
+      {
+        "index": 205,
+        "operation": "diff",
+        "elapsed_ms": 127.24858298315667,
+        "error": null
+      },
+      {
+        "index": 206,
+        "operation": "issues",
+        "elapsed_ms": 1.5117080183699727,
+        "error": null
+      },
+      {
+        "index": 207,
+        "operation": "pull_review",
+        "elapsed_ms": 222.3984169831965,
+        "error": null
+      },
+      {
+        "index": 208,
+        "operation": "groups",
+        "elapsed_ms": 1.5677079791203141,
+        "error": null
+      },
+      {
+        "index": 209,
+        "operation": "branches",
+        "elapsed_ms": 34.54245798639022,
+        "error": null
+      },
+      {
+        "index": 210,
+        "operation": "repository_directory",
+        "elapsed_ms": 6.878917018184438,
+        "error": null
+      },
+      {
+        "index": 211,
+        "operation": "repository_search",
+        "elapsed_ms": 8.061750006163493,
+        "error": null
+      },
+      {
+        "index": 212,
+        "operation": "tree",
+        "elapsed_ms": 70.15312497969717,
+        "error": null
+      },
+      {
+        "index": 213,
+        "operation": "blob",
+        "elapsed_ms": 125.53575000492856,
+        "error": null
+      },
+      {
+        "index": 214,
+        "operation": "history",
+        "elapsed_ms": 69.82049997895956,
+        "error": null
+      },
+      {
+        "index": 215,
+        "operation": "diff",
+        "elapsed_ms": 132.54329102346674,
+        "error": null
+      },
+      {
+        "index": 216,
+        "operation": "issues",
+        "elapsed_ms": 2.093832998070866,
+        "error": null
+      },
+      {
+        "index": 217,
+        "operation": "pull_review",
+        "elapsed_ms": 241.11370797618292,
+        "error": null
+      },
+      {
+        "index": 218,
+        "operation": "groups",
+        "elapsed_ms": 1.9750000210478902,
+        "error": null
+      },
+      {
+        "index": 219,
+        "operation": "branches",
+        "elapsed_ms": 37.78800001600757,
+        "error": null
+      },
+      {
+        "index": 220,
+        "operation": "repository_directory",
+        "elapsed_ms": 8.295750012621284,
+        "error": null
+      },
+      {
+        "index": 221,
+        "operation": "repository_search",
+        "elapsed_ms": 7.105541997589171,
+        "error": null
+      },
+      {
+        "index": 222,
+        "operation": "tree",
+        "elapsed_ms": 70.90145800611936,
+        "error": null
+      },
+      {
+        "index": 223,
+        "operation": "blob",
+        "elapsed_ms": 138.32441699923947,
+        "error": null
+      },
+      {
+        "index": 224,
+        "operation": "history",
+        "elapsed_ms": 69.32045900612138,
+        "error": null
+      },
+      {
+        "index": 225,
+        "operation": "diff",
+        "elapsed_ms": 126.78483300260268,
+        "error": null
+      },
+      {
+        "index": 226,
+        "operation": "issues",
+        "elapsed_ms": 1.5844169829506427,
+        "error": null
+      },
+      {
+        "index": 227,
+        "operation": "pull_review",
+        "elapsed_ms": 231.24108402407728,
+        "error": null
+      },
+      {
+        "index": 228,
+        "operation": "groups",
+        "elapsed_ms": 1.6539579955860972,
+        "error": null
+      },
+      {
+        "index": 229,
+        "operation": "branches",
+        "elapsed_ms": 33.9571250078734,
+        "error": null
+      },
+      {
+        "index": 230,
+        "operation": "repository_directory",
+        "elapsed_ms": 6.881084002088755,
+        "error": null
+      },
+      {
+        "index": 231,
+        "operation": "repository_search",
+        "elapsed_ms": 8.715999982086942,
+        "error": null
+      },
+      {
+        "index": 232,
+        "operation": "tree",
+        "elapsed_ms": 78.35870800772682,
+        "error": null
+      },
+      {
+        "index": 233,
+        "operation": "blob",
+        "elapsed_ms": 131.30458298837766,
+        "error": null
+      },
+      {
+        "index": 234,
+        "operation": "history",
+        "elapsed_ms": 69.27429200732149,
+        "error": null
+      },
+      {
+        "index": 235,
+        "operation": "diff",
+        "elapsed_ms": 127.9778339958284,
+        "error": null
+      },
+      {
+        "index": 236,
+        "operation": "issues",
+        "elapsed_ms": 1.5808750176802278,
+        "error": null
+      },
+      {
+        "index": 237,
+        "operation": "pull_review",
+        "elapsed_ms": 225.6627919850871,
+        "error": null
+      },
+      {
+        "index": 238,
+        "operation": "groups",
+        "elapsed_ms": 1.6305829922202975,
+        "error": null
+      },
+      {
+        "index": 239,
+        "operation": "branches",
+        "elapsed_ms": 34.36166699975729,
+        "error": null
+      },
+      {
+        "index": 240,
+        "operation": "repository_directory",
+        "elapsed_ms": 6.84350001392886,
+        "error": null
+      },
+      {
+        "index": 241,
+        "operation": "repository_search",
+        "elapsed_ms": 6.273124978179112,
+        "error": null
+      },
+      {
+        "index": 242,
+        "operation": "tree",
+        "elapsed_ms": 67.77241700910963,
+        "error": null
+      },
+      {
+        "index": 243,
+        "operation": "blob",
+        "elapsed_ms": 126.52999997953884,
+        "error": null
+      },
+      {
+        "index": 244,
+        "operation": "history",
+        "elapsed_ms": 69.93991698254831,
+        "error": null
+      },
+      {
+        "index": 245,
+        "operation": "diff",
+        "elapsed_ms": 128.83541599148884,
+        "error": null
+      },
+      {
+        "index": 246,
+        "operation": "issues",
+        "elapsed_ms": 1.6683750145602971,
+        "error": null
+      },
+      {
+        "index": 247,
+        "operation": "pull_review",
+        "elapsed_ms": 226.2035830062814,
+        "error": null
+      },
+      {
+        "index": 248,
+        "operation": "groups",
+        "elapsed_ms": 1.5138750022742897,
+        "error": null
+      },
+      {
+        "index": 249,
+        "operation": "branches",
+        "elapsed_ms": 34.54345799400471,
+        "error": null
+      },
+      {
+        "index": 250,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.280207995790988,
+        "error": null
+      },
+      {
+        "index": 251,
+        "operation": "repository_search",
+        "elapsed_ms": 6.446167011745274,
+        "error": null
+      },
+      {
+        "index": 252,
+        "operation": "tree",
+        "elapsed_ms": 67.6238750165794,
+        "error": null
+      },
+      {
+        "index": 253,
+        "operation": "blob",
+        "elapsed_ms": 126.64549998589791,
+        "error": null
+      },
+      {
+        "index": 254,
+        "operation": "history",
+        "elapsed_ms": 66.43408298259601,
+        "error": null
+      },
+      {
+        "index": 255,
+        "operation": "diff",
+        "elapsed_ms": 131.74199999775738,
+        "error": null
+      },
+      {
+        "index": 256,
+        "operation": "issues",
+        "elapsed_ms": 1.856540999142453,
+        "error": null
+      },
+      {
+        "index": 257,
+        "operation": "pull_review",
+        "elapsed_ms": 227.98304198659025,
+        "error": null
+      },
+      {
+        "index": 258,
+        "operation": "groups",
+        "elapsed_ms": 1.279874995816499,
+        "error": null
+      },
+      {
+        "index": 259,
+        "operation": "branches",
+        "elapsed_ms": 34.64558397536166,
+        "error": null
+      },
+      {
+        "index": 260,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.9634579888079315,
+        "error": null
+      },
+      {
+        "index": 261,
+        "operation": "repository_search",
+        "elapsed_ms": 7.177040999522433,
+        "error": null
+      },
+      {
+        "index": 262,
+        "operation": "tree",
+        "elapsed_ms": 68.60791699727997,
+        "error": null
+      },
+      {
+        "index": 263,
+        "operation": "blob",
+        "elapsed_ms": 131.83795899385586,
+        "error": null
+      },
+      {
+        "index": 264,
+        "operation": "history",
+        "elapsed_ms": 71.94237498333678,
+        "error": null
+      },
+      {
+        "index": 265,
+        "operation": "diff",
+        "elapsed_ms": 129.7314169933088,
+        "error": null
+      },
+      {
+        "index": 266,
+        "operation": "issues",
+        "elapsed_ms": 1.6896669985726476,
+        "error": null
+      },
+      {
+        "index": 267,
+        "operation": "pull_review",
+        "elapsed_ms": 214.8035419813823,
+        "error": null
+      },
+      {
+        "index": 268,
+        "operation": "groups",
+        "elapsed_ms": 1.4007079880684614,
+        "error": null
+      },
+      {
+        "index": 269,
+        "operation": "branches",
+        "elapsed_ms": 30.10674999677576,
+        "error": null
+      },
+      {
+        "index": 270,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.4006250069942325,
+        "error": null
+      },
+      {
+        "index": 271,
+        "operation": "repository_search",
+        "elapsed_ms": 6.219125003553927,
+        "error": null
+      },
+      {
+        "index": 272,
+        "operation": "tree",
+        "elapsed_ms": 60.44508298509754,
+        "error": null
+      },
+      {
+        "index": 273,
+        "operation": "blob",
+        "elapsed_ms": 116.32825000560842,
+        "error": null
+      },
+      {
+        "index": 274,
+        "operation": "history",
+        "elapsed_ms": 63.805083016632125,
+        "error": null
+      },
+      {
+        "index": 275,
+        "operation": "diff",
+        "elapsed_ms": 110.43391699786298,
+        "error": null
+      },
+      {
+        "index": 276,
+        "operation": "issues",
+        "elapsed_ms": 1.3460410118568689,
+        "error": null
+      },
+      {
+        "index": 277,
+        "operation": "pull_review",
+        "elapsed_ms": 221.35420801350847,
+        "error": null
+      },
+      {
+        "index": 278,
+        "operation": "groups",
+        "elapsed_ms": 1.5155829896684736,
+        "error": null
+      },
+      {
+        "index": 279,
+        "operation": "branches",
+        "elapsed_ms": 33.516166993649676,
+        "error": null
+      },
+      {
+        "index": 280,
+        "operation": "repository_directory",
+        "elapsed_ms": 6.9404999958351254,
+        "error": null
+      },
+      {
+        "index": 281,
+        "operation": "repository_search",
+        "elapsed_ms": 6.754125002771616,
+        "error": null
+      },
+      {
+        "index": 282,
+        "operation": "tree",
+        "elapsed_ms": 66.4570830122102,
+        "error": null
+      },
+      {
+        "index": 283,
+        "operation": "blob",
+        "elapsed_ms": 126.17270802729763,
+        "error": null
+      },
+      {
+        "index": 284,
+        "operation": "history",
+        "elapsed_ms": 67.56904200301506,
+        "error": null
+      },
+      {
+        "index": 285,
+        "operation": "diff",
+        "elapsed_ms": 130.09341698489152,
+        "error": null
+      },
+      {
+        "index": 286,
+        "operation": "issues",
+        "elapsed_ms": 1.5829159819986671,
+        "error": null
+      },
+      {
+        "index": 287,
+        "operation": "pull_review",
+        "elapsed_ms": 233.07345801731572,
+        "error": null
+      },
+      {
+        "index": 288,
+        "operation": "groups",
+        "elapsed_ms": 2.4199580075219274,
+        "error": null
+      },
+      {
+        "index": 289,
+        "operation": "branches",
+        "elapsed_ms": 35.505250009009615,
+        "error": null
+      },
+      {
+        "index": 290,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.736458006547764,
+        "error": null
+      },
+      {
+        "index": 291,
+        "operation": "repository_search",
+        "elapsed_ms": 6.542166025610641,
+        "error": null
+      },
+      {
+        "index": 292,
+        "operation": "tree",
+        "elapsed_ms": 68.90237500192598,
+        "error": null
+      },
+      {
+        "index": 293,
+        "operation": "blob",
+        "elapsed_ms": 124.9046669981908,
+        "error": null
+      },
+      {
+        "index": 294,
+        "operation": "history",
+        "elapsed_ms": 67.61504200403579,
+        "error": null
+      },
+      {
+        "index": 295,
+        "operation": "diff",
+        "elapsed_ms": 125.78404101077467,
+        "error": null
+      },
+      {
+        "index": 296,
+        "operation": "issues",
+        "elapsed_ms": 1.4337910106405616,
+        "error": null
+      },
+      {
+        "index": 297,
+        "operation": "pull_review",
+        "elapsed_ms": 221.47304099053144,
+        "error": null
+      },
+      {
+        "index": 298,
+        "operation": "groups",
+        "elapsed_ms": 1.7391250003129244,
+        "error": null
+      },
+      {
+        "index": 299,
+        "operation": "branches",
+        "elapsed_ms": 33.74766602064483,
+        "error": null
+      },
+      {
+        "index": 300,
+        "operation": "repository_directory",
+        "elapsed_ms": 8.564540999941528,
+        "error": null
+      },
+      {
+        "index": 301,
+        "operation": "repository_search",
+        "elapsed_ms": 8.49941701744683,
+        "error": null
+      },
+      {
+        "index": 302,
+        "operation": "tree",
+        "elapsed_ms": 68.74187497305684,
+        "error": null
+      },
+      {
+        "index": 303,
+        "operation": "blob",
+        "elapsed_ms": 126.71429102192633,
+        "error": null
+      },
+      {
+        "index": 304,
+        "operation": "history",
+        "elapsed_ms": 73.2602920033969,
+        "error": null
+      },
+      {
+        "index": 305,
+        "operation": "diff",
+        "elapsed_ms": 134.04441700549796,
+        "error": null
+      },
+      {
+        "index": 306,
+        "operation": "issues",
+        "elapsed_ms": 1.6911250131670386,
+        "error": null
+      },
+      {
+        "index": 307,
+        "operation": "pull_review",
+        "elapsed_ms": 227.81916699022986,
+        "error": null
+      },
+      {
+        "index": 308,
+        "operation": "groups",
+        "elapsed_ms": 1.50095799472183,
+        "error": null
+      },
+      {
+        "index": 309,
+        "operation": "branches",
+        "elapsed_ms": 32.98916699714027,
+        "error": null
+      },
+      {
+        "index": 310,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.170583005063236,
+        "error": null
+      },
+      {
+        "index": 311,
+        "operation": "repository_search",
+        "elapsed_ms": 6.222916999831796,
+        "error": null
+      },
+      {
+        "index": 312,
+        "operation": "tree",
+        "elapsed_ms": 67.22383300075307,
+        "error": null
+      },
+      {
+        "index": 313,
+        "operation": "blob",
+        "elapsed_ms": 124.95712499367073,
+        "error": null
+      },
+      {
+        "index": 314,
+        "operation": "history",
+        "elapsed_ms": 69.4138329999987,
+        "error": null
+      },
+      {
+        "index": 315,
+        "operation": "diff",
+        "elapsed_ms": 126.42266700277105,
+        "error": null
+      },
+      {
+        "index": 316,
+        "operation": "issues",
+        "elapsed_ms": 1.2727080029435456,
+        "error": null
+      },
+      {
+        "index": 317,
+        "operation": "pull_review",
+        "elapsed_ms": 232.66291699837893,
+        "error": null
+      },
+      {
+        "index": 318,
+        "operation": "groups",
+        "elapsed_ms": 1.808417000574991,
+        "error": null
+      },
+      {
+        "index": 319,
+        "operation": "branches",
+        "elapsed_ms": 36.114791000727564,
+        "error": null
+      },
+      {
+        "index": 320,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.253165997099131,
+        "error": null
+      },
+      {
+        "index": 321,
+        "operation": "repository_search",
+        "elapsed_ms": 6.630290998145938,
+        "error": null
+      },
+      {
+        "index": 322,
+        "operation": "tree",
+        "elapsed_ms": 68.28937499085441,
+        "error": null
+      },
+      {
+        "index": 323,
+        "operation": "blob",
+        "elapsed_ms": 128.99545798427425,
+        "error": null
+      },
+      {
+        "index": 324,
+        "operation": "history",
+        "elapsed_ms": 68.63475000136532,
+        "error": null
+      },
+      {
+        "index": 325,
+        "operation": "diff",
+        "elapsed_ms": 125.22041701595299,
+        "error": null
+      },
+      {
+        "index": 326,
+        "operation": "issues",
+        "elapsed_ms": 1.596207992406562,
+        "error": null
+      },
+      {
+        "index": 327,
+        "operation": "pull_review",
+        "elapsed_ms": 224.35070798383094,
+        "error": null
+      },
+      {
+        "index": 328,
+        "operation": "groups",
+        "elapsed_ms": 1.5300420054700226,
+        "error": null
+      },
+      {
+        "index": 329,
+        "operation": "branches",
+        "elapsed_ms": 33.663082984276116,
+        "error": null
+      },
+      {
+        "index": 330,
+        "operation": "repository_directory",
+        "elapsed_ms": 6.612541008507833,
+        "error": null
+      },
+      {
+        "index": 331,
+        "operation": "repository_search",
+        "elapsed_ms": 8.455207978840917,
+        "error": null
+      },
+      {
+        "index": 332,
+        "operation": "tree",
+        "elapsed_ms": 68.07058298727497,
+        "error": null
+      },
+      {
+        "index": 333,
+        "operation": "blob",
+        "elapsed_ms": 133.65595901268534,
+        "error": null
+      },
+      {
+        "index": 334,
+        "operation": "history",
+        "elapsed_ms": 72.928250010591,
+        "error": null
+      },
+      {
+        "index": 335,
+        "operation": "diff",
+        "elapsed_ms": 130.7512919884175,
+        "error": null
+      },
+      {
+        "index": 336,
+        "operation": "issues",
+        "elapsed_ms": 1.9520000205375254,
+        "error": null
+      },
+      {
+        "index": 337,
+        "operation": "pull_review",
+        "elapsed_ms": 226.6625420015771,
+        "error": null
+      },
+      {
+        "index": 338,
+        "operation": "groups",
+        "elapsed_ms": 1.6408330120611936,
+        "error": null
+      },
+      {
+        "index": 339,
+        "operation": "branches",
+        "elapsed_ms": 33.951332996366546,
+        "error": null
+      },
+      {
+        "index": 340,
+        "operation": "repository_directory",
+        "elapsed_ms": 6.697208998957649,
+        "error": null
+      },
+      {
+        "index": 341,
+        "operation": "repository_search",
+        "elapsed_ms": 6.7939589789602906,
+        "error": null
+      },
+      {
+        "index": 342,
+        "operation": "tree",
+        "elapsed_ms": 71.14100002218038,
+        "error": null
+      },
+      {
+        "index": 343,
+        "operation": "blob",
+        "elapsed_ms": 126.26108300173655,
+        "error": null
+      },
+      {
+        "index": 344,
+        "operation": "history",
+        "elapsed_ms": 67.89716600906104,
+        "error": null
+      },
+      {
+        "index": 345,
+        "operation": "diff",
+        "elapsed_ms": 125.94699999317527,
+        "error": null
+      },
+      {
+        "index": 346,
+        "operation": "issues",
+        "elapsed_ms": 2.709249994950369,
+        "error": null
+      },
+      {
+        "index": 347,
+        "operation": "pull_review",
+        "elapsed_ms": 229.14162502274849,
+        "error": null
+      },
+      {
+        "index": 348,
+        "operation": "groups",
+        "elapsed_ms": 1.5704169927630574,
+        "error": null
+      },
+      {
+        "index": 349,
+        "operation": "branches",
+        "elapsed_ms": 34.90249998867512,
+        "error": null
+      },
+      {
+        "index": 350,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.075332978274673,
+        "error": null
+      },
+      {
+        "index": 351,
+        "operation": "repository_search",
+        "elapsed_ms": 7.898459007265046,
+        "error": null
+      },
+      {
+        "index": 352,
+        "operation": "tree",
+        "elapsed_ms": 67.40483400062658,
+        "error": null
+      },
+      {
+        "index": 353,
+        "operation": "blob",
+        "elapsed_ms": 124.44241699995473,
+        "error": null
+      },
+      {
+        "index": 354,
+        "operation": "history",
+        "elapsed_ms": 67.23362501361407,
+        "error": null
+      },
+      {
+        "index": 355,
+        "operation": "diff",
+        "elapsed_ms": 123.18329099798575,
+        "error": null
+      },
+      {
+        "index": 356,
+        "operation": "issues",
+        "elapsed_ms": 1.5969169908203185,
+        "error": null
+      },
+      {
+        "index": 357,
+        "operation": "pull_review",
+        "elapsed_ms": 214.40504200290889,
+        "error": null
+      },
+      {
+        "index": 358,
+        "operation": "groups",
+        "elapsed_ms": 1.5431250212714076,
+        "error": null
+      },
+      {
+        "index": 359,
+        "operation": "branches",
+        "elapsed_ms": 32.75987500092015,
+        "error": null
+      },
+      {
+        "index": 360,
+        "operation": "repository_directory",
+        "elapsed_ms": 6.703958002617583,
+        "error": null
+      },
+      {
+        "index": 361,
+        "operation": "repository_search",
+        "elapsed_ms": 7.015959010459483,
+        "error": null
+      },
+      {
+        "index": 362,
+        "operation": "tree",
+        "elapsed_ms": 65.95333400764503,
+        "error": null
+      },
+      {
+        "index": 363,
+        "operation": "blob",
+        "elapsed_ms": 125.28145802207291,
+        "error": null
+      },
+      {
+        "index": 364,
+        "operation": "history",
+        "elapsed_ms": 66.5659170190338,
+        "error": null
+      },
+      {
+        "index": 365,
+        "operation": "diff",
+        "elapsed_ms": 122.9068330139853,
+        "error": null
+      },
+      {
+        "index": 366,
+        "operation": "issues",
+        "elapsed_ms": 1.5134160057641566,
+        "error": null
+      },
+      {
+        "index": 367,
+        "operation": "pull_review",
+        "elapsed_ms": 215.78374999808148,
+        "error": null
+      },
+      {
+        "index": 368,
+        "operation": "groups",
+        "elapsed_ms": 1.7828330164775252,
+        "error": null
+      },
+      {
+        "index": 369,
+        "operation": "branches",
+        "elapsed_ms": 32.61579098762013,
+        "error": null
+      },
+      {
+        "index": 370,
+        "operation": "repository_directory",
+        "elapsed_ms": 6.889790995046496,
+        "error": null
+      },
+      {
+        "index": 371,
+        "operation": "repository_search",
+        "elapsed_ms": 6.057624996174127,
+        "error": null
+      },
+      {
+        "index": 372,
+        "operation": "tree",
+        "elapsed_ms": 64.24262499785982,
+        "error": null
+      },
+      {
+        "index": 373,
+        "operation": "blob",
+        "elapsed_ms": 121.09891598811373,
+        "error": null
+      },
+      {
+        "index": 374,
+        "operation": "history",
+        "elapsed_ms": 66.20645901421085,
+        "error": null
+      },
+      {
+        "index": 375,
+        "operation": "diff",
+        "elapsed_ms": 122.1389579877723,
+        "error": null
+      },
+      {
+        "index": 376,
+        "operation": "issues",
+        "elapsed_ms": 1.245584018761292,
+        "error": null
+      },
+      {
+        "index": 377,
+        "operation": "pull_review",
+        "elapsed_ms": 217.48541700071655,
+        "error": null
+      },
+      {
+        "index": 378,
+        "operation": "groups",
+        "elapsed_ms": 1.8073750252369791,
+        "error": null
+      },
+      {
+        "index": 379,
+        "operation": "branches",
+        "elapsed_ms": 31.93912497954443,
+        "error": null
+      },
+      {
+        "index": 380,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.29116698494181,
+        "error": null
+      },
+      {
+        "index": 381,
+        "operation": "repository_search",
+        "elapsed_ms": 6.888082978548482,
+        "error": null
+      },
+      {
+        "index": 382,
+        "operation": "tree",
+        "elapsed_ms": 65.67908398574218,
+        "error": null
+      },
+      {
+        "index": 383,
+        "operation": "blob",
+        "elapsed_ms": 124.37625002348796,
+        "error": null
+      },
+      {
+        "index": 384,
+        "operation": "history",
+        "elapsed_ms": 65.66762499278411,
+        "error": null
+      },
+      {
+        "index": 385,
+        "operation": "diff",
+        "elapsed_ms": 120.4749169992283,
+        "error": null
+      },
+      {
+        "index": 386,
+        "operation": "issues",
+        "elapsed_ms": 1.3400840107351542,
+        "error": null
+      },
+      {
+        "index": 387,
+        "operation": "pull_review",
+        "elapsed_ms": 216.214541986119,
+        "error": null
+      },
+      {
+        "index": 388,
+        "operation": "groups",
+        "elapsed_ms": 1.6365839983336627,
+        "error": null
+      },
+      {
+        "index": 389,
+        "operation": "branches",
+        "elapsed_ms": 31.43100001034327,
+        "error": null
+      },
+      {
+        "index": 390,
+        "operation": "repository_directory",
+        "elapsed_ms": 7.330000022193417,
+        "error": null
+      },
+      {
+        "index": 391,
+        "operation": "repository_search",
+        "elapsed_ms": 6.65020800079219,
+        "error": null
+      },
+      {
+        "index": 392,
+        "operation": "tree",
+        "elapsed_ms": 63.984292006352916,
+        "error": null
+      },
+      {
+        "index": 393,
+        "operation": "blob",
+        "elapsed_ms": 120.00608298694715,
+        "error": null
+      },
+      {
+        "index": 394,
+        "operation": "history",
+        "elapsed_ms": 65.3167080017738,
+        "error": null
+      },
+      {
+        "index": 395,
+        "operation": "diff",
+        "elapsed_ms": 121.8488750164397,
+        "error": null
+      },
+      {
+        "index": 396,
+        "operation": "issues",
+        "elapsed_ms": 1.429750001989305,
+        "error": null
+      },
+      {
+        "index": 397,
+        "operation": "pull_review",
+        "elapsed_ms": 213.7537920207251,
+        "error": null
+      },
+      {
+        "index": 398,
+        "operation": "groups",
+        "elapsed_ms": 1.2645829992834479,
+        "error": null
+      },
+      {
+        "index": 399,
+        "operation": "branches",
+        "elapsed_ms": 32.07579199806787,
+        "error": null
+      }
+    ],
+    "latency": {
+      "samples": 400,
+      "min_ms": 1.1685000208672136,
+      "p50_ms": 61.709041998256,
+      "p95_ms": 225.2652089809999,
+      "p99_ms": 233.07345801731572,
+      "max_ms": 31156.325040996308,
+      "mean_ms": 287.96744257982937
+    },
+    "by_operation": {
+      "repository_directory": {
+        "samples": 40,
+        "min_ms": 6.325999973341823,
+        "p50_ms": 7.170583005063236,
+        "p95_ms": 9.942958015017211,
+        "p99_ms": 30563.902624999173,
+        "max_ms": 30563.902624999173,
+        "mean_ms": 771.4399822754785
+      },
+      "repository_search": {
+        "samples": 40,
+        "min_ms": 5.813874973682687,
+        "p50_ms": 6.748458981746808,
+        "p95_ms": 13.206458010245115,
+        "p99_ms": 26908.674417005386,
+        "max_ms": 26908.674417005386,
+        "mean_ms": 679.7951448243111
+      },
+      "tree": {
+        "samples": 40,
+        "min_ms": 60.44508298509754,
+        "p50_ms": 68.07058298727497,
+        "p95_ms": 77.24399998551235,
+        "p99_ms": 31156.325040996308,
+        "max_ms": 31156.325040996308,
+        "mean_ms": 845.6109166247188
+      },
+      "blob": {
+        "samples": 40,
+        "min_ms": 116.32825000560842,
+        "p50_ms": 126.0474169976078,
+        "p95_ms": 131.83795899385586,
+        "p99_ms": 138.32441699923947,
+        "max_ms": 138.32441699923947,
+        "mean_ms": 126.39058537315577
+      },
+      "history": {
+        "samples": 40,
+        "min_ms": 61.709041998256,
+        "p50_ms": 68.43924999702722,
+        "p95_ms": 73.2602920033969,
+        "p99_ms": 73.44429200747982,
+        "max_ms": 73.44429200747982,
+        "mean_ms": 68.7148479752068
+      },
+      "diff": {
+        "samples": 40,
+        "min_ms": 110.43391699786298,
+        "p50_ms": 126.42266700277105,
+        "p95_ms": 134.04441700549796,
+        "p99_ms": 140.53854197845794,
+        "max_ms": 140.53854197845794,
+        "mean_ms": 126.76394587397226
+      },
+      "issues": {
+        "samples": 40,
+        "min_ms": 1.194458018289879,
+        "p50_ms": 1.5829159819986671,
+        "p95_ms": 1.9520000205375254,
+        "p99_ms": 2.709249994950369,
+        "max_ms": 2.709249994950369,
+        "mean_ms": 1.5866425026615616
+      },
+      "pull_review": {
+        "samples": 40,
+        "min_ms": 199.3213329988066,
+        "p50_ms": 224.1920419910457,
+        "p95_ms": 232.66291699837893,
+        "p99_ms": 241.11370797618292,
+        "max_ms": 241.11370797618292,
+        "mean_ms": 223.80970734811854
+      },
+      "groups": {
+        "samples": 40,
+        "min_ms": 1.1685000208672136,
+        "p50_ms": 1.5681250079069287,
+        "p95_ms": 1.9750000210478902,
+        "p99_ms": 2.617082995129749,
+        "max_ms": 2.617082995129749,
+        "mean_ms": 1.6172134513908532
+      },
+      "branches": {
+        "samples": 40,
+        "min_ms": 27.09320798749104,
+        "p50_ms": 34.35995799372904,
+        "p95_ms": 36.114791000727564,
+        "p99_ms": 37.78800001600757,
+        "max_ms": 37.78800001600757,
+        "mean_ms": 33.9454395492794
+      }
+    }
+  },
+  "git": {
+    "raw_samples": [
+      {
+        "operation": "clone",
+        "index": 0,
+        "elapsed_ms": 210.75366699369624
+      },
+      {
+        "operation": "push",
+        "index": 0,
+        "oid": "a6e70b41312c320654626bd59b2553c688b5c5cc",
+        "elapsed_ms": 285.4304580250755
+      },
+      {
+        "operation": "clone",
+        "index": 1,
+        "elapsed_ms": 209.6695409854874
+      },
+      {
+        "operation": "push",
+        "index": 1,
+        "oid": "3edb2ee577bb9d8d2a90baeb74afdde980823e6d",
+        "elapsed_ms": 287.87170900614
+      },
+      {
+        "operation": "clone",
+        "index": 2,
+        "elapsed_ms": 210.8939169847872
+      },
+      {
+        "operation": "push",
+        "index": 2,
+        "oid": "62331cb7fbf51da1c1cfa9cce4e55b029d606b11",
+        "elapsed_ms": 285.2003329899162
+      },
+      {
+        "operation": "clone",
+        "index": 3,
+        "elapsed_ms": 209.49616699363105
+      },
+      {
+        "operation": "push",
+        "index": 3,
+        "oid": "6fc39611d5d41ae88da5ed18db21babdb2f68a3f",
+        "elapsed_ms": 289.1904159914702
+      },
+      {
+        "operation": "clone",
+        "index": 4,
+        "elapsed_ms": 212.07266597775742
+      },
+      {
+        "operation": "push",
+        "index": 4,
+        "oid": "8ded5b15cf1c1dd26e9998553d96825a90d491bc",
+        "elapsed_ms": 292.8714169829618
+      }
+    ],
+    "latency": {
+      "clone": {
+        "samples": 5,
+        "min_ms": 209.49616699363105,
+        "p50_ms": 210.75366699369624,
+        "p95_ms": 212.07266597775742,
+        "p99_ms": 212.07266597775742,
+        "max_ms": 212.07266597775742,
+        "mean_ms": 210.57719158707187
+      },
+      "push": {
+        "samples": 5,
+        "min_ms": 285.2003329899162,
+        "p50_ms": 287.87170900614,
+        "p95_ms": 292.8714169829618,
+        "p99_ms": 292.8714169829618,
+        "max_ms": 292.8714169829618,
+        "mean_ms": 288.11286659911275
+      }
+    }
+  },
+  "memory": {
+    "method": "ps sampled every 50ms plus ps execution time; RSS units KiB; not a kernel peak",
+    "sampling_scope": "Measured HTTP and Git phases, after fixture setup and warmup",
+    "server_pid": 59087,
+    "error": null,
+    "samples": [
+      {
+        "monotonic_seconds": 185663.163890875,
+        "server_rss_kib": 72992,
+        "process_tree_rss_kib": 74864,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185663.251402291,
+        "server_rss_kib": 73040,
+        "process_tree_rss_kib": 91856,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185663.344016458,
+        "server_rss_kib": 73040,
+        "process_tree_rss_kib": 99840,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185663.434216166,
+        "server_rss_kib": 72992,
+        "process_tree_rss_kib": 91776,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185663.520281958,
+        "server_rss_kib": 73040,
+        "process_tree_rss_kib": 91760,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185663.602758,
+        "server_rss_kib": 73040,
+        "process_tree_rss_kib": 89616,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185663.690490208,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 91472,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185663.779700833,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75744,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185663.872551375,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91984,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185663.96389625,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 99360,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185664.054039333,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91040,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185664.14719925,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91280,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185664.231421666,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 82080,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185664.322869041,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75216,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185664.408833333,
+        "server_rss_kib": 73072,
+        "process_tree_rss_kib": 80848,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185664.502069166,
+        "server_rss_kib": 73072,
+        "process_tree_rss_kib": 91536,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185664.589663458,
+        "server_rss_kib": 73072,
+        "process_tree_rss_kib": 92032,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185664.677146583,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 86208,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185664.76251575,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 80848,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185664.8485255,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 91632,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185664.936864708,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 83952,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185665.027010083,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 74960,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185665.116374708,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 83808,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185665.204864791,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 103600,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185665.292115583,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91632,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185665.3793295,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 86240,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185665.467522416,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 75200,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185665.553535083,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 97536,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185665.639883666,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 113744,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 185665.728376166,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91712,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185665.818358916,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 89808,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185665.906498208,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 86160,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185665.991600125,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 96592,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185666.078741541,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 114080,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 185666.170183875,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 89040,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185666.260430583,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 79600,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185666.356542208,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75056,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185666.442332,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 97504,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185666.533114583,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 87728,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185666.623080041,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 75424,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185666.706815333,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 92736,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185666.792716125,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 89696,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185666.876674583,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 80736,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185666.965271458,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91840,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185667.056073791,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 79856,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185667.145323541,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91760,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185667.232947125,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91744,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185667.323311041,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 88656,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185667.408505375,
+        "server_rss_kib": 73040,
+        "process_tree_rss_kib": 103168,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185667.4973445,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 97616,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185667.587140583,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 87872,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185667.679132375,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 86064,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185667.771436958,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91888,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185667.861719041,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 88176,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185667.949578833,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 83808,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185668.042818083,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 97264,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185668.135756875,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91408,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185668.225490375,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 85104,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185668.313255958,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 97664,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185668.408061291,
+        "server_rss_kib": 73120,
+        "process_tree_rss_kib": 74992,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185668.501623208,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 89056,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185668.590764375,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 106944,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185668.683595,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75056,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185668.77077,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91968,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185668.861782291,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91664,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185668.948694708,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 85072,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185669.036933958,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 79664,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185669.122159541,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 79888,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185669.209740458,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91632,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185669.303514458,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91632,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185669.392666958,
+        "server_rss_kib": 72944,
+        "process_tree_rss_kib": 87632,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185669.478947666,
+        "server_rss_kib": 73072,
+        "process_tree_rss_kib": 75184,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185669.565895708,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 97808,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185669.656574791,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 91072,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185669.746199708,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75056,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185669.839351833,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 96368,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185669.928472708,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 108416,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185670.026479791,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 88352,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185670.113696416,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 94976,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185670.19822475,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91616,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185670.292233875,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 90560,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185670.387652375,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 86512,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185670.471206666,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 86544,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185670.565186416,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 76928,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185670.658568208,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 80752,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185670.748587375,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 95296,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185670.837603791,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91600,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185670.920808041,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 78576,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185671.005321458,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 96576,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185671.09156225,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 80960,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185671.179787833,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91856,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185671.270780666,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 108320,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 185671.365069833,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 87600,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185671.454711458,
+        "server_rss_kib": 72944,
+        "process_tree_rss_kib": 104672,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185671.541972125,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 97712,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185671.626959166,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 89744,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185671.719778125,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 88304,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185671.804876625,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 90112,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185671.895479,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 79728,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185671.98771075,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 75856,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185672.074452083,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91488,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185672.166150458,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 90144,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185672.25650525,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 86208,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185672.341215791,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 92016,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185672.42794975,
+        "server_rss_kib": 73136,
+        "process_tree_rss_kib": 76384,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185672.518739041,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 90096,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185672.605451583,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 106240,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185672.696413958,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75056,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185672.781051583,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 89792,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185672.870017916,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 86160,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185672.960032708,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 77536,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185673.049976375,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75056,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185673.136240791,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 77760,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185673.2214365,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 90176,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185673.312438166,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 88368,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185673.402220083,
+        "server_rss_kib": 72944,
+        "process_tree_rss_kib": 75200,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185673.489563583,
+        "server_rss_kib": 73040,
+        "process_tree_rss_kib": 91552,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185673.575379333,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 88112,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185673.667241125,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 75088,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185673.760975666,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 74960,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185673.850346416,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 79360,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185673.941324041,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 103088,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185674.031535041,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 96704,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185674.124600125,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 90768,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185674.21661125,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 89824,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185674.308491083,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 86464,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185674.398194875,
+        "server_rss_kib": 72976,
+        "process_tree_rss_kib": 78912,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185674.48488175,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 85136,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185674.571647875,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 97424,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185674.655719958,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 90144,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185674.74449225,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75056,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185674.83217275,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75056,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185674.918134833,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91184,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185675.005432125,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 80608,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185675.100116625,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75056,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185675.184090041,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 80096,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185675.276283541,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 99696,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185675.364259833,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91504,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185675.44865225,
+        "server_rss_kib": 73040,
+        "process_tree_rss_kib": 79776,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185675.542395208,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 75088,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185675.633471833,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 97424,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185675.718203791,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 108352,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 185675.8094685,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 96416,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185675.894244541,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 85488,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185675.983600583,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 77952,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185676.074888541,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75056,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185676.160798083,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 108400,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185676.25471825,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 87824,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185676.346547375,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75296,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185676.433335333,
+        "server_rss_kib": 72976,
+        "process_tree_rss_kib": 91392,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185676.520587333,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 75040,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185676.61104275,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 91968,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185676.698692583,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 90896,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185676.787711125,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 80976,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185676.881560541,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75184,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185676.965172458,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 92176,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185677.057345291,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 116432,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 185677.151507,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91696,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185677.236082833,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 88448,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185677.325666708,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 84272,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185677.416031875,
+        "server_rss_kib": 73072,
+        "process_tree_rss_kib": 91520,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185677.510131333,
+        "server_rss_kib": 73072,
+        "process_tree_rss_kib": 108432,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185677.596093416,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 84000,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185677.692248833,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 91552,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185677.781506083,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 88944,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185677.871155458,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 90720,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185677.962268208,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 79904,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185678.051133666,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 97104,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185678.138611791,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 86160,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185678.226097791,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 80864,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185678.314624041,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91872,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185678.405748958,
+        "server_rss_kib": 73024,
+        "process_tree_rss_kib": 87520,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185678.501504041,
+        "server_rss_kib": 73136,
+        "process_tree_rss_kib": 75008,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185678.589324333,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 80992,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185678.679409,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 92048,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185678.769385208,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 91424,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185678.860257291,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 83696,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185678.949695583,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 80864,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185679.034483333,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91680,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185679.12851725,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 113408,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 185679.220815416,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 76496,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185679.309196041,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91744,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185679.397331875,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 86256,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185679.482666708,
+        "server_rss_kib": 73072,
+        "process_tree_rss_kib": 91648,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185679.567716625,
+        "server_rss_kib": 73072,
+        "process_tree_rss_kib": 108544,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 185679.656453583,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 80496,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185679.7476515,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 74960,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185679.837286166,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 94864,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185679.928011625,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 75120,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185680.019523958,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 97664,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185680.106740083,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91696,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185680.199792291,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 85488,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185680.294102375,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 79968,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185680.382922375,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91728,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185680.470419791,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 113792,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 185680.564968208,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 75120,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185680.653545541,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 89728,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185680.744692708,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 81504,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185680.837383791,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91728,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185680.92457575,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 114496,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 185681.01197175,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 87696,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185681.100869,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 75120,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185681.189246583,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 75120,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185681.272316708,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 90800,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185681.3620615,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 116512,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 185681.448422833,
+        "server_rss_kib": 72976,
+        "process_tree_rss_kib": 85936,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185681.530083958,
+        "server_rss_kib": 72976,
+        "process_tree_rss_kib": 107664,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185681.62318625,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 88496,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185681.712124,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 75200,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185681.796786166,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 92256,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185681.890348583,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 79296,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185681.979398583,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91776,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185682.065831458,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91712,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185682.158063,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 85456,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185682.244343,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 75248,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185682.339142208,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 75120,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185682.431957416,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 115888,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 185682.517345416,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91344,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185682.602020291,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 80480,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185682.686489291,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91824,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185682.77768075,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91184,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185682.865744083,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 108176,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185682.95306825,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 79888,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185683.039081708,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91968,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185683.132232791,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91808,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185683.223147708,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91776,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185683.314414708,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91344,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185683.408141666,
+        "server_rss_kib": 72944,
+        "process_tree_rss_kib": 87536,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185683.494315875,
+        "server_rss_kib": 73072,
+        "process_tree_rss_kib": 91568,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185683.579992791,
+        "server_rss_kib": 73072,
+        "process_tree_rss_kib": 87600,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185683.673520666,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 82928,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185683.760066375,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 91856,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185683.847816625,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 79792,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185683.93173925,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 92048,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185684.017482416,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 108544,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 185684.102651708,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 75248,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185684.195331791,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91856,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185684.290020666,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 98768,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185684.384671291,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91616,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185684.47121425,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 75200,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185684.565031833,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 90112,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185684.648779958,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91776,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185684.738510708,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 97728,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185684.826073833,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 87728,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185684.917182416,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 81696,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185685.010479291,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 75280,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185685.098797125,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91952,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185685.183084166,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 76496,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185685.277262083,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 92112,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185685.363511708,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 106816,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185685.452524125,
+        "server_rss_kib": 72944,
+        "process_tree_rss_kib": 91584,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185685.543599125,
+        "server_rss_kib": 73072,
+        "process_tree_rss_kib": 89888,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185685.632504625,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 83728,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185685.72202425,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 74992,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185685.810086791,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 91664,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185685.90331325,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 75520,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185685.995015541,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 92192,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185686.08181825,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 90832,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185686.173275333,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 81488,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185686.260005541,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 75120,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185686.351314875,
+        "server_rss_kib": 73248,
+        "process_tree_rss_kib": 91952,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185686.445084125,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 90240,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185686.538261625,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75056,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185686.627937291,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91312,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185686.719707083,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 112160,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 185686.811094208,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 86384,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185686.902794583,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 107584,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185686.987719625,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75664,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185687.07291175,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 96896,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185687.163766583,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 92032,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185687.256359833,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 79008,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185687.3445185,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 92064,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185687.432352291,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 91312,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185687.52444725,
+        "server_rss_kib": 73072,
+        "process_tree_rss_kib": 88960,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185687.610750041,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 87760,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185687.696303083,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 80272,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185687.785037166,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 74960,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185687.876077916,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 88176,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185687.964975583,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75296,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185688.055971708,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 79232,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185688.146911458,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75056,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185688.232481125,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 97584,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185688.320906666,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 91552,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185688.408481708,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 108192,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185688.500045333,
+        "server_rss_kib": 73136,
+        "process_tree_rss_kib": 91664,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185688.589089208,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 91168,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185688.678928625,
+        "server_rss_kib": 73168,
+        "process_tree_rss_kib": 89008,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185688.765312416,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 81008,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185688.853491875,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 79616,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185688.947766833,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75296,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185689.036069,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 93440,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185689.126839125,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 88160,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185689.211686666,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 80704,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185689.301270166,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 80816,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185689.394402791,
+        "server_rss_kib": 73184,
+        "process_tree_rss_kib": 75056,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185689.477991125,
+        "server_rss_kib": 73040,
+        "process_tree_rss_kib": 91648,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185689.571239083,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 91696,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185689.657025833,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 89776,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185689.742135333,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 74960,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185689.825074,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 74960,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185689.913875291,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 74960,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185690.000734458,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 74960,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185690.090857791,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 74960,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185690.18181325,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 74960,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185690.272823541,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 74960,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185690.363742458,
+        "server_rss_kib": 73088,
+        "process_tree_rss_kib": 74960,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185690.447292958,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185690.536822583,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185690.626738666,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185690.716414458,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185690.805291458,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185690.896696,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185690.983855958,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185691.075237541,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185691.160730208,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185691.246166416,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185691.335815416,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185691.418745041,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185691.506991625,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185691.595231375,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185691.685353,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185691.774744125,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185691.861036583,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185691.949430333,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185692.0414415,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185692.126169833,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185692.209830875,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185692.293938875,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185692.384960541,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185692.471237791,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185692.558459041,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185692.6511435,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185692.740725041,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185692.83075875,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185692.916297166,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185692.9996785,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185693.083377333,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185693.168614333,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185693.254886708,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185693.34339575,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185693.431733708,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185693.515297166,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185693.603650916,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185693.694053208,
+        "server_rss_kib": 72864,
+        "process_tree_rss_kib": 74736,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185693.777295958,
+        "server_rss_kib": 73056,
+        "process_tree_rss_kib": 74928,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185693.863244958,
+        "server_rss_kib": 73056,
+        "process_tree_rss_kib": 74928,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185693.948986666,
+        "server_rss_kib": 73056,
+        "process_tree_rss_kib": 74928,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185694.034076375,
+        "server_rss_kib": 73056,
+        "process_tree_rss_kib": 74928,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185694.121344583,
+        "server_rss_kib": 73056,
+        "process_tree_rss_kib": 74928,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185694.208694916,
+        "server_rss_kib": 73056,
+        "process_tree_rss_kib": 74928,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185694.300507166,
+        "server_rss_kib": 73072,
+        "process_tree_rss_kib": 87664,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185694.388002166,
+        "server_rss_kib": 73232,
+        "process_tree_rss_kib": 92160,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185694.477793916,
+        "server_rss_kib": 73232,
+        "process_tree_rss_kib": 93824,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185694.564925208,
+        "server_rss_kib": 73712,
+        "process_tree_rss_kib": 75584,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185694.651762666,
+        "server_rss_kib": 73712,
+        "process_tree_rss_kib": 75584,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185694.743778833,
+        "server_rss_kib": 73680,
+        "process_tree_rss_kib": 128592,
+        "process_count": 7
+      },
+      {
+        "monotonic_seconds": 185694.832541541,
+        "server_rss_kib": 73712,
+        "process_tree_rss_kib": 141696,
+        "process_count": 7
+      },
+      {
+        "monotonic_seconds": 185694.924282041,
+        "server_rss_kib": 74368,
+        "process_tree_rss_kib": 98096,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185695.016107041,
+        "server_rss_kib": 74528,
+        "process_tree_rss_kib": 99440,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185695.10219,
+        "server_rss_kib": 74896,
+        "process_tree_rss_kib": 76768,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185695.186460375,
+        "server_rss_kib": 74912,
+        "process_tree_rss_kib": 76784,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185695.2720395,
+        "server_rss_kib": 74928,
+        "process_tree_rss_kib": 121040,
+        "process_count": 7
+      },
+      {
+        "monotonic_seconds": 185695.361904416,
+        "server_rss_kib": 74960,
+        "process_tree_rss_kib": 139984,
+        "process_count": 7
+      },
+      {
+        "monotonic_seconds": 185695.447870416,
+        "server_rss_kib": 74960,
+        "process_tree_rss_kib": 89952,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185695.532787625,
+        "server_rss_kib": 74960,
+        "process_tree_rss_kib": 76944,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185695.623059625,
+        "server_rss_kib": 74960,
+        "process_tree_rss_kib": 76832,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185695.707547416,
+        "server_rss_kib": 74960,
+        "process_tree_rss_kib": 99600,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185695.795831458,
+        "server_rss_kib": 74544,
+        "process_tree_rss_kib": 123824,
+        "process_count": 7
+      },
+      {
+        "monotonic_seconds": 185695.880911291,
+        "server_rss_kib": 74560,
+        "process_tree_rss_kib": 131712,
+        "process_count": 7
+      },
+      {
+        "monotonic_seconds": 185695.97078425,
+        "server_rss_kib": 74560,
+        "process_tree_rss_kib": 80848,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185696.06196225,
+        "server_rss_kib": 74592,
+        "process_tree_rss_kib": 80176,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185696.154012333,
+        "server_rss_kib": 74672,
+        "process_tree_rss_kib": 76544,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185696.240571791,
+        "server_rss_kib": 74672,
+        "process_tree_rss_kib": 93680,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 185696.329919541,
+        "server_rss_kib": 74672,
+        "process_tree_rss_kib": 116672,
+        "process_count": 7
+      },
+      {
+        "monotonic_seconds": 185696.415672333,
+        "server_rss_kib": 74672,
+        "process_tree_rss_kib": 129280,
+        "process_count": 7
+      },
+      {
+        "monotonic_seconds": 185696.509771083,
+        "server_rss_kib": 74864,
+        "process_tree_rss_kib": 77136,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185696.592870083,
+        "server_rss_kib": 75296,
+        "process_tree_rss_kib": 115280,
+        "process_count": 6
+      },
+      {
+        "monotonic_seconds": 185696.677062666,
+        "server_rss_kib": 75456,
+        "process_tree_rss_kib": 77328,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 185696.765513041,
+        "server_rss_kib": 75440,
+        "process_tree_rss_kib": 77648,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 185696.858024791,
+        "server_rss_kib": 75440,
+        "process_tree_rss_kib": 102032,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 185696.945371125,
+        "server_rss_kib": 75440,
+        "process_tree_rss_kib": 118032,
+        "process_count": 7
+      }
+    ],
+    "peak_server_rss_kib": 75456,
+    "peak_process_tree_rss_kib": 141696
+  },
+  "elapsed_seconds": 44.05412292480469
+}

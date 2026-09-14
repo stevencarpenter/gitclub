@@ -1,0 +1,45 @@
+{
+  "go_production": {
+    "files": 4,
+    "physical_lines": 2072,
+    "bytes": 68479
+  },
+  "gleam_production": {
+    "files": 6,
+    "physical_lines": 3362,
+    "bytes": 112114
+  },
+  "erlang_ffi": {
+    "files": 4,
+    "physical_lines": 396,
+    "bytes": 20782
+  },
+  "browser": {
+    "files": 4,
+    "physical_lines": 2225,
+    "bytes": 91865
+  },
+  "shared_python": {
+    "files": 3,
+    "physical_lines": 249,
+    "bytes": 10600
+  },
+  "method": "Physical lines including comments/blanks, excluding tests and dependencies. Erlang source includes embedded Python strings. Formatting differs; counts are not maintainability scores.",
+  "go_tests": {
+    "physical_lines": 364
+  },
+  "gleam_tests": {
+    "physical_lines": 488
+  },
+  "gleam_resolved_packages": 14,
+  "rust_production": {
+    "files": 5,
+    "physical_lines": 3279,
+    "bytes": 128388
+  },
+  "rust_tests": {
+    "physical_lines": 715
+  },
+  "rust_direct_dependencies": 16,
+  "rust_resolved_packages": 108
+}

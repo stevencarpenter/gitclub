@@ -1,0 +1,298 @@
+{
+  "started_at_unix": 1789345788.5577269,
+  "url": "http://127.0.0.1:17731",
+  "configuration": {
+    "requests": 20,
+    "concurrency": 4,
+    "warmup_requests": 4,
+    "repositories": 1000,
+    "git_rounds": 1,
+    "directory_only": true
+  },
+  "environment": {
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "cpu_count": 18,
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.1.8 ]",
+    "git": "git version 2.54.0",
+    "server_version": "Go 1.26.8 darwin/arm64; native optimized release; final build elapsed not separately measured",
+    "build_seconds": null
+  },
+  "limitations": [
+    "Local fixture measurements do not establish uptime or production capacity.",
+    "HTTP latencies include client scheduling and connection overhead; urllib uses fresh requests.",
+    "Repository-list results include any pre-existing server data; use isolated fresh data directories."
+  ],
+  "fixture": {
+    "seed": 1729,
+    "repositories": 1000,
+    "source_files": 100,
+    "binary_payload_bytes": 1048576,
+    "binary_payload_sha256": "3fc9f1b948c9c40f2a25517cd638e297ed362143049b31ed4a0ffab1e114994c",
+    "default_branch_commits": 20,
+    "description": "One populated repository; all remaining repositories are empty. Populated default branch has 20 commits, 100 generated source files plus the base fixture, and a 1 MiB incompressible binary.",
+    "head_oid": "e62e56e2f981bd32fac1a62dd678a8b9f5a3f52f",
+    "pull_id": 1,
+    "group_id": 1,
+    "accessible_repository_count": 1000,
+    "directory_search_result_count": 996
+  },
+  "fixture_setup_seconds": 42.239547166012926,
+  "implementation": "go",
+  "http_mix": [
+    {
+      "name": "repository_directory",
+      "path": "/api/repos"
+    },
+    {
+      "name": "repository_search",
+      "path": "/api/repos?q=benchmark"
+    }
+  ],
+  "percentile_method": "nearest rank: sorted[ceil(p * sample_count) - 1]",
+  "http": {
+    "elapsed_seconds": 0.21653991701896302,
+    "requests_per_second": 92.36172376591676,
+    "errors": 0,
+    "raw_samples": [
+      {
+        "index": 0,
+        "operation": "repository_directory",
+        "elapsed_ms": 48.879334004595876,
+        "error": null
+      },
+      {
+        "index": 1,
+        "operation": "repository_search",
+        "elapsed_ms": 47.35474998597056,
+        "error": null
+      },
+      {
+        "index": 2,
+        "operation": "repository_directory",
+        "elapsed_ms": 49.53079199185595,
+        "error": null
+      },
+      {
+        "index": 3,
+        "operation": "repository_search",
+        "elapsed_ms": 45.67725001834333,
+        "error": null
+      },
+      {
+        "index": 4,
+        "operation": "repository_directory",
+        "elapsed_ms": 36.50779198505916,
+        "error": null
+      },
+      {
+        "index": 5,
+        "operation": "repository_search",
+        "elapsed_ms": 41.13354199216701,
+        "error": null
+      },
+      {
+        "index": 6,
+        "operation": "repository_directory",
+        "elapsed_ms": 45.34295800840482,
+        "error": null
+      },
+      {
+        "index": 7,
+        "operation": "repository_search",
+        "elapsed_ms": 40.20216700155288,
+        "error": null
+      },
+      {
+        "index": 8,
+        "operation": "repository_directory",
+        "elapsed_ms": 41.740499989828095,
+        "error": null
+      },
+      {
+        "index": 9,
+        "operation": "repository_search",
+        "elapsed_ms": 40.74754100292921,
+        "error": null
+      },
+      {
+        "index": 10,
+        "operation": "repository_directory",
+        "elapsed_ms": 38.18429200327955,
+        "error": null
+      },
+      {
+        "index": 11,
+        "operation": "repository_search",
+        "elapsed_ms": 36.735208006575704,
+        "error": null
+      },
+      {
+        "index": 12,
+        "operation": "repository_directory",
+        "elapsed_ms": 37.668083008611575,
+        "error": null
+      },
+      {
+        "index": 13,
+        "operation": "repository_search",
+        "elapsed_ms": 44.3315000156872,
+        "error": null
+      },
+      {
+        "index": 14,
+        "operation": "repository_directory",
+        "elapsed_ms": 44.517540984088555,
+        "error": null
+      },
+      {
+        "index": 15,
+        "operation": "repository_search",
+        "elapsed_ms": 40.60037501039915,
+        "error": null
+      },
+      {
+        "index": 16,
+        "operation": "repository_directory",
+        "elapsed_ms": 37.258708995068446,
+        "error": null
+      },
+      {
+        "index": 17,
+        "operation": "repository_search",
+        "elapsed_ms": 43.369666003854945,
+        "error": null
+      },
+      {
+        "index": 18,
+        "operation": "repository_directory",
+        "elapsed_ms": 43.26141701312736,
+        "error": null
+      },
+      {
+        "index": 19,
+        "operation": "repository_search",
+        "elapsed_ms": 39.58325000712648,
+        "error": null
+      }
+    ],
+    "latency": {
+      "samples": 20,
+      "min_ms": 36.50779198505916,
+      "p50_ms": 41.13354199216701,
+      "p95_ms": 48.879334004595876,
+      "p99_ms": 49.53079199185595,
+      "max_ms": 49.53079199185595,
+      "mean_ms": 42.13133335142629
+    },
+    "by_operation": {
+      "repository_directory": {
+        "samples": 10,
+        "min_ms": 36.50779198505916,
+        "p50_ms": 41.740499989828095,
+        "p95_ms": 49.53079199185595,
+        "p99_ms": 49.53079199185595,
+        "max_ms": 49.53079199185595,
+        "mean_ms": 42.28914179839194
+      },
+      "repository_search": {
+        "samples": 10,
+        "min_ms": 36.735208006575704,
+        "p50_ms": 40.74754100292921,
+        "p95_ms": 47.35474998597056,
+        "p99_ms": 47.35474998597056,
+        "max_ms": 47.35474998597056,
+        "mean_ms": 41.973524904460646
+      }
+    }
+  },
+  "git": {
+    "raw_samples": [
+      {
+        "operation": "clone",
+        "index": 0,
+        "elapsed_ms": 125.19829100347124
+      },
+      {
+        "operation": "push",
+        "index": 0,
+        "oid": "a6e70b41312c320654626bd59b2553c688b5c5cc",
+        "elapsed_ms": 205.10008299606852
+      }
+    ],
+    "latency": {
+      "clone": {
+        "samples": 1,
+        "min_ms": 125.19829100347124,
+        "p50_ms": 125.19829100347124,
+        "p95_ms": 125.19829100347124,
+        "p99_ms": 125.19829100347124,
+        "max_ms": 125.19829100347124,
+        "mean_ms": 125.19829100347124
+      },
+      "push": {
+        "samples": 1,
+        "min_ms": 205.10008299606852,
+        "p50_ms": 205.10008299606852,
+        "p95_ms": 205.10008299606852,
+        "p99_ms": 205.10008299606852,
+        "max_ms": 205.10008299606852,
+        "mean_ms": 205.10008299606852
+      }
+    }
+  },
+  "memory": {
+    "method": "ps sampled every 50ms plus ps execution time; RSS units KiB; not a kernel peak",
+    "sampling_scope": "Measured HTTP and Git phases, after fixture setup and warmup",
+    "process_tree_rss_definition": "Sum of server and descendant RSS; shared pages can be counted more than once",
+    "server_pid": 59276,
+    "error": null,
+    "samples": [
+      {
+        "monotonic_seconds": 186521.02738675,
+        "server_rss_kib": 25664,
+        "process_tree_rss_kib": 25664,
+        "process_count": 1
+      },
+      {
+        "monotonic_seconds": 186521.113314583,
+        "server_rss_kib": 37040,
+        "process_tree_rss_kib": 37040,
+        "process_count": 1
+      },
+      {
+        "monotonic_seconds": 186521.197852916,
+        "server_rss_kib": 37200,
+        "process_tree_rss_kib": 37200,
+        "process_count": 1
+      },
+      {
+        "monotonic_seconds": 186521.281423041,
+        "server_rss_kib": 37232,
+        "process_tree_rss_kib": 44496,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 186521.366759,
+        "server_rss_kib": 37232,
+        "process_tree_rss_kib": 37232,
+        "process_count": 1
+      },
+      {
+        "monotonic_seconds": 186521.453149,
+        "server_rss_kib": 37232,
+        "process_tree_rss_kib": 37232,
+        "process_count": 1
+      },
+      {
+        "monotonic_seconds": 186521.537175875,
+        "server_rss_kib": 37232,
+        "process_tree_rss_kib": 85456,
+        "process_count": 5
+      }
+    ],
+    "peak_server_rss_kib": 37232,
+    "peak_process_tree_rss_kib": 85456
+  },
+  "elapsed_seconds": 42.94832634925842
+}

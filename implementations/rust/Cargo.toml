@@ -1,0 +1,32 @@
+[package]
+name = "gitclub"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.98"
+publish = false
+
+[dependencies]
+# HTTP framing, bounded asynchronous I/O, and SQLite persistence.
+axum = "0.8.9"
+# Explicit HTTP/1 header deadlines; these are also Axum runtime dependencies.
+hyper = { version = "1.11.1", features = ["http1", "server"] }
+hyper-util = { version = "0.1.20", features = ["tokio", "service"] }
+tokio = { version = "1.53.1", features = ["full"] }
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+# Interoperable password/token formats and constant-time comparisons.
+pbkdf2 = "0.13.0"
+sha2 = "0.11.0"
+rand = "0.10.2"
+base64 = "0.23.1"
+hex = "0.4.3"
+subtle = "2.6.1"
+# Backpressure for Git transport and safe Unix process-group cancellation.
+futures-util = "0.3.34"
+nix = { version = "0.31.3", features = ["signal", "process"] }
+form_urlencoded = "1.2.2"
+
+[profile.release]
+strip = true
+lto = "thin"

@@ -1,0 +1,26 @@
+{
+  "url": "http://127.0.0.1:17706",
+  "started_at_unix": 1789344657.167851,
+  "status": "passed",
+  "checked_paths": [
+    "/api/repos/6",
+    "/api/repos/6/branches",
+    "/api/repos/6/tree?ref=trunk",
+    "/api/repos/6/commits?ref=trunk",
+    "/api/repos/6/issues",
+    "/api/repos/6/pulls",
+    "/api/groups",
+    "/api/repos/6/issues/4",
+    "/api/repos/6/issues/3",
+    "/api/repos/6/pulls/8",
+    "/api/repos/6/pulls/7",
+    "/api/repos/6/pulls/6",
+    "/api/repos/6/pulls/5"
+  ],
+  "original_token": true,
+  "password_login": true,
+  "git_refs_equal": true,
+  "authenticated_clone_fsck": true,
+  "group_scope": "Fixture-owned groups; offline recovery separately verifies every database row",
+  "elapsed_seconds": 1.375671148300171
+}

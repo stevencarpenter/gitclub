@@ -1,0 +1,46 @@
+{
+  "implementation": "go",
+  "url": "http://localhost:17711",
+  "ssh_host": "127.0.0.1",
+  "ssh_port": 17721,
+  "started_at_unix": 1789344156.197658,
+  "elapsed_seconds": 1.231019,
+  "environment": {
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "ssh": "OpenSSH_10.3p1, LibreSSL 3.3.6"
+  },
+  "results": [
+    {
+      "name": "OpenSSH key registration and native Git import",
+      "status": "passed",
+      "elapsed_seconds": 0.436594
+    },
+    {
+      "name": "SSH clone binary identity, tags and feature push",
+      "status": "passed",
+      "elapsed_seconds": 0.222593
+    },
+    {
+      "name": "SSH protected default branch rejects direct push",
+      "status": "passed",
+      "elapsed_seconds": 0.131824
+    },
+    {
+      "name": "SSH arbitrary shell and traversal rejection",
+      "status": "passed",
+      "elapsed_seconds": 0.054802
+    },
+    {
+      "name": "SSH eight-transfer bound and disconnect releases slots",
+      "status": "passed",
+      "elapsed_seconds": 0.348855
+    },
+    {
+      "name": "SSH revoked key denies subsequent authentication",
+      "status": "passed",
+      "elapsed_seconds": 0.036117
+    }
+  ],
+  "passed": 6,
+  "failed": 0
+}

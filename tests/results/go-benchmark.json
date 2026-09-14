@@ -1,0 +1,2984 @@
+{
+  "started_at_unix": 1789345655.684682,
+  "url": "http://127.0.0.1:17731",
+  "configuration": {
+    "requests": 400,
+    "concurrency": 4,
+    "warmup_requests": 40,
+    "repositories": 40,
+    "git_rounds": 5,
+    "directory_only": false
+  },
+  "environment": {
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "cpu_count": 18,
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.1.8 ]",
+    "git": "git version 2.54.0",
+    "server_version": "Go 1.26.8 darwin/arm64; native optimized release; final build elapsed not separately measured",
+    "build_seconds": null
+  },
+  "limitations": [
+    "Local fixture measurements do not establish uptime or production capacity.",
+    "HTTP latencies include client scheduling and connection overhead; urllib uses fresh requests.",
+    "Repository-list results include any pre-existing server data; use isolated fresh data directories."
+  ],
+  "fixture": {
+    "seed": 1729,
+    "repositories": 40,
+    "source_files": 100,
+    "binary_payload_bytes": 1048576,
+    "binary_payload_sha256": "3fc9f1b948c9c40f2a25517cd638e297ed362143049b31ed4a0ffab1e114994c",
+    "default_branch_commits": 20,
+    "description": "One populated repository; all remaining repositories are empty. Populated default branch has 20 commits, 100 generated source files plus the base fixture, and a 1 MiB incompressible binary.",
+    "head_oid": "e62e56e2f981bd32fac1a62dd678a8b9f5a3f52f",
+    "pull_id": 1,
+    "group_id": 1,
+    "accessible_repository_count": 40,
+    "directory_search_result_count": 36
+  },
+  "fixture_setup_seconds": 3.584393833996728,
+  "implementation": "go",
+  "http_mix": [
+    {
+      "name": "repository_directory",
+      "path": "/api/repos"
+    },
+    {
+      "name": "repository_search",
+      "path": "/api/repos?q=benchmark"
+    },
+    {
+      "name": "tree",
+      "path": "/api/repos/1/tree?ref=trunk&path=src"
+    },
+    {
+      "name": "blob",
+      "path": "/api/repos/1/blob?ref=trunk&path=src/module_001.txt"
+    },
+    {
+      "name": "history",
+      "path": "/api/repos/1/commits?ref=trunk"
+    },
+    {
+      "name": "diff",
+      "path": "/api/repos/1/diff?base=trunk&head=benchmark-diff"
+    },
+    {
+      "name": "issues",
+      "path": "/api/repos/1/issues"
+    },
+    {
+      "name": "pull_review",
+      "path": "/api/repos/1/pulls/1"
+    },
+    {
+      "name": "groups",
+      "path": "/api/groups"
+    },
+    {
+      "name": "branches",
+      "path": "/api/repos/1/branches"
+    }
+  ],
+  "percentile_method": "nearest rank: sorted[ceil(p * sample_count) - 1]",
+  "http": {
+    "elapsed_seconds": 2.3416447920026258,
+    "requests_per_second": 170.82010105294887,
+    "errors": 0,
+    "raw_samples": [
+      {
+        "index": 0,
+        "operation": "repository_directory",
+        "elapsed_ms": 2.9869580175727606,
+        "error": null
+      },
+      {
+        "index": 1,
+        "operation": "repository_search",
+        "elapsed_ms": 1.946250005858019,
+        "error": null
+      },
+      {
+        "index": 2,
+        "operation": "tree",
+        "elapsed_ms": 28.488874988397583,
+        "error": null
+      },
+      {
+        "index": 3,
+        "operation": "blob",
+        "elapsed_ms": 38.246208016062155,
+        "error": null
+      },
+      {
+        "index": 4,
+        "operation": "history",
+        "elapsed_ms": 26.7694579961244,
+        "error": null
+      },
+      {
+        "index": 5,
+        "operation": "diff",
+        "elapsed_ms": 44.35962499701418,
+        "error": null
+      },
+      {
+        "index": 6,
+        "operation": "issues",
+        "elapsed_ms": 112.2875830042176,
+        "error": null
+      },
+      {
+        "index": 7,
+        "operation": "pull_review",
+        "elapsed_ms": 51.4605839853175,
+        "error": null
+      },
+      {
+        "index": 8,
+        "operation": "groups",
+        "elapsed_ms": 1.0557500063441694,
+        "error": null
+      },
+      {
+        "index": 9,
+        "operation": "branches",
+        "elapsed_ms": 9.20429200050421,
+        "error": null
+      },
+      {
+        "index": 10,
+        "operation": "repository_directory",
+        "elapsed_ms": 1.8784580170176923,
+        "error": null
+      },
+      {
+        "index": 11,
+        "operation": "repository_search",
+        "elapsed_ms": 2.6185830065514892,
+        "error": null
+      },
+      {
+        "index": 12,
+        "operation": "tree",
+        "elapsed_ms": 25.79395897919312,
+        "error": null
+      },
+      {
+        "index": 13,
+        "operation": "blob",
+        "elapsed_ms": 31.852917018113658,
+        "error": null
+      },
+      {
+        "index": 14,
+        "operation": "history",
+        "elapsed_ms": 23.361500003375113,
+        "error": null
+      },
+      {
+        "index": 15,
+        "operation": "diff",
+        "elapsed_ms": 43.03683401667513,
+        "error": null
+      },
+      {
+        "index": 16,
+        "operation": "issues",
+        "elapsed_ms": 0.822750007500872,
+        "error": null
+      },
+      {
+        "index": 17,
+        "operation": "pull_review",
+        "elapsed_ms": 49.56941702403128,
+        "error": null
+      },
+      {
+        "index": 18,
+        "operation": "groups",
+        "elapsed_ms": 1.0133750038221478,
+        "error": null
+      },
+      {
+        "index": 19,
+        "operation": "branches",
+        "elapsed_ms": 9.572624985594302,
+        "error": null
+      },
+      {
+        "index": 20,
+        "operation": "repository_directory",
+        "elapsed_ms": 1.6030000115279108,
+        "error": null
+      },
+      {
+        "index": 21,
+        "operation": "repository_search",
+        "elapsed_ms": 1.3251249911263585,
+        "error": null
+      },
+      {
+        "index": 22,
+        "operation": "tree",
+        "elapsed_ms": 26.34745798422955,
+        "error": null
+      },
+      {
+        "index": 23,
+        "operation": "blob",
+        "elapsed_ms": 35.283958015497774,
+        "error": null
+      },
+      {
+        "index": 24,
+        "operation": "history",
+        "elapsed_ms": 29.68400000827387,
+        "error": null
+      },
+      {
+        "index": 25,
+        "operation": "diff",
+        "elapsed_ms": 48.695916979340836,
+        "error": null
+      },
+      {
+        "index": 26,
+        "operation": "issues",
+        "elapsed_ms": 2.8452920087147504,
+        "error": null
+      },
+      {
+        "index": 27,
+        "operation": "pull_review",
+        "elapsed_ms": 55.319458013400435,
+        "error": null
+      },
+      {
+        "index": 28,
+        "operation": "groups",
+        "elapsed_ms": 0.9513340191915631,
+        "error": null
+      },
+      {
+        "index": 29,
+        "operation": "branches",
+        "elapsed_ms": 9.558958001434803,
+        "error": null
+      },
+      {
+        "index": 30,
+        "operation": "repository_directory",
+        "elapsed_ms": 2.674249990377575,
+        "error": null
+      },
+      {
+        "index": 31,
+        "operation": "repository_search",
+        "elapsed_ms": 3.1677090155426413,
+        "error": null
+      },
+      {
+        "index": 32,
+        "operation": "tree",
+        "elapsed_ms": 29.031958983978257,
+        "error": null
+      },
+      {
+        "index": 33,
+        "operation": "blob",
+        "elapsed_ms": 37.451583018992096,
+        "error": null
+      },
+      {
+        "index": 34,
+        "operation": "history",
+        "elapsed_ms": 33.476833981694654,
+        "error": null
+      },
+      {
+        "index": 35,
+        "operation": "diff",
+        "elapsed_ms": 44.20779200154357,
+        "error": null
+      },
+      {
+        "index": 36,
+        "operation": "issues",
+        "elapsed_ms": 1.444249995984137,
+        "error": null
+      },
+      {
+        "index": 37,
+        "operation": "pull_review",
+        "elapsed_ms": 54.290875006699935,
+        "error": null
+      },
+      {
+        "index": 38,
+        "operation": "groups",
+        "elapsed_ms": 0.6104590138420463,
+        "error": null
+      },
+      {
+        "index": 39,
+        "operation": "branches",
+        "elapsed_ms": 10.07441699039191,
+        "error": null
+      },
+      {
+        "index": 40,
+        "operation": "repository_directory",
+        "elapsed_ms": 2.148334024241194,
+        "error": null
+      },
+      {
+        "index": 41,
+        "operation": "repository_search",
+        "elapsed_ms": 4.239458008669317,
+        "error": null
+      },
+      {
+        "index": 42,
+        "operation": "tree",
+        "elapsed_ms": 28.057457995601,
+        "error": null
+      },
+      {
+        "index": 43,
+        "operation": "blob",
+        "elapsed_ms": 35.103917005471885,
+        "error": null
+      },
+      {
+        "index": 44,
+        "operation": "history",
+        "elapsed_ms": 26.343542005633935,
+        "error": null
+      },
+      {
+        "index": 45,
+        "operation": "diff",
+        "elapsed_ms": 45.45187499024905,
+        "error": null
+      },
+      {
+        "index": 46,
+        "operation": "issues",
+        "elapsed_ms": 0.5967499746475369,
+        "error": null
+      },
+      {
+        "index": 47,
+        "operation": "pull_review",
+        "elapsed_ms": 56.14645799505524,
+        "error": null
+      },
+      {
+        "index": 48,
+        "operation": "groups",
+        "elapsed_ms": 1.2028329947497696,
+        "error": null
+      },
+      {
+        "index": 49,
+        "operation": "branches",
+        "elapsed_ms": 9.14824998471886,
+        "error": null
+      },
+      {
+        "index": 50,
+        "operation": "repository_directory",
+        "elapsed_ms": 1.913374988362193,
+        "error": null
+      },
+      {
+        "index": 51,
+        "operation": "repository_search",
+        "elapsed_ms": 1.5769579913467169,
+        "error": null
+      },
+      {
+        "index": 52,
+        "operation": "tree",
+        "elapsed_ms": 29.362666013184935,
+        "error": null
+      },
+      {
+        "index": 53,
+        "operation": "blob",
+        "elapsed_ms": 38.04616699926555,
+        "error": null
+      },
+      {
+        "index": 54,
+        "operation": "history",
+        "elapsed_ms": 27.623333007795736,
+        "error": null
+      },
+      {
+        "index": 55,
+        "operation": "diff",
+        "elapsed_ms": 44.97241700300947,
+        "error": null
+      },
+      {
+        "index": 56,
+        "operation": "issues",
+        "elapsed_ms": 63.79066698718816,
+        "error": null
+      },
+      {
+        "index": 57,
+        "operation": "pull_review",
+        "elapsed_ms": 50.92391700600274,
+        "error": null
+      },
+      {
+        "index": 58,
+        "operation": "groups",
+        "elapsed_ms": 0.7727080082986504,
+        "error": null
+      },
+      {
+        "index": 59,
+        "operation": "branches",
+        "elapsed_ms": 8.570957987103611,
+        "error": null
+      },
+      {
+        "index": 60,
+        "operation": "repository_directory",
+        "elapsed_ms": 1.8433749792166054,
+        "error": null
+      },
+      {
+        "index": 61,
+        "operation": "repository_search",
+        "elapsed_ms": 1.5854999946895987,
+        "error": null
+      },
+      {
+        "index": 62,
+        "operation": "tree",
+        "elapsed_ms": 27.04416698543355,
+        "error": null
+      },
+      {
+        "index": 63,
+        "operation": "blob",
+        "elapsed_ms": 37.228417000733316,
+        "error": null
+      },
+      {
+        "index": 64,
+        "operation": "history",
+        "elapsed_ms": 27.94766699662432,
+        "error": null
+      },
+      {
+        "index": 65,
+        "operation": "diff",
+        "elapsed_ms": 44.82183398795314,
+        "error": null
+      },
+      {
+        "index": 66,
+        "operation": "issues",
+        "elapsed_ms": 1.690416014753282,
+        "error": null
+      },
+      {
+        "index": 67,
+        "operation": "pull_review",
+        "elapsed_ms": 58.60016599763185,
+        "error": null
+      },
+      {
+        "index": 68,
+        "operation": "groups",
+        "elapsed_ms": 0.9179589978884906,
+        "error": null
+      },
+      {
+        "index": 69,
+        "operation": "branches",
+        "elapsed_ms": 10.644790978403762,
+        "error": null
+      },
+      {
+        "index": 70,
+        "operation": "repository_directory",
+        "elapsed_ms": 2.1416249801404774,
+        "error": null
+      },
+      {
+        "index": 71,
+        "operation": "repository_search",
+        "elapsed_ms": 1.986375020351261,
+        "error": null
+      },
+      {
+        "index": 72,
+        "operation": "tree",
+        "elapsed_ms": 33.915917010745034,
+        "error": null
+      },
+      {
+        "index": 73,
+        "operation": "blob",
+        "elapsed_ms": 39.068250014679506,
+        "error": null
+      },
+      {
+        "index": 74,
+        "operation": "history",
+        "elapsed_ms": 28.109500010032207,
+        "error": null
+      },
+      {
+        "index": 75,
+        "operation": "diff",
+        "elapsed_ms": 47.2444579936564,
+        "error": null
+      },
+      {
+        "index": 76,
+        "operation": "issues",
+        "elapsed_ms": 0.918666017241776,
+        "error": null
+      },
+      {
+        "index": 77,
+        "operation": "pull_review",
+        "elapsed_ms": 64.26283300970681,
+        "error": null
+      },
+      {
+        "index": 78,
+        "operation": "groups",
+        "elapsed_ms": 0.4274170205462724,
+        "error": null
+      },
+      {
+        "index": 79,
+        "operation": "branches",
+        "elapsed_ms": 9.315499977674335,
+        "error": null
+      },
+      {
+        "index": 80,
+        "operation": "repository_directory",
+        "elapsed_ms": 1.5424159937538207,
+        "error": null
+      },
+      {
+        "index": 81,
+        "operation": "repository_search",
+        "elapsed_ms": 2.3955419892445207,
+        "error": null
+      },
+      {
+        "index": 82,
+        "operation": "tree",
+        "elapsed_ms": 28.45391700975597,
+        "error": null
+      },
+      {
+        "index": 83,
+        "operation": "blob",
+        "elapsed_ms": 38.460084004327655,
+        "error": null
+      },
+      {
+        "index": 84,
+        "operation": "history",
+        "elapsed_ms": 29.136833996744826,
+        "error": null
+      },
+      {
+        "index": 85,
+        "operation": "diff",
+        "elapsed_ms": 40.98691599210724,
+        "error": null
+      },
+      {
+        "index": 86,
+        "operation": "issues",
+        "elapsed_ms": 132.12637501419522,
+        "error": null
+      },
+      {
+        "index": 87,
+        "operation": "pull_review",
+        "elapsed_ms": 51.406458020210266,
+        "error": null
+      },
+      {
+        "index": 88,
+        "operation": "groups",
+        "elapsed_ms": 0.4700839926954359,
+        "error": null
+      },
+      {
+        "index": 89,
+        "operation": "branches",
+        "elapsed_ms": 9.486957977060229,
+        "error": null
+      },
+      {
+        "index": 90,
+        "operation": "repository_directory",
+        "elapsed_ms": 1.9661659898702055,
+        "error": null
+      },
+      {
+        "index": 91,
+        "operation": "repository_search",
+        "elapsed_ms": 1.099916989915073,
+        "error": null
+      },
+      {
+        "index": 92,
+        "operation": "tree",
+        "elapsed_ms": 26.332167006330565,
+        "error": null
+      },
+      {
+        "index": 93,
+        "operation": "blob",
+        "elapsed_ms": 32.66333299688995,
+        "error": null
+      },
+      {
+        "index": 94,
+        "operation": "history",
+        "elapsed_ms": 27.101124986074865,
+        "error": null
+      },
+      {
+        "index": 95,
+        "operation": "diff",
+        "elapsed_ms": 45.11129201273434,
+        "error": null
+      },
+      {
+        "index": 96,
+        "operation": "issues",
+        "elapsed_ms": 0.6635420140810311,
+        "error": null
+      },
+      {
+        "index": 97,
+        "operation": "pull_review",
+        "elapsed_ms": 54.1170000215061,
+        "error": null
+      },
+      {
+        "index": 98,
+        "operation": "groups",
+        "elapsed_ms": 0.7298749987967312,
+        "error": null
+      },
+      {
+        "index": 99,
+        "operation": "branches",
+        "elapsed_ms": 9.350000007543713,
+        "error": null
+      },
+      {
+        "index": 100,
+        "operation": "repository_directory",
+        "elapsed_ms": 3.8861669891048223,
+        "error": null
+      },
+      {
+        "index": 101,
+        "operation": "repository_search",
+        "elapsed_ms": 1.09816700569354,
+        "error": null
+      },
+      {
+        "index": 102,
+        "operation": "tree",
+        "elapsed_ms": 24.344292003661394,
+        "error": null
+      },
+      {
+        "index": 103,
+        "operation": "blob",
+        "elapsed_ms": 35.083374998066574,
+        "error": null
+      },
+      {
+        "index": 104,
+        "operation": "history",
+        "elapsed_ms": 26.22899998095818,
+        "error": null
+      },
+      {
+        "index": 105,
+        "operation": "diff",
+        "elapsed_ms": 43.23724997811951,
+        "error": null
+      },
+      {
+        "index": 106,
+        "operation": "issues",
+        "elapsed_ms": 0.5939590046182275,
+        "error": null
+      },
+      {
+        "index": 107,
+        "operation": "pull_review",
+        "elapsed_ms": 48.83420799160376,
+        "error": null
+      },
+      {
+        "index": 108,
+        "operation": "groups",
+        "elapsed_ms": 0.7000830082688481,
+        "error": null
+      },
+      {
+        "index": 109,
+        "operation": "branches",
+        "elapsed_ms": 9.620333003113046,
+        "error": null
+      },
+      {
+        "index": 110,
+        "operation": "repository_directory",
+        "elapsed_ms": 4.522540984908119,
+        "error": null
+      },
+      {
+        "index": 111,
+        "operation": "repository_search",
+        "elapsed_ms": 1.3721249997615814,
+        "error": null
+      },
+      {
+        "index": 112,
+        "operation": "tree",
+        "elapsed_ms": 28.307791013503447,
+        "error": null
+      },
+      {
+        "index": 113,
+        "operation": "blob",
+        "elapsed_ms": 35.36870799143799,
+        "error": null
+      },
+      {
+        "index": 114,
+        "operation": "history",
+        "elapsed_ms": 28.931209002621472,
+        "error": null
+      },
+      {
+        "index": 115,
+        "operation": "diff",
+        "elapsed_ms": 46.90216699964367,
+        "error": null
+      },
+      {
+        "index": 116,
+        "operation": "issues",
+        "elapsed_ms": 1.8877080001402646,
+        "error": null
+      },
+      {
+        "index": 117,
+        "operation": "pull_review",
+        "elapsed_ms": 56.514292024075985,
+        "error": null
+      },
+      {
+        "index": 118,
+        "operation": "groups",
+        "elapsed_ms": 0.6558749882970005,
+        "error": null
+      },
+      {
+        "index": 119,
+        "operation": "branches",
+        "elapsed_ms": 10.09533301112242,
+        "error": null
+      },
+      {
+        "index": 120,
+        "operation": "repository_directory",
+        "elapsed_ms": 3.3200829930137843,
+        "error": null
+      },
+      {
+        "index": 121,
+        "operation": "repository_search",
+        "elapsed_ms": 2.2248339955694973,
+        "error": null
+      },
+      {
+        "index": 122,
+        "operation": "tree",
+        "elapsed_ms": 29.484083002898842,
+        "error": null
+      },
+      {
+        "index": 123,
+        "operation": "blob",
+        "elapsed_ms": 32.60674999910407,
+        "error": null
+      },
+      {
+        "index": 124,
+        "operation": "history",
+        "elapsed_ms": 26.33324998896569,
+        "error": null
+      },
+      {
+        "index": 125,
+        "operation": "diff",
+        "elapsed_ms": 44.065791007597,
+        "error": null
+      },
+      {
+        "index": 126,
+        "operation": "issues",
+        "elapsed_ms": 61.25779199646786,
+        "error": null
+      },
+      {
+        "index": 127,
+        "operation": "pull_review",
+        "elapsed_ms": 50.946292001754045,
+        "error": null
+      },
+      {
+        "index": 128,
+        "operation": "groups",
+        "elapsed_ms": 0.865417008753866,
+        "error": null
+      },
+      {
+        "index": 129,
+        "operation": "branches",
+        "elapsed_ms": 9.950125007890165,
+        "error": null
+      },
+      {
+        "index": 130,
+        "operation": "repository_directory",
+        "elapsed_ms": 2.0587079925462604,
+        "error": null
+      },
+      {
+        "index": 131,
+        "operation": "repository_search",
+        "elapsed_ms": 2.6425000105518848,
+        "error": null
+      },
+      {
+        "index": 132,
+        "operation": "tree",
+        "elapsed_ms": 26.413834013510495,
+        "error": null
+      },
+      {
+        "index": 133,
+        "operation": "blob",
+        "elapsed_ms": 34.53512501437217,
+        "error": null
+      },
+      {
+        "index": 134,
+        "operation": "history",
+        "elapsed_ms": 24.908124993089586,
+        "error": null
+      },
+      {
+        "index": 135,
+        "operation": "diff",
+        "elapsed_ms": 42.97420900547877,
+        "error": null
+      },
+      {
+        "index": 136,
+        "operation": "issues",
+        "elapsed_ms": 0.7964580145198852,
+        "error": null
+      },
+      {
+        "index": 137,
+        "operation": "pull_review",
+        "elapsed_ms": 54.610124992905185,
+        "error": null
+      },
+      {
+        "index": 138,
+        "operation": "groups",
+        "elapsed_ms": 2.2367920028045774,
+        "error": null
+      },
+      {
+        "index": 139,
+        "operation": "branches",
+        "elapsed_ms": 9.336624993011355,
+        "error": null
+      },
+      {
+        "index": 140,
+        "operation": "repository_directory",
+        "elapsed_ms": 3.170625015627593,
+        "error": null
+      },
+      {
+        "index": 141,
+        "operation": "repository_search",
+        "elapsed_ms": 3.326665988424793,
+        "error": null
+      },
+      {
+        "index": 142,
+        "operation": "tree",
+        "elapsed_ms": 28.206124989083037,
+        "error": null
+      },
+      {
+        "index": 143,
+        "operation": "blob",
+        "elapsed_ms": 37.103167007444426,
+        "error": null
+      },
+      {
+        "index": 144,
+        "operation": "history",
+        "elapsed_ms": 30.18129098927602,
+        "error": null
+      },
+      {
+        "index": 145,
+        "operation": "diff",
+        "elapsed_ms": 46.61925000254996,
+        "error": null
+      },
+      {
+        "index": 146,
+        "operation": "issues",
+        "elapsed_ms": 0.9997920133173466,
+        "error": null
+      },
+      {
+        "index": 147,
+        "operation": "pull_review",
+        "elapsed_ms": 54.27412502467632,
+        "error": null
+      },
+      {
+        "index": 148,
+        "operation": "groups",
+        "elapsed_ms": 1.0517500049900264,
+        "error": null
+      },
+      {
+        "index": 149,
+        "operation": "branches",
+        "elapsed_ms": 9.86620900221169,
+        "error": null
+      },
+      {
+        "index": 150,
+        "operation": "repository_directory",
+        "elapsed_ms": 2.494207990821451,
+        "error": null
+      },
+      {
+        "index": 151,
+        "operation": "repository_search",
+        "elapsed_ms": 1.9808750075753778,
+        "error": null
+      },
+      {
+        "index": 152,
+        "operation": "tree",
+        "elapsed_ms": 26.960707997204736,
+        "error": null
+      },
+      {
+        "index": 153,
+        "operation": "blob",
+        "elapsed_ms": 34.72179200616665,
+        "error": null
+      },
+      {
+        "index": 154,
+        "operation": "history",
+        "elapsed_ms": 26.45491700968705,
+        "error": null
+      },
+      {
+        "index": 155,
+        "operation": "diff",
+        "elapsed_ms": 41.74404201330617,
+        "error": null
+      },
+      {
+        "index": 156,
+        "operation": "issues",
+        "elapsed_ms": 0.805042014690116,
+        "error": null
+      },
+      {
+        "index": 157,
+        "operation": "pull_review",
+        "elapsed_ms": 56.00308402790688,
+        "error": null
+      },
+      {
+        "index": 158,
+        "operation": "groups",
+        "elapsed_ms": 0.34304099972359836,
+        "error": null
+      },
+      {
+        "index": 159,
+        "operation": "branches",
+        "elapsed_ms": 10.451124981045723,
+        "error": null
+      },
+      {
+        "index": 160,
+        "operation": "repository_directory",
+        "elapsed_ms": 2.588250004919246,
+        "error": null
+      },
+      {
+        "index": 161,
+        "operation": "repository_search",
+        "elapsed_ms": 1.267250016098842,
+        "error": null
+      },
+      {
+        "index": 162,
+        "operation": "tree",
+        "elapsed_ms": 27.05416700337082,
+        "error": null
+      },
+      {
+        "index": 163,
+        "operation": "blob",
+        "elapsed_ms": 35.728833987377584,
+        "error": null
+      },
+      {
+        "index": 164,
+        "operation": "history",
+        "elapsed_ms": 28.159583016531542,
+        "error": null
+      },
+      {
+        "index": 165,
+        "operation": "diff",
+        "elapsed_ms": 42.84979100339115,
+        "error": null
+      },
+      {
+        "index": 166,
+        "operation": "issues",
+        "elapsed_ms": 62.39904201356694,
+        "error": null
+      },
+      {
+        "index": 167,
+        "operation": "pull_review",
+        "elapsed_ms": 54.749792005168274,
+        "error": null
+      },
+      {
+        "index": 168,
+        "operation": "groups",
+        "elapsed_ms": 0.5011250032112002,
+        "error": null
+      },
+      {
+        "index": 169,
+        "operation": "branches",
+        "elapsed_ms": 9.08787499065511,
+        "error": null
+      },
+      {
+        "index": 170,
+        "operation": "repository_directory",
+        "elapsed_ms": 1.7631250084377825,
+        "error": null
+      },
+      {
+        "index": 171,
+        "operation": "repository_search",
+        "elapsed_ms": 2.9436250042635947,
+        "error": null
+      },
+      {
+        "index": 172,
+        "operation": "tree",
+        "elapsed_ms": 25.19658301025629,
+        "error": null
+      },
+      {
+        "index": 173,
+        "operation": "blob",
+        "elapsed_ms": 35.578542010625824,
+        "error": null
+      },
+      {
+        "index": 174,
+        "operation": "history",
+        "elapsed_ms": 29.462042002705857,
+        "error": null
+      },
+      {
+        "index": 175,
+        "operation": "diff",
+        "elapsed_ms": 46.27262501162477,
+        "error": null
+      },
+      {
+        "index": 176,
+        "operation": "issues",
+        "elapsed_ms": 1.6610000166110694,
+        "error": null
+      },
+      {
+        "index": 177,
+        "operation": "pull_review",
+        "elapsed_ms": 54.72420799196698,
+        "error": null
+      },
+      {
+        "index": 178,
+        "operation": "groups",
+        "elapsed_ms": 1.4822499942965806,
+        "error": null
+      },
+      {
+        "index": 179,
+        "operation": "branches",
+        "elapsed_ms": 10.793249995913357,
+        "error": null
+      },
+      {
+        "index": 180,
+        "operation": "repository_directory",
+        "elapsed_ms": 3.831790992990136,
+        "error": null
+      },
+      {
+        "index": 181,
+        "operation": "repository_search",
+        "elapsed_ms": 2.4872499925550073,
+        "error": null
+      },
+      {
+        "index": 182,
+        "operation": "tree",
+        "elapsed_ms": 30.39954201085493,
+        "error": null
+      },
+      {
+        "index": 183,
+        "operation": "blob",
+        "elapsed_ms": 36.15704199182801,
+        "error": null
+      },
+      {
+        "index": 184,
+        "operation": "history",
+        "elapsed_ms": 26.391457999125123,
+        "error": null
+      },
+      {
+        "index": 185,
+        "operation": "diff",
+        "elapsed_ms": 40.41016599512659,
+        "error": null
+      },
+      {
+        "index": 186,
+        "operation": "issues",
+        "elapsed_ms": 0.5859170050825924,
+        "error": null
+      },
+      {
+        "index": 187,
+        "operation": "pull_review",
+        "elapsed_ms": 53.79970799549483,
+        "error": null
+      },
+      {
+        "index": 188,
+        "operation": "groups",
+        "elapsed_ms": 0.6350000039674342,
+        "error": null
+      },
+      {
+        "index": 189,
+        "operation": "branches",
+        "elapsed_ms": 9.325500024715438,
+        "error": null
+      },
+      {
+        "index": 190,
+        "operation": "repository_directory",
+        "elapsed_ms": 2.470084000378847,
+        "error": null
+      },
+      {
+        "index": 191,
+        "operation": "repository_search",
+        "elapsed_ms": 3.6806669959332794,
+        "error": null
+      },
+      {
+        "index": 192,
+        "operation": "tree",
+        "elapsed_ms": 28.29858398763463,
+        "error": null
+      },
+      {
+        "index": 193,
+        "operation": "blob",
+        "elapsed_ms": 35.36549999262206,
+        "error": null
+      },
+      {
+        "index": 194,
+        "operation": "history",
+        "elapsed_ms": 27.569083991693333,
+        "error": null
+      },
+      {
+        "index": 195,
+        "operation": "diff",
+        "elapsed_ms": 52.618709014495835,
+        "error": null
+      },
+      {
+        "index": 196,
+        "operation": "issues",
+        "elapsed_ms": 1.2629590055439621,
+        "error": null
+      },
+      {
+        "index": 197,
+        "operation": "pull_review",
+        "elapsed_ms": 59.55833397456445,
+        "error": null
+      },
+      {
+        "index": 198,
+        "operation": "groups",
+        "elapsed_ms": 1.845583989052102,
+        "error": null
+      },
+      {
+        "index": 199,
+        "operation": "branches",
+        "elapsed_ms": 10.507417027838528,
+        "error": null
+      },
+      {
+        "index": 200,
+        "operation": "repository_directory",
+        "elapsed_ms": 4.225332988426089,
+        "error": null
+      },
+      {
+        "index": 201,
+        "operation": "repository_search",
+        "elapsed_ms": 3.679415996884927,
+        "error": null
+      },
+      {
+        "index": 202,
+        "operation": "tree",
+        "elapsed_ms": 30.612083995947614,
+        "error": null
+      },
+      {
+        "index": 203,
+        "operation": "blob",
+        "elapsed_ms": 40.547957993112504,
+        "error": null
+      },
+      {
+        "index": 204,
+        "operation": "history",
+        "elapsed_ms": 30.521915992721915,
+        "error": null
+      },
+      {
+        "index": 205,
+        "operation": "diff",
+        "elapsed_ms": 45.83449999336153,
+        "error": null
+      },
+      {
+        "index": 206,
+        "operation": "issues",
+        "elapsed_ms": 62.585625011706725,
+        "error": null
+      },
+      {
+        "index": 207,
+        "operation": "pull_review",
+        "elapsed_ms": 52.76908300584182,
+        "error": null
+      },
+      {
+        "index": 208,
+        "operation": "groups",
+        "elapsed_ms": 1.2165420048404485,
+        "error": null
+      },
+      {
+        "index": 209,
+        "operation": "branches",
+        "elapsed_ms": 9.73795901518315,
+        "error": null
+      },
+      {
+        "index": 210,
+        "operation": "repository_directory",
+        "elapsed_ms": 1.8494579999241978,
+        "error": null
+      },
+      {
+        "index": 211,
+        "operation": "repository_search",
+        "elapsed_ms": 1.1374160239938647,
+        "error": null
+      },
+      {
+        "index": 212,
+        "operation": "tree",
+        "elapsed_ms": 26.221124979201704,
+        "error": null
+      },
+      {
+        "index": 213,
+        "operation": "blob",
+        "elapsed_ms": 36.866791982902214,
+        "error": null
+      },
+      {
+        "index": 214,
+        "operation": "history",
+        "elapsed_ms": 27.021707996027544,
+        "error": null
+      },
+      {
+        "index": 215,
+        "operation": "diff",
+        "elapsed_ms": 44.83712499495596,
+        "error": null
+      },
+      {
+        "index": 216,
+        "operation": "issues",
+        "elapsed_ms": 1.0635840008035302,
+        "error": null
+      },
+      {
+        "index": 217,
+        "operation": "pull_review",
+        "elapsed_ms": 55.3514159983024,
+        "error": null
+      },
+      {
+        "index": 218,
+        "operation": "groups",
+        "elapsed_ms": 1.4247919898480177,
+        "error": null
+      },
+      {
+        "index": 219,
+        "operation": "branches",
+        "elapsed_ms": 10.480333992745727,
+        "error": null
+      },
+      {
+        "index": 220,
+        "operation": "repository_directory",
+        "elapsed_ms": 3.835708019323647,
+        "error": null
+      },
+      {
+        "index": 221,
+        "operation": "repository_search",
+        "elapsed_ms": 3.413999977055937,
+        "error": null
+      },
+      {
+        "index": 222,
+        "operation": "tree",
+        "elapsed_ms": 27.946207992499694,
+        "error": null
+      },
+      {
+        "index": 223,
+        "operation": "blob",
+        "elapsed_ms": 36.8241670075804,
+        "error": null
+      },
+      {
+        "index": 224,
+        "operation": "history",
+        "elapsed_ms": 27.190749999135733,
+        "error": null
+      },
+      {
+        "index": 225,
+        "operation": "diff",
+        "elapsed_ms": 43.7874159833882,
+        "error": null
+      },
+      {
+        "index": 226,
+        "operation": "issues",
+        "elapsed_ms": 1.0165409767068923,
+        "error": null
+      },
+      {
+        "index": 227,
+        "operation": "pull_review",
+        "elapsed_ms": 54.67312497785315,
+        "error": null
+      },
+      {
+        "index": 228,
+        "operation": "groups",
+        "elapsed_ms": 0.9452920057810843,
+        "error": null
+      },
+      {
+        "index": 229,
+        "operation": "branches",
+        "elapsed_ms": 9.955041983630508,
+        "error": null
+      },
+      {
+        "index": 230,
+        "operation": "repository_directory",
+        "elapsed_ms": 5.15750001068227,
+        "error": null
+      },
+      {
+        "index": 231,
+        "operation": "repository_search",
+        "elapsed_ms": 4.645792010705918,
+        "error": null
+      },
+      {
+        "index": 232,
+        "operation": "tree",
+        "elapsed_ms": 28.10074997250922,
+        "error": null
+      },
+      {
+        "index": 233,
+        "operation": "blob",
+        "elapsed_ms": 37.14687502360903,
+        "error": null
+      },
+      {
+        "index": 234,
+        "operation": "history",
+        "elapsed_ms": 27.379167004255578,
+        "error": null
+      },
+      {
+        "index": 235,
+        "operation": "diff",
+        "elapsed_ms": 44.37720900750719,
+        "error": null
+      },
+      {
+        "index": 236,
+        "operation": "issues",
+        "elapsed_ms": 51.55441700480878,
+        "error": null
+      },
+      {
+        "index": 237,
+        "operation": "pull_review",
+        "elapsed_ms": 50.677457998972386,
+        "error": null
+      },
+      {
+        "index": 238,
+        "operation": "groups",
+        "elapsed_ms": 0.806041993200779,
+        "error": null
+      },
+      {
+        "index": 239,
+        "operation": "branches",
+        "elapsed_ms": 9.213791985530406,
+        "error": null
+      },
+      {
+        "index": 240,
+        "operation": "repository_directory",
+        "elapsed_ms": 1.80508301127702,
+        "error": null
+      },
+      {
+        "index": 241,
+        "operation": "repository_search",
+        "elapsed_ms": 2.5337499973829836,
+        "error": null
+      },
+      {
+        "index": 242,
+        "operation": "tree",
+        "elapsed_ms": 26.596292009344324,
+        "error": null
+      },
+      {
+        "index": 243,
+        "operation": "blob",
+        "elapsed_ms": 35.356624983251095,
+        "error": null
+      },
+      {
+        "index": 244,
+        "operation": "history",
+        "elapsed_ms": 30.18137501203455,
+        "error": null
+      },
+      {
+        "index": 245,
+        "operation": "diff",
+        "elapsed_ms": 47.08566699991934,
+        "error": null
+      },
+      {
+        "index": 246,
+        "operation": "issues",
+        "elapsed_ms": 4.412958020111546,
+        "error": null
+      },
+      {
+        "index": 247,
+        "operation": "pull_review",
+        "elapsed_ms": 52.88633401505649,
+        "error": null
+      },
+      {
+        "index": 248,
+        "operation": "groups",
+        "elapsed_ms": 0.9342920093331486,
+        "error": null
+      },
+      {
+        "index": 249,
+        "operation": "branches",
+        "elapsed_ms": 8.735582989174873,
+        "error": null
+      },
+      {
+        "index": 250,
+        "operation": "repository_directory",
+        "elapsed_ms": 1.9844589987769723,
+        "error": null
+      },
+      {
+        "index": 251,
+        "operation": "repository_search",
+        "elapsed_ms": 2.7594160055741668,
+        "error": null
+      },
+      {
+        "index": 252,
+        "operation": "tree",
+        "elapsed_ms": 27.197749994229525,
+        "error": null
+      },
+      {
+        "index": 253,
+        "operation": "blob",
+        "elapsed_ms": 33.877291018143296,
+        "error": null
+      },
+      {
+        "index": 254,
+        "operation": "history",
+        "elapsed_ms": 26.060958014568314,
+        "error": null
+      },
+      {
+        "index": 255,
+        "operation": "diff",
+        "elapsed_ms": 45.01012500259094,
+        "error": null
+      },
+      {
+        "index": 256,
+        "operation": "issues",
+        "elapsed_ms": 0.8958329854067415,
+        "error": null
+      },
+      {
+        "index": 257,
+        "operation": "pull_review",
+        "elapsed_ms": 58.126874995650724,
+        "error": null
+      },
+      {
+        "index": 258,
+        "operation": "groups",
+        "elapsed_ms": 1.1063750134781003,
+        "error": null
+      },
+      {
+        "index": 259,
+        "operation": "branches",
+        "elapsed_ms": 8.905166992917657,
+        "error": null
+      },
+      {
+        "index": 260,
+        "operation": "repository_directory",
+        "elapsed_ms": 3.411834011785686,
+        "error": null
+      },
+      {
+        "index": 261,
+        "operation": "repository_search",
+        "elapsed_ms": 2.3914999910630286,
+        "error": null
+      },
+      {
+        "index": 262,
+        "operation": "tree",
+        "elapsed_ms": 28.354458016110584,
+        "error": null
+      },
+      {
+        "index": 263,
+        "operation": "blob",
+        "elapsed_ms": 39.68220899696462,
+        "error": null
+      },
+      {
+        "index": 264,
+        "operation": "history",
+        "elapsed_ms": 28.520124993519858,
+        "error": null
+      },
+      {
+        "index": 265,
+        "operation": "diff",
+        "elapsed_ms": 46.56995800905861,
+        "error": null
+      },
+      {
+        "index": 266,
+        "operation": "issues",
+        "elapsed_ms": 0.7714589883107692,
+        "error": null
+      },
+      {
+        "index": 267,
+        "operation": "pull_review",
+        "elapsed_ms": 66.12991701695137,
+        "error": null
+      },
+      {
+        "index": 268,
+        "operation": "groups",
+        "elapsed_ms": 0.27979101287201047,
+        "error": null
+      },
+      {
+        "index": 269,
+        "operation": "branches",
+        "elapsed_ms": 9.153332997811958,
+        "error": null
+      },
+      {
+        "index": 270,
+        "operation": "repository_directory",
+        "elapsed_ms": 2.961790974950418,
+        "error": null
+      },
+      {
+        "index": 271,
+        "operation": "repository_search",
+        "elapsed_ms": 1.5046250191517174,
+        "error": null
+      },
+      {
+        "index": 272,
+        "operation": "tree",
+        "elapsed_ms": 28.26054097386077,
+        "error": null
+      },
+      {
+        "index": 273,
+        "operation": "blob",
+        "elapsed_ms": 36.892500007525086,
+        "error": null
+      },
+      {
+        "index": 274,
+        "operation": "history",
+        "elapsed_ms": 25.52420800202526,
+        "error": null
+      },
+      {
+        "index": 275,
+        "operation": "diff",
+        "elapsed_ms": 45.24341700016521,
+        "error": null
+      },
+      {
+        "index": 276,
+        "operation": "issues",
+        "elapsed_ms": 132.15741599560715,
+        "error": null
+      },
+      {
+        "index": 277,
+        "operation": "pull_review",
+        "elapsed_ms": 64.93774999398738,
+        "error": null
+      },
+      {
+        "index": 278,
+        "operation": "groups",
+        "elapsed_ms": 1.0881669877562672,
+        "error": null
+      },
+      {
+        "index": 279,
+        "operation": "branches",
+        "elapsed_ms": 10.369166993768886,
+        "error": null
+      },
+      {
+        "index": 280,
+        "operation": "repository_directory",
+        "elapsed_ms": 3.864124999381602,
+        "error": null
+      },
+      {
+        "index": 281,
+        "operation": "repository_search",
+        "elapsed_ms": 1.8024579912889749,
+        "error": null
+      },
+      {
+        "index": 282,
+        "operation": "tree",
+        "elapsed_ms": 28.81150000030175,
+        "error": null
+      },
+      {
+        "index": 283,
+        "operation": "blob",
+        "elapsed_ms": 37.15912500047125,
+        "error": null
+      },
+      {
+        "index": 284,
+        "operation": "history",
+        "elapsed_ms": 26.44716700888239,
+        "error": null
+      },
+      {
+        "index": 285,
+        "operation": "diff",
+        "elapsed_ms": 42.45387500850484,
+        "error": null
+      },
+      {
+        "index": 286,
+        "operation": "issues",
+        "elapsed_ms": 1.8788340094033629,
+        "error": null
+      },
+      {
+        "index": 287,
+        "operation": "pull_review",
+        "elapsed_ms": 50.199750025058165,
+        "error": null
+      },
+      {
+        "index": 288,
+        "operation": "groups",
+        "elapsed_ms": 0.6690419977530837,
+        "error": null
+      },
+      {
+        "index": 289,
+        "operation": "branches",
+        "elapsed_ms": 9.130500024184585,
+        "error": null
+      },
+      {
+        "index": 290,
+        "operation": "repository_directory",
+        "elapsed_ms": 3.3939580025617033,
+        "error": null
+      },
+      {
+        "index": 291,
+        "operation": "repository_search",
+        "elapsed_ms": 3.935209009796381,
+        "error": null
+      },
+      {
+        "index": 292,
+        "operation": "tree",
+        "elapsed_ms": 27.79870800441131,
+        "error": null
+      },
+      {
+        "index": 293,
+        "operation": "blob",
+        "elapsed_ms": 34.1259999840986,
+        "error": null
+      },
+      {
+        "index": 294,
+        "operation": "history",
+        "elapsed_ms": 26.486458024010062,
+        "error": null
+      },
+      {
+        "index": 295,
+        "operation": "diff",
+        "elapsed_ms": 43.59087499324232,
+        "error": null
+      },
+      {
+        "index": 296,
+        "operation": "issues",
+        "elapsed_ms": 2.374750009039417,
+        "error": null
+      },
+      {
+        "index": 297,
+        "operation": "pull_review",
+        "elapsed_ms": 48.36370798875578,
+        "error": null
+      },
+      {
+        "index": 298,
+        "operation": "groups",
+        "elapsed_ms": 1.2497080024331808,
+        "error": null
+      },
+      {
+        "index": 299,
+        "operation": "branches",
+        "elapsed_ms": 10.734917013905942,
+        "error": null
+      },
+      {
+        "index": 300,
+        "operation": "repository_directory",
+        "elapsed_ms": 2.3436670016963035,
+        "error": null
+      },
+      {
+        "index": 301,
+        "operation": "repository_search",
+        "elapsed_ms": 1.6301670111715794,
+        "error": null
+      },
+      {
+        "index": 302,
+        "operation": "tree",
+        "elapsed_ms": 26.56704100081697,
+        "error": null
+      },
+      {
+        "index": 303,
+        "operation": "blob",
+        "elapsed_ms": 37.36591699998826,
+        "error": null
+      },
+      {
+        "index": 304,
+        "operation": "history",
+        "elapsed_ms": 27.28558299713768,
+        "error": null
+      },
+      {
+        "index": 305,
+        "operation": "diff",
+        "elapsed_ms": 43.80408299039118,
+        "error": null
+      },
+      {
+        "index": 306,
+        "operation": "issues",
+        "elapsed_ms": 0.6312920013442636,
+        "error": null
+      },
+      {
+        "index": 307,
+        "operation": "pull_review",
+        "elapsed_ms": 54.89191698143259,
+        "error": null
+      },
+      {
+        "index": 308,
+        "operation": "groups",
+        "elapsed_ms": 0.8778329938650131,
+        "error": null
+      },
+      {
+        "index": 309,
+        "operation": "branches",
+        "elapsed_ms": 9.903416997985914,
+        "error": null
+      },
+      {
+        "index": 310,
+        "operation": "repository_directory",
+        "elapsed_ms": 2.136374998372048,
+        "error": null
+      },
+      {
+        "index": 311,
+        "operation": "repository_search",
+        "elapsed_ms": 2.427375002298504,
+        "error": null
+      },
+      {
+        "index": 312,
+        "operation": "tree",
+        "elapsed_ms": 28.48795900354162,
+        "error": null
+      },
+      {
+        "index": 313,
+        "operation": "blob",
+        "elapsed_ms": 34.13675000774674,
+        "error": null
+      },
+      {
+        "index": 314,
+        "operation": "history",
+        "elapsed_ms": 27.041666995501146,
+        "error": null
+      },
+      {
+        "index": 315,
+        "operation": "diff",
+        "elapsed_ms": 41.06554199825041,
+        "error": null
+      },
+      {
+        "index": 316,
+        "operation": "issues",
+        "elapsed_ms": 0.6909160001669079,
+        "error": null
+      },
+      {
+        "index": 317,
+        "operation": "pull_review",
+        "elapsed_ms": 53.60854198806919,
+        "error": null
+      },
+      {
+        "index": 318,
+        "operation": "groups",
+        "elapsed_ms": 2.028916002018377,
+        "error": null
+      },
+      {
+        "index": 319,
+        "operation": "branches",
+        "elapsed_ms": 10.109208000358194,
+        "error": null
+      },
+      {
+        "index": 320,
+        "operation": "repository_directory",
+        "elapsed_ms": 2.2374170075636357,
+        "error": null
+      },
+      {
+        "index": 321,
+        "operation": "repository_search",
+        "elapsed_ms": 3.816917014773935,
+        "error": null
+      },
+      {
+        "index": 322,
+        "operation": "tree",
+        "elapsed_ms": 26.474582991795614,
+        "error": null
+      },
+      {
+        "index": 323,
+        "operation": "blob",
+        "elapsed_ms": 35.81662499345839,
+        "error": null
+      },
+      {
+        "index": 324,
+        "operation": "history",
+        "elapsed_ms": 27.08124998025596,
+        "error": null
+      },
+      {
+        "index": 325,
+        "operation": "diff",
+        "elapsed_ms": 43.546457978663966,
+        "error": null
+      },
+      {
+        "index": 326,
+        "operation": "issues",
+        "elapsed_ms": 0.7869590190239251,
+        "error": null
+      },
+      {
+        "index": 327,
+        "operation": "pull_review",
+        "elapsed_ms": 52.124875015579164,
+        "error": null
+      },
+      {
+        "index": 328,
+        "operation": "groups",
+        "elapsed_ms": 1.0537079942878336,
+        "error": null
+      },
+      {
+        "index": 329,
+        "operation": "branches",
+        "elapsed_ms": 9.164290997432545,
+        "error": null
+      },
+      {
+        "index": 330,
+        "operation": "repository_directory",
+        "elapsed_ms": 1.9572080054786056,
+        "error": null
+      },
+      {
+        "index": 331,
+        "operation": "repository_search",
+        "elapsed_ms": 3.783791995374486,
+        "error": null
+      },
+      {
+        "index": 332,
+        "operation": "tree",
+        "elapsed_ms": 27.46395897702314,
+        "error": null
+      },
+      {
+        "index": 333,
+        "operation": "blob",
+        "elapsed_ms": 33.2494169997517,
+        "error": null
+      },
+      {
+        "index": 334,
+        "operation": "history",
+        "elapsed_ms": 24.76858301088214,
+        "error": null
+      },
+      {
+        "index": 335,
+        "operation": "diff",
+        "elapsed_ms": 42.85729199182242,
+        "error": null
+      },
+      {
+        "index": 336,
+        "operation": "issues",
+        "elapsed_ms": 61.65225000586361,
+        "error": null
+      },
+      {
+        "index": 337,
+        "operation": "pull_review",
+        "elapsed_ms": 53.99779198342003,
+        "error": null
+      },
+      {
+        "index": 338,
+        "operation": "groups",
+        "elapsed_ms": 1.0298750130459666,
+        "error": null
+      },
+      {
+        "index": 339,
+        "operation": "branches",
+        "elapsed_ms": 8.191708999220282,
+        "error": null
+      },
+      {
+        "index": 340,
+        "operation": "repository_directory",
+        "elapsed_ms": 1.7507909797132015,
+        "error": null
+      },
+      {
+        "index": 341,
+        "operation": "repository_search",
+        "elapsed_ms": 2.5414169940631837,
+        "error": null
+      },
+      {
+        "index": 342,
+        "operation": "tree",
+        "elapsed_ms": 25.50095898914151,
+        "error": null
+      },
+      {
+        "index": 343,
+        "operation": "blob",
+        "elapsed_ms": 34.59616599138826,
+        "error": null
+      },
+      {
+        "index": 344,
+        "operation": "history",
+        "elapsed_ms": 27.12858299491927,
+        "error": null
+      },
+      {
+        "index": 345,
+        "operation": "diff",
+        "elapsed_ms": 40.99958299775608,
+        "error": null
+      },
+      {
+        "index": 346,
+        "operation": "issues",
+        "elapsed_ms": 0.5303750222083181,
+        "error": null
+      },
+      {
+        "index": 347,
+        "operation": "pull_review",
+        "elapsed_ms": 53.80550000700168,
+        "error": null
+      },
+      {
+        "index": 348,
+        "operation": "groups",
+        "elapsed_ms": 0.7358340080827475,
+        "error": null
+      },
+      {
+        "index": 349,
+        "operation": "branches",
+        "elapsed_ms": 9.247249981854111,
+        "error": null
+      },
+      {
+        "index": 350,
+        "operation": "repository_directory",
+        "elapsed_ms": 1.824209000915289,
+        "error": null
+      },
+      {
+        "index": 351,
+        "operation": "repository_search",
+        "elapsed_ms": 1.5123749908525497,
+        "error": null
+      },
+      {
+        "index": 352,
+        "operation": "tree",
+        "elapsed_ms": 27.150125009939075,
+        "error": null
+      },
+      {
+        "index": 353,
+        "operation": "blob",
+        "elapsed_ms": 37.33141699922271,
+        "error": null
+      },
+      {
+        "index": 354,
+        "operation": "history",
+        "elapsed_ms": 25.259042013203725,
+        "error": null
+      },
+      {
+        "index": 355,
+        "operation": "diff",
+        "elapsed_ms": 43.659540999215096,
+        "error": null
+      },
+      {
+        "index": 356,
+        "operation": "issues",
+        "elapsed_ms": 1.2130409886594862,
+        "error": null
+      },
+      {
+        "index": 357,
+        "operation": "pull_review",
+        "elapsed_ms": 62.95154200051911,
+        "error": null
+      },
+      {
+        "index": 358,
+        "operation": "groups",
+        "elapsed_ms": 0.4507910052780062,
+        "error": null
+      },
+      {
+        "index": 359,
+        "operation": "branches",
+        "elapsed_ms": 9.295041993027553,
+        "error": null
+      },
+      {
+        "index": 360,
+        "operation": "repository_directory",
+        "elapsed_ms": 2.0368330006022006,
+        "error": null
+      },
+      {
+        "index": 361,
+        "operation": "repository_search",
+        "elapsed_ms": 1.4965409936849028,
+        "error": null
+      },
+      {
+        "index": 362,
+        "operation": "tree",
+        "elapsed_ms": 27.478375006467104,
+        "error": null
+      },
+      {
+        "index": 363,
+        "operation": "blob",
+        "elapsed_ms": 34.686375001911074,
+        "error": null
+      },
+      {
+        "index": 364,
+        "operation": "history",
+        "elapsed_ms": 26.298959011910483,
+        "error": null
+      },
+      {
+        "index": 365,
+        "operation": "diff",
+        "elapsed_ms": 41.44283398636617,
+        "error": null
+      },
+      {
+        "index": 366,
+        "operation": "issues",
+        "elapsed_ms": 21.737458009738475,
+        "error": null
+      },
+      {
+        "index": 367,
+        "operation": "pull_review",
+        "elapsed_ms": 66.76699998206459,
+        "error": null
+      },
+      {
+        "index": 368,
+        "operation": "groups",
+        "elapsed_ms": 0.47383300261572003,
+        "error": null
+      },
+      {
+        "index": 369,
+        "operation": "branches",
+        "elapsed_ms": 9.392625011969358,
+        "error": null
+      },
+      {
+        "index": 370,
+        "operation": "repository_directory",
+        "elapsed_ms": 2.2167919960338622,
+        "error": null
+      },
+      {
+        "index": 371,
+        "operation": "repository_search",
+        "elapsed_ms": 3.685208997922018,
+        "error": null
+      },
+      {
+        "index": 372,
+        "operation": "tree",
+        "elapsed_ms": 27.558499976294115,
+        "error": null
+      },
+      {
+        "index": 373,
+        "operation": "blob",
+        "elapsed_ms": 35.441125015495345,
+        "error": null
+      },
+      {
+        "index": 374,
+        "operation": "history",
+        "elapsed_ms": 28.343957994366065,
+        "error": null
+      },
+      {
+        "index": 375,
+        "operation": "diff",
+        "elapsed_ms": 44.42662501242012,
+        "error": null
+      },
+      {
+        "index": 376,
+        "operation": "issues",
+        "elapsed_ms": 22.22249997430481,
+        "error": null
+      },
+      {
+        "index": 377,
+        "operation": "pull_review",
+        "elapsed_ms": 84.19754198985174,
+        "error": null
+      },
+      {
+        "index": 378,
+        "operation": "groups",
+        "elapsed_ms": 1.960708003025502,
+        "error": null
+      },
+      {
+        "index": 379,
+        "operation": "branches",
+        "elapsed_ms": 9.753999998793006,
+        "error": null
+      },
+      {
+        "index": 380,
+        "operation": "repository_directory",
+        "elapsed_ms": 2.2063329815864563,
+        "error": null
+      },
+      {
+        "index": 381,
+        "operation": "repository_search",
+        "elapsed_ms": 1.6330000071320683,
+        "error": null
+      },
+      {
+        "index": 382,
+        "operation": "tree",
+        "elapsed_ms": 27.598249987931922,
+        "error": null
+      },
+      {
+        "index": 383,
+        "operation": "blob",
+        "elapsed_ms": 35.611041996162385,
+        "error": null
+      },
+      {
+        "index": 384,
+        "operation": "history",
+        "elapsed_ms": 27.866083022672683,
+        "error": null
+      },
+      {
+        "index": 385,
+        "operation": "diff",
+        "elapsed_ms": 44.74050001590513,
+        "error": null
+      },
+      {
+        "index": 386,
+        "operation": "issues",
+        "elapsed_ms": 21.053207980003208,
+        "error": null
+      },
+      {
+        "index": 387,
+        "operation": "pull_review",
+        "elapsed_ms": 74.37470799777657,
+        "error": null
+      },
+      {
+        "index": 388,
+        "operation": "groups",
+        "elapsed_ms": 0.7765000045765191,
+        "error": null
+      },
+      {
+        "index": 389,
+        "operation": "branches",
+        "elapsed_ms": 10.458042001118883,
+        "error": null
+      },
+      {
+        "index": 390,
+        "operation": "repository_directory",
+        "elapsed_ms": 4.0719589742366225,
+        "error": null
+      },
+      {
+        "index": 391,
+        "operation": "repository_search",
+        "elapsed_ms": 2.1486670011654496,
+        "error": null
+      },
+      {
+        "index": 392,
+        "operation": "tree",
+        "elapsed_ms": 29.69404199393466,
+        "error": null
+      },
+      {
+        "index": 393,
+        "operation": "blob",
+        "elapsed_ms": 37.12445800192654,
+        "error": null
+      },
+      {
+        "index": 394,
+        "operation": "history",
+        "elapsed_ms": 27.163916995050386,
+        "error": null
+      },
+      {
+        "index": 395,
+        "operation": "diff",
+        "elapsed_ms": 41.650000028312206,
+        "error": null
+      },
+      {
+        "index": 396,
+        "operation": "issues",
+        "elapsed_ms": 82.18504200340249,
+        "error": null
+      },
+      {
+        "index": 397,
+        "operation": "pull_review",
+        "elapsed_ms": 64.03962502372451,
+        "error": null
+      },
+      {
+        "index": 398,
+        "operation": "groups",
+        "elapsed_ms": 0.731542007997632,
+        "error": null
+      },
+      {
+        "index": 399,
+        "operation": "branches",
+        "elapsed_ms": 9.458374988753349,
+        "error": null
+      }
+    ],
+    "latency": {
+      "samples": 400,
+      "min_ms": 0.27979101287201047,
+      "p50_ms": 26.060958014568314,
+      "p95_ms": 56.514292024075985,
+      "p99_ms": 82.18504200340249,
+      "max_ms": 132.15741599560715,
+      "mean_ms": 23.087960867997026
+    },
+    "by_operation": {
+      "repository_directory": {
+        "samples": 40,
+        "min_ms": 1.5424159937538207,
+        "p50_ms": 2.2167919960338622,
+        "p95_ms": 4.225332988426089,
+        "p99_ms": 5.15750001068227,
+        "max_ms": 5.15750001068227,
+        "mean_ms": 2.6518592982029077
+      },
+      "repository_search": {
+        "samples": 40,
+        "min_ms": 1.09816700569354,
+        "p50_ms": 2.3914999910630286,
+        "p95_ms": 3.935209009796381,
+        "p99_ms": 4.645792010705918,
+        "max_ms": 4.645792010705918,
+        "mean_ms": 2.436110451526474
+      },
+      "tree": {
+        "samples": 40,
+        "min_ms": 24.344292003661394,
+        "p50_ms": 27.598249987931922,
+        "p95_ms": 30.39954201085493,
+        "p99_ms": 33.915917010745034,
+        "max_ms": 33.915917010745034,
+        "mean_ms": 27.78418652160326
+      },
+      "blob": {
+        "samples": 40,
+        "min_ms": 31.852917018113658,
+        "p50_ms": 35.611041996162385,
+        "p95_ms": 39.068250014679506,
+        "p99_ms": 40.547957993112504,
+        "max_ms": 40.547957993112504,
+        "mean_ms": 35.98731257734471
+      },
+      "history": {
+        "samples": 40,
+        "min_ms": 23.361500003375113,
+        "p50_ms": 27.12858299491927,
+        "p95_ms": 30.18137501203455,
+        "p99_ms": 33.476833981694654,
+        "max_ms": 33.476833981694654,
+        "mean_ms": 27.443630225752713
+      },
+      "diff": {
+        "samples": 40,
+        "min_ms": 40.41016599512659,
+        "p50_ms": 44.20779200154357,
+        "p95_ms": 47.2444579936564,
+        "p99_ms": 52.618709014495835,
+        "max_ms": 52.618709014495835,
+        "mean_ms": 44.33913962493534
+      },
+      "issues": {
+        "samples": 40,
+        "min_ms": 0.5303750222083181,
+        "p50_ms": 1.444249995984137,
+        "p95_ms": 112.2875830042176,
+        "p99_ms": 132.15741599560715,
+        "max_ms": 132.15741599560715,
+        "mean_ms": 23.021260453242576
+      },
+      "pull_review": {
+        "samples": 40,
+        "min_ms": 48.36370798875578,
+        "p50_ms": 54.610124992905185,
+        "p95_ms": 66.76699998206459,
+        "p99_ms": 84.19754198985174,
+        "max_ms": 84.19754198985174,
+        "mean_ms": 56.62464482738869
+      },
+      "groups": {
+        "samples": 40,
+        "min_ms": 0.27979101287201047,
+        "p50_ms": 0.8778329938650131,
+        "p95_ms": 1.960708003025502,
+        "p99_ms": 2.2367920028045774,
+        "max_ms": 2.2367920028045774,
+        "mean_ms": 0.9577073527907487
+      },
+      "branches": {
+        "samples": 40,
+        "min_ms": 8.191708999220282,
+        "p50_ms": 9.486957977060229,
+        "p95_ms": 10.644790978403762,
+        "p99_ms": 10.793249995913357,
+        "max_ms": 10.793249995913357,
+        "mean_ms": 9.633757347182836
+      }
+    }
+  },
+  "git": {
+    "raw_samples": [
+      {
+        "operation": "clone",
+        "index": 0,
+        "elapsed_ms": 149.27587498095818
+      },
+      {
+        "operation": "push",
+        "index": 0,
+        "oid": "a6e70b41312c320654626bd59b2553c688b5c5cc",
+        "elapsed_ms": 244.8057089932263
+      },
+      {
+        "operation": "clone",
+        "index": 1,
+        "elapsed_ms": 154.4773339992389
+      },
+      {
+        "operation": "push",
+        "index": 1,
+        "oid": "3edb2ee577bb9d8d2a90baeb74afdde980823e6d",
+        "elapsed_ms": 243.29379099071957
+      },
+      {
+        "operation": "clone",
+        "index": 2,
+        "elapsed_ms": 145.69970799493603
+      },
+      {
+        "operation": "push",
+        "index": 2,
+        "oid": "62331cb7fbf51da1c1cfa9cce4e55b029d606b11",
+        "elapsed_ms": 237.8719580010511
+      },
+      {
+        "operation": "clone",
+        "index": 3,
+        "elapsed_ms": 147.5800419866573
+      },
+      {
+        "operation": "push",
+        "index": 3,
+        "oid": "6fc39611d5d41ae88da5ed18db21babdb2f68a3f",
+        "elapsed_ms": 237.9028750001453
+      },
+      {
+        "operation": "clone",
+        "index": 4,
+        "elapsed_ms": 145.67104098387063
+      },
+      {
+        "operation": "push",
+        "index": 4,
+        "oid": "8ded5b15cf1c1dd26e9998553d96825a90d491bc",
+        "elapsed_ms": 240.216167003382
+      }
+    ],
+    "latency": {
+      "clone": {
+        "samples": 5,
+        "min_ms": 145.67104098387063,
+        "p50_ms": 147.5800419866573,
+        "p95_ms": 154.4773339992389,
+        "p99_ms": 154.4773339992389,
+        "max_ms": 154.4773339992389,
+        "mean_ms": 148.5407999891322
+      },
+      "push": {
+        "samples": 5,
+        "min_ms": 237.8719580010511,
+        "p50_ms": 240.216167003382,
+        "p95_ms": 244.8057089932263,
+        "p99_ms": 244.8057089932263,
+        "max_ms": 244.8057089932263,
+        "mean_ms": 240.81809999770485
+      }
+    }
+  },
+  "memory": {
+    "method": "ps sampled every 50ms plus ps execution time; RSS units KiB; not a kernel peak",
+    "sampling_scope": "Measured HTTP and Git phases, after fixture setup and warmup",
+    "process_tree_rss_definition": "Sum of server and descendant RSS; shared pages can be counted more than once",
+    "server_pid": 32631,
+    "error": null,
+    "samples": [
+      {
+        "monotonic_seconds": 186350.213304333,
+        "server_rss_kib": 22048,
+        "process_tree_rss_kib": 22048,
+        "process_count": 1
+      },
+      {
+        "monotonic_seconds": 186350.305504791,
+        "server_rss_kib": 22720,
+        "process_tree_rss_kib": 27648,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 186350.398741625,
+        "server_rss_kib": 22848,
+        "process_tree_rss_kib": 36768,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 186350.495691875,
+        "server_rss_kib": 23392,
+        "process_tree_rss_kib": 28448,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 186350.587262916,
+        "server_rss_kib": 23408,
+        "process_tree_rss_kib": 33584,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 186350.678785375,
+        "server_rss_kib": 23456,
+        "process_tree_rss_kib": 33872,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 186350.764709583,
+        "server_rss_kib": 23456,
+        "process_tree_rss_kib": 33552,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 186350.858391208,
+        "server_rss_kib": 23584,
+        "process_tree_rss_kib": 28752,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 186350.948184958,
+        "server_rss_kib": 23968,
+        "process_tree_rss_kib": 31360,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 186351.043903875,
+        "server_rss_kib": 24032,
+        "process_tree_rss_kib": 28976,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 186351.137035375,
+        "server_rss_kib": 24064,
+        "process_tree_rss_kib": 34032,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 186351.229663666,
+        "server_rss_kib": 24112,
+        "process_tree_rss_kib": 49328,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 186351.325505083,
+        "server_rss_kib": 24128,
+        "process_tree_rss_kib": 29104,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 186351.422648208,
+        "server_rss_kib": 24144,
+        "process_tree_rss_kib": 29696,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 186351.518744291,
+        "server_rss_kib": 24160,
+        "process_tree_rss_kib": 31840,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 186351.608931958,
+        "server_rss_kib": 24304,
+        "process_tree_rss_kib": 29856,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 186351.6986385,
+        "server_rss_kib": 24304,
+        "process_tree_rss_kib": 34608,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 186351.792848291,
+        "server_rss_kib": 24304,
+        "process_tree_rss_kib": 25280,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 186351.880834666,
+        "server_rss_kib": 24304,
+        "process_tree_rss_kib": 31344,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 186351.970006625,
+        "server_rss_kib": 24304,
+        "process_tree_rss_kib": 36592,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 186352.058769583,
+        "server_rss_kib": 24304,
+        "process_tree_rss_kib": 37248,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 186352.144644458,
+        "server_rss_kib": 24304,
+        "process_tree_rss_kib": 29232,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 186352.234022125,
+        "server_rss_kib": 24304,
+        "process_tree_rss_kib": 24976,
+        "process_count": 3
+      },
+      {
+        "monotonic_seconds": 186352.328839708,
+        "server_rss_kib": 24352,
+        "process_tree_rss_kib": 39424,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 186352.423422041,
+        "server_rss_kib": 24352,
+        "process_tree_rss_kib": 29280,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 186352.51108825,
+        "server_rss_kib": 24352,
+        "process_tree_rss_kib": 24784,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 186352.602125333,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 44688,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 186352.690393291,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 24368,
+        "process_count": 1
+      },
+      {
+        "monotonic_seconds": 186352.7805325,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 25264,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 186352.8710885,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 51472,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 186352.95660275,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 70592,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 186353.042595291,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 44736,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 186353.126439791,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 24368,
+        "process_count": 1
+      },
+      {
+        "monotonic_seconds": 186353.214299,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 24368,
+        "process_count": 1
+      },
+      {
+        "monotonic_seconds": 186353.306782125,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 46752,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 186353.399795125,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 70704,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 186353.487591166,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 24624,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 186353.574365333,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 24368,
+        "process_count": 1
+      },
+      {
+        "monotonic_seconds": 186353.66304125,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 39168,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 186353.754282333,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 63968,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 186353.840021416,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 47264,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 186353.926143541,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 39008,
+        "process_count": 4
+      },
+      {
+        "monotonic_seconds": 186354.016640541,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 24368,
+        "process_count": 1
+      },
+      {
+        "monotonic_seconds": 186354.101912916,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 24368,
+        "process_count": 1
+      },
+      {
+        "monotonic_seconds": 186354.188365666,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 67904,
+        "process_count": 5
+      },
+      {
+        "monotonic_seconds": 186354.278101166,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 24368,
+        "process_count": 1
+      },
+      {
+        "monotonic_seconds": 186354.367781791,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 29296,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 186354.459198958,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 24368,
+        "process_count": 1
+      },
+      {
+        "monotonic_seconds": 186354.54604875,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 28608,
+        "process_count": 2
+      },
+      {
+        "monotonic_seconds": 186354.633751083,
+        "server_rss_kib": 24368,
+        "process_tree_rss_kib": 73072,
+        "process_count": 5
+      }
+    ],
+    "peak_server_rss_kib": 24368,
+    "peak_process_tree_rss_kib": 73072
+  },
+  "elapsed_seconds": 8.94880223274231
+}

@@ -1,0 +1,184 @@
+{
+  "implementation": "rust",
+  "source": "/Users/carpenter/projects/gitclub/.data/rust-acceptance",
+  "started_at_unix": 1789360592.5005429,
+  "status": "passed",
+  "backup": {
+    "arguments": [
+      "backup",
+      "rust",
+      "/var/folders/v8/y545g92s5gd7tk27zk4nmhjm0000gn/T/gitclub-recovery-jn86reij/snapshot.tar.gz",
+      "--data-dir",
+      "/Users/carpenter/projects/gitclub/.data/rust-acceptance"
+    ],
+    "stdout": "Backup verified: /private/var/folders/v8/y545g92s5gd7tk27zk4nmhjm0000gn/T/gitclub-recovery-jn86reij/snapshot.tar.gz\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  "archive_bytes": 26291439,
+  "restore": {
+    "arguments": [
+      "restore",
+      "rust",
+      "/var/folders/v8/y545g92s5gd7tk27zk4nmhjm0000gn/T/gitclub-recovery-jn86reij/snapshot.tar.gz",
+      "--data-dir",
+      "/Users/carpenter/projects/gitclub/.data/rust-restored"
+    ],
+    "stdout": "Restored and verified: /Users/carpenter/projects/gitclub/.data/rust-restored\n",
+    "stderr": "notice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\n",
+    "exit_code": 0
+  },
+  "preserved": {
+    "database_dump_sha256": "51918f71afe60b15b723aba2da7ed4e53d1a5e779c268b44836a27d3db86b336",
+    "table_rows": {
+      "comments": 13,
+      "group_repos": 7,
+      "groups": 7,
+      "issues": 7,
+      "namespace_members": 21,
+      "namespaces": 18,
+      "pins": 2,
+      "pull_requests": 12,
+      "repo_members": 6,
+      "repositories": 21,
+      "reviews": 27,
+      "ssh_keys": 0,
+      "tokens": 15,
+      "users": 15
+    },
+    "repositories": {
+      "1.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "9cd7d9661eb0025ba85f63aa26dd62d5e38ff8a9444578eba04802c530b6b1ee",
+        "objects_sha256": "1a563e2caffdb4bfdbaaa3988c8f2bcf117578d9cc51f4f2bcb14209cc3e274d",
+        "objects": 46
+      },
+      "10.git": {
+        "head": "ref: refs/heads/published",
+        "refs_sha256": "f1dce33839c7876517a17d935b4f9863804ae27392febcbc9466f3ff93bd8ca0",
+        "objects_sha256": "c50056f17a7eb1d02084fec452538fbf186a9f783ccab05f947aca9874f2a3d8",
+        "objects": 10
+      },
+      "11.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "12.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "13.git": {
+        "head": "ref: refs/heads/main",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "14.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "8e1557cccbb989feb23696e283d44c1a8ce69898f2cc07a2809cf1965d09a39d",
+        "objects_sha256": "a5ce795e91582685c987a7f35b19152b9961b71b87ad77b4c713ed01d07d00b2",
+        "objects": 9
+      },
+      "15.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "16.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "2a186ba7b3b6d3f0a59e5867dd937f8d22ad9eabb1fe131481da5c1e1240bad2",
+        "objects_sha256": "e3468848f3169ebc08a11e5e43de4327b1f3aea1e87f6fa977a53bec686f1486",
+        "objects": 46
+      },
+      "17.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "18.git": {
+        "head": "ref: refs/heads/published",
+        "refs_sha256": "f1dce33839c7876517a17d935b4f9863804ae27392febcbc9466f3ff93bd8ca0",
+        "objects_sha256": "c50056f17a7eb1d02084fec452538fbf186a9f783ccab05f947aca9874f2a3d8",
+        "objects": 10
+      },
+      "19.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "2.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "20.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "21.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "8e1557cccbb989feb23696e283d44c1a8ce69898f2cc07a2809cf1965d09a39d",
+        "objects_sha256": "a5ce795e91582685c987a7f35b19152b9961b71b87ad77b4c713ed01d07d00b2",
+        "objects": 9
+      },
+      "3.git": {
+        "head": "ref: refs/heads/published",
+        "refs_sha256": "f1dce33839c7876517a17d935b4f9863804ae27392febcbc9466f3ff93bd8ca0",
+        "objects_sha256": "c50056f17a7eb1d02084fec452538fbf186a9f783ccab05f947aca9874f2a3d8",
+        "objects": 10
+      },
+      "4.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "5.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "6.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "8e1557cccbb989feb23696e283d44c1a8ce69898f2cc07a2809cf1965d09a39d",
+        "objects_sha256": "a5ce795e91582685c987a7f35b19152b9961b71b87ad77b4c713ed01d07d00b2",
+        "objects": 9
+      },
+      "7.git": {
+        "head": "ref: refs/heads/main",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "8.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "0da9e4d2fd4e6fdac626cded0d491f7af9f8496031b9a24ac2be46b61c556afb",
+        "objects_sha256": "5459fa0cec17e5017822e94a0af8e94f98d8ad4bf80b10d7f4fbf567d1b53d33",
+        "objects": 46
+      },
+      "9.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      }
+    }
+  },
+  "restored_directory": "/Users/carpenter/projects/gitclub/.data/rust-restored",
+  "overwrite_refusal": {
+    "exit_code": 1,
+    "stderr": "GitClub: Restore requires a new, empty data directory. Existing data will not be replaced.\n"
+  },
+  "elapsed_seconds": 6.752990961074829
+}

@@ -1,0 +1,49 @@
+{
+  "image_id": "sha256:44a408bcfdb8ea5a9dd2266f0c0ab49bedcf0af786b172647e2e694115fcdea0",
+  "image_bytes": 242259549,
+  "runtime_user": "git",
+  "status": "passed",
+  "image": "gitclub-rust",
+  "all_servers": {
+    "go": {
+      "health": {
+        "implementation": "go",
+        "status": "ok"
+      },
+      "asset_hashes": {
+        "index.html": "58c396acf241562f79c1a81bd5ee82508890e7c150b36ef18145cde8ae6fd88c",
+        "style.css": "fed1f6191d49e9a6bafc251aac83a8ed9f50c18261bbe88d4d500b3ef2571568",
+        "app.js": "1dda33d671082c5adda4dec955c844c63b4f6d7e4b1b80841d0a986627468c30",
+        "favicon.svg": "25d190e946afbb051e229c286d7ab9eed68d3a5a5eb20fcac7f93bc4ca51dfce"
+      }
+    },
+    "gleam": {
+      "health": {
+        "status": "ok",
+        "implementation": "gleam"
+      },
+      "asset_hashes": {
+        "index.html": "58c396acf241562f79c1a81bd5ee82508890e7c150b36ef18145cde8ae6fd88c",
+        "style.css": "fed1f6191d49e9a6bafc251aac83a8ed9f50c18261bbe88d4d500b3ef2571568",
+        "app.js": "1dda33d671082c5adda4dec955c844c63b4f6d7e4b1b80841d0a986627468c30",
+        "favicon.svg": "25d190e946afbb051e229c286d7ab9eed68d3a5a5eb20fcac7f93bc4ca51dfce"
+      }
+    },
+    "rust": {
+      "health": {
+        "implementation": "rust",
+        "status": "ok"
+      },
+      "asset_hashes": {
+        "index.html": "58c396acf241562f79c1a81bd5ee82508890e7c150b36ef18145cde8ae6fd88c",
+        "style.css": "fed1f6191d49e9a6bafc251aac83a8ed9f50c18261bbe88d4d500b3ef2571568",
+        "app.js": "1dda33d671082c5adda4dec955c844c63b4f6d7e4b1b80841d0a986627468c30",
+        "favicon.svg": "25d190e946afbb051e229c286d7ab9eed68d3a5a5eb20fcac7f93bc4ca51dfce"
+      }
+    }
+  },
+  "rust_no_demo_repositories": true,
+  "recorded_at_unix": 1789360706.067592,
+  "rust_account_count": 0,
+  "rust_repository_count": 0
+}

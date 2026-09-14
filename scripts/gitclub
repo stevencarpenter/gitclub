@@ -1,0 +1,266 @@
+#!/usr/bin/env python3
+"""Build, run, package and recover any GitClub implementation."""
+from __future__ import annotations
+
+import argparse
+import contextlib
+import fcntl
+import json
+import os
+import secrets
+import shutil
+import signal
+import sqlite3
+import subprocess
+import sys
+import tarfile
+import tempfile
+import time
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+def executable(name: str) -> str:
+    found = shutil.which(name)
+    for candidate in (Path.home() / '.local/share/mise/shims' / name, Path('/opt/homebrew/bin') / name):
+        if found:
+            return found
+        if candidate.is_file():
+            return str(candidate)
+    if found:
+        return found
+    raise RuntimeError(f'{name} is not installed or available on PATH.')
+
+
+def run_checked(command: list[str], **kwargs) -> None:
+    subprocess.run(command, check=True, **kwargs)
+
+
+def build(implementation: str) -> Path:
+    out = ROOT / '.build'
+    out.mkdir(exist_ok=True)
+    started = time.monotonic()
+    env = os.environ.copy()
+    if implementation in ('gleam', 'rust'):
+        sqlite = out / 'sqlite-3.53.4'
+        run_checked([sys.executable, str(ROOT / 'scripts/build-sqlite.py'), str(sqlite)])
+        env.update({'LIBSQLITE3_SYS_USE_PKG_CONFIG': '1', 'SQLITE3_NO_PKG_CONFIG': '1', 'SQLITE3_STATIC': '1',
+                    'SQLITE3_LIB_DIR': str(sqlite / 'lib'), 'SQLITE3_INCLUDE_DIR': str(sqlite / 'include'),
+                    'ESQLITE_USE_SYSTEM': '1',
+                    'CFLAGS': f"{env.get('CFLAGS', '')} -I{sqlite / 'include'}",
+                    'LDFLAGS': f"{env.get('LDFLAGS', '')} -L{sqlite / 'lib'}"})
+    if implementation == 'go':
+        target = out / 'gitclub-go'
+        run_checked([executable('go'), 'build', '-trimpath', '-ldflags=-s -w', '-o', str(target), '.'], cwd=ROOT / 'implementations/go')
+    elif implementation == 'rust':
+        # Cargo does not track changes to the external static archive itself.
+        run_checked([executable('cargo'), 'clean', '--release', '-p', 'libsqlite3-sys'], cwd=ROOT / 'implementations/rust')
+        run_checked([executable('cargo'), 'build', '--release', '--locked'], cwd=ROOT / 'implementations/rust', env=env)
+        target = out / 'gitclub-rust'
+        # Replacing the inode preserves running executables and macOS code-signature validity.
+        with tempfile.NamedTemporaryFile(dir=out, prefix='gitclub-rust-', delete=False) as temporary:
+            staged = Path(temporary.name)
+        try:
+            shutil.copy2(ROOT / 'implementations/rust/target/release/gitclub', staged)
+            staged.replace(target)
+        finally:
+            staged.unlink(missing_ok=True)
+    else:
+        if sys.platform == 'darwin':
+            # esqlite's system-library mode omits Darwin's Erlang host-symbol lookup.
+            env['LDFLAGS'] += ' -Wl,-undefined,dynamic_lookup'
+        # Recompile the NIF so a previous bundled SQLite cannot survive a linkage change.
+        run_checked([executable('gleam'), 'clean'], cwd=ROOT / 'implementations/gleam', env=env)
+        run_checked([executable('gleam'), 'export', 'erlang-shipment'], cwd=ROOT / 'implementations/gleam', env=env)
+        target = ROOT / 'implementations/gleam/build/erlang-shipment/entrypoint.sh'
+    print(f'{implementation} build: {time.monotonic() - started:.2f}s', flush=True)
+    return target
+
+
+def data_path(implementation: str, override: str | None) -> Path:
+    return Path(override or ROOT / '.data' / implementation).resolve()
+
+
+@contextlib.contextmanager
+def exclusive_data(directory: Path):
+    directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+    with (directory / 'server.lock').open('a+') as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise RuntimeError('GitClub is running for this data directory. Stop it before backup or restore.') from exc
+        yield
+
+
+def serve(args) -> None:
+    target = build(args.implementation) if not args.no_build else (
+        ROOT / 'implementations/gleam/build/erlang-shipment/entrypoint.sh' if args.implementation == 'gleam' else ROOT / f'.build/gitclub-{args.implementation}')
+    if not target.exists():
+        raise RuntimeError('Build is missing. Run again without --no-build.')
+    directory = data_path(args.implementation, args.data_dir)
+    env = os.environ.copy()
+    env['PATH'] = os.pathsep.join([str(Path.home() / '.local/share/mise/shims'), '/opt/homebrew/bin', env.get('PATH', '/usr/bin:/bin')])
+    env.update({'DATA_DIR': str(directory), 'WEB_DIR': str(ROOT / 'web'), 'SHARED_DIR': str(ROOT / 'shared'),
+                'HOST': args.host, 'PORT': str(args.port or {'go': 7701, 'gleam': 7702, 'rust': 7703}[args.implementation])})
+    env.setdefault('PUBLIC_URL', f'http://localhost:{env["PORT"]}')
+    with exclusive_data(directory):
+        command = ['sh', str(target), 'run'] if args.implementation == 'gleam' else [str(target)]
+        child = subprocess.Popen(command, cwd=ROOT, env=env, start_new_session=True)
+        def stop(signum, frame):
+            if child.poll() is None:
+                os.killpg(child.pid, signal.SIGTERM)
+        signal.signal(signal.SIGINT, stop)
+        signal.signal(signal.SIGTERM, stop)
+        (directory / 'server.pid').write_text(str(child.pid))
+        try:
+            print(f'GitClub {args.implementation}: {env["PUBLIC_URL"]}', flush=True)
+            result = child.wait()
+            if result not in (0, -signal.SIGTERM, -signal.SIGINT):
+                raise RuntimeError(f'{args.implementation} server exited with status {result}.')
+        finally:
+            if child.poll() is None:
+                child.terminate()
+                try:
+                    child.wait(timeout=15)
+                except subprocess.TimeoutExpired:
+                    os.killpg(child.pid, signal.SIGKILL)
+                    child.wait()
+            (directory / 'server.pid').unlink(missing_ok=True)
+
+
+@contextlib.contextmanager
+def quiescent_transfers(directory: Path):
+    locks = []
+    slots = directory / 'ssh-transfer-locks'
+    slots.mkdir(mode=0o700, exist_ok=True)
+    try:
+        for index in range(8):
+            lock = (slots / str(index)).open('a+')
+            locks.append(lock)
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError as exc:
+                raise RuntimeError('An SSH transfer is still active. Wait for it to finish before backup.') from exc
+        yield
+    finally:
+        for lock in locks:
+            lock.close()
+
+
+def backup(args) -> None:
+    directory = data_path(args.implementation, args.data_dir)
+    archive = Path(args.archive).resolve()
+    if archive == directory or directory in archive.parents:
+        raise RuntimeError('Write the backup archive outside its source data directory.')
+    if archive.exists():
+        raise RuntimeError('Backup destination already exists. Choose another filename.')
+    if not (directory / 'gitclub.db').is_file():
+        raise RuntimeError('No GitClub database exists at the selected data directory.')
+    with exclusive_data(directory), quiescent_transfers(directory), tempfile.TemporaryDirectory(prefix='gitclub-backup-') as tmp:
+        snapshot = Path(tmp) / 'gitclub'
+        snapshot.mkdir()
+        source = sqlite3.connect(f'file:{directory / "gitclub.db"}?mode=ro', uri=True)
+        destination = sqlite3.connect(snapshot / 'gitclub.db')
+        try:
+            source.backup(destination)
+            if destination.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
+                raise RuntimeError('Database integrity check failed.')
+        finally:
+            source.close()
+            destination.close()
+        if (directory / 'repos').exists():
+            shutil.copytree(directory / 'repos', snapshot / 'repos', symlinks=False)
+        for marker in directory.glob('merge-*.json'):
+            shutil.copy2(marker, snapshot / marker.name)
+        for name in ('ssh', 'merge-recovery'):
+            if (directory / name).is_dir():
+                shutil.copytree(directory / name, snapshot / name, symlinks=False)
+        (snapshot / 'backup.json').write_text(json.dumps({'format': 1, 'implementation': args.implementation, 'created_at': int(time.time())}, indent=2))
+        archive.parent.mkdir(parents=True, exist_ok=True)
+        descriptor = os.open(archive, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(descriptor, 'wb') as stream, tarfile.open(fileobj=stream, mode='w:gz') as tar:
+            tar.add(snapshot, arcname='gitclub')
+    print(f'Backup verified: {archive}')
+
+
+def restore(args) -> None:
+    directory = data_path(args.implementation, args.data_dir)
+    archive = Path(args.archive).resolve()
+    if directory.exists() and any(directory.iterdir()):
+        raise RuntimeError('Restore requires a new, empty data directory. Existing data will not be replaced.')
+    with tempfile.TemporaryDirectory(prefix='gitclub-restore-') as tmp:
+        with tarfile.open(archive, 'r:gz') as tar:
+            for member in tar.getmembers():
+                parts = Path(member.name).parts
+                if not parts or parts[0] != 'gitclub' or '..' in parts or member.name.startswith('/') or member.issym() or member.islnk() or not (member.isfile() or member.isdir()):
+                    raise RuntimeError('Archive contains an unsupported or unsafe entry.')
+            tar.extractall(tmp, filter='data')
+        snapshot = Path(tmp) / 'gitclub'
+        metadata = json.loads((snapshot / 'backup.json').read_text())
+        if metadata.get('format') != 1:
+            raise RuntimeError('Unsupported backup format.')
+        database = sqlite3.connect(f'file:{snapshot / "gitclub.db"}?mode=ro', uri=True)
+        try:
+            if database.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
+                raise RuntimeError('Backup database integrity check failed.')
+        finally:
+            database.close()
+        for repository in (snapshot / 'repos').glob('*.git'):
+            run_checked([executable('git'), '--git-dir', str(repository), 'fsck', '--full'], stdout=subprocess.DEVNULL)
+        directory.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(snapshot, directory, dirs_exist_ok=True)
+        directory.chmod(0o700)
+    print(f'Restored and verified: {directory}')
+
+
+def compose(args) -> None:
+    env_file = ROOT / '.data/compose.env'
+    env_file.parent.mkdir(exist_ok=True)
+    if not env_file.exists():
+        descriptor = os.open(env_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(descriptor, 'w') as stream:
+            stream.write(f'GITCLUB_SSH_SECRET={secrets.token_hex(32)}\n')
+    command = [executable('docker'), 'compose', '--env-file', str(env_file), '-f', str(ROOT / 'compose.yaml')]
+    command += ['up', '--build', '-d'] if args.command == 'up' else ['down']
+    run_checked(command, cwd=ROOT)
+    if args.command == 'up':
+        print('Go: http://localhost:7701 (SSH 2221)\nGleam: http://localhost:7702 (SSH 2222)\nRust: http://localhost:7703 (SSH 2223)')
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    commands = parser.add_subparsers(dest='command', required=True)
+    for name in ('build', 'run', 'backup', 'restore'):
+        command = commands.add_parser(name)
+        command.add_argument('implementation', choices=('go', 'gleam', 'rust'))
+        if name in ('run', 'backup', 'restore'):
+            command.add_argument('--data-dir')
+        if name == 'run':
+            command.add_argument('--port', type=int)
+            command.add_argument('--host', default='127.0.0.1')
+            command.add_argument('--no-build', action='store_true')
+        if name in ('backup', 'restore'):
+            command.add_argument('archive')
+    commands.add_parser('up', help='Build and run all implementations with SSH using Docker Compose')
+    commands.add_parser('down', help='Stop the Docker Compose services, preserving data volumes')
+    args = parser.parse_args()
+    try:
+        if args.command == 'build':
+            build(args.implementation)
+        elif args.command == 'run':
+            serve(args)
+        elif args.command == 'backup':
+            backup(args)
+        elif args.command == 'restore':
+            restore(args)
+        else:
+            compose(args)
+        return 0
+    except (RuntimeError, OSError, ValueError, subprocess.CalledProcessError, tarfile.TarError, sqlite3.Error) as exc:
+        print(f'GitClub: {exc}', file=sys.stderr)
+        return 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

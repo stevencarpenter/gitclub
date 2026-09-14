@@ -1,0 +1,29 @@
+{
+  "recorded_at": "2026-09-14T00:08:31.016674+00:00",
+  "scope": "Read-only installed CLI help validation. No global config changes or agent calls.",
+  "web_snippets_changed": false,
+  "results": [
+    {
+      "client": "codex",
+      "version": "codex-cli 0.154.0",
+      "command": "codex mcp add --help",
+      "verified_flags": [
+        "--url",
+        "--bearer-token-env-var"
+      ],
+      "help_output": "Usage: codex mcp add [OPTIONS] <NAME> (--url <URL> | -- <COMMAND>...)\n\nArguments:\n  <NAME>\n          Name for the MCP server configuration\n\n  [COMMAND]...\n          Command to launch the MCP server. Use --url for a streamable HTTP server\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --env <KEY=VALUE>\n          Environment variables to set when launching the server. Only valid with stdio servers\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --url <URL>\n          URL for a streamable HTTP MCP server\n\n      --bearer-token-env-var <ENV_VAR>\n          Optional environment variable to read for a bearer token. Only valid with streamable HTTP\n          servers\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n      --oauth-client-id <CLIENT_ID>\n          Optional OAuth client identifier to use for this MCP server\n\n      --oauth-client-registration <AUTO|CIMD|DCR>\n          OAuth client-registration strategy for the immediate login only\n          \n          [possible values: auto, cimd, dcr]\n\n      --oauth-resource <RESOURCE>\n          Optional OAuth resource parameter to include during MCP login\n\n  -h, --help\n          Print help (see a summary with '-h')",
+      "status": "passed"
+    },
+    {
+      "client": "claude",
+      "version": "2.1.270 (Claude Code)",
+      "command": "claude mcp add --help",
+      "verified_flags": [
+        "--transport",
+        "--header"
+      ],
+      "help_output": "Usage: claude mcp add [options] <name> <commandOrUrl> [args...]\n\nAdd an MCP server to Claude Code.\n\nExamples:\n  # Add HTTP server:\n  claude mcp add --transport http sentry https://mcp.sentry.dev/mcp\n\n  # Add HTTP server with headers:\n  claude mcp add --transport http corridor https://app.corridor.dev/api/mcp\n--header \"Authorization: Bearer ...\"\n\n  # Add stdio server with environment variables:\n  claude mcp add my-server -e API_KEY=xxx -- npx my-mcp-server\n\n  # Add stdio server with subprocess flags:\n  claude mcp add my-server -- my-command --some-flag arg1\n\nOptions:\n  --callback-port <port>       Fixed port for OAuth callback (for servers\n                               requiring pre-registered redirect URIs)\n  --client-id <clientId>       OAuth client ID for HTTP/SSE servers\n  --client-secret              Prompt for OAuth client secret (or set\n                               MCP_CLIENT_SECRET env var)\n  -e, --env <env...>           Set environment variables (e.g. -e KEY=value)\n  -H, --header <header...>     Set headers for HTTP/SSE servers (e.g. -H\n                               \"X-Api-Key: abc123\" -H \"X-Custom: value\")\n  -h, --help                   Display help for command\n  -s, --scope <scope>          Configuration scope (local, user, or project)\n                               (default: \"local\")\n  -t, --transport <transport>  Transport type (stdio, sse, http). Defaults to\n                               stdio if not specified.",
+      "status": "passed"
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "recorded_at": "2026-09-14T00:08:05.441749+00:00",
+  "sdk": "official modelcontextprotocol/python-sdk",
+  "sdk_version": "2.2.0",
+  "python_version": "3.14.7",
+  "scope": "SDK transport interoperability. Does not invoke Codex or Claude agents or modify their configuration.",
+  "results": [
+    {
+      "url": "http://127.0.0.1:17701",
+      "status": "passed",
+      "checks": [
+        "SDK initialize and initialized notification",
+        "SDK ping",
+        "SDK list_tools matches all shared tools and omits private mappings",
+        "SDK creates, finds across owners, and reads a private repository",
+        "SDK repository pin write persists",
+        "SDK creates, comments on, closes, and reads an issue with exact text",
+        "SDK shared group create/update/read preserves membership"
+      ],
+      "implementation": "go",
+      "protocol_version": "2025-06-18",
+      "server_info": {
+        "name": "gitclub-go",
+        "version": "0.1.0"
+      },
+      "tool_count": 24,
+      "tools": [
+        "browse_tree",
+        "comment_on_issue",
+        "comment_on_pull_request",
+        "compare_refs",
+        "create_group",
+        "create_issue",
+        "create_pull_request",
+        "create_repository",
+        "get_issue",
+        "get_pull_request",
+        "get_repository",
+        "list_branches",
+        "list_commits",
+        "list_groups",
+        "list_issues",
+        "list_pull_requests",
+        "list_repositories",
+        "merge_pull_request",
+        "read_file",
+        "review_pull_request",
+        "set_repository_pin",
+        "update_group",
+        "update_issue",
+        "update_pull_request"
+      ],
+      "token_revoked": true
+    },
+    {
+      "url": "http://127.0.0.1:17702",
+      "status": "passed",
+      "checks": [
+        "SDK initialize and initialized notification",
+        "SDK ping",
+        "SDK list_tools matches all shared tools and omits private mappings",
+        "SDK creates, finds across owners, and reads a private repository",
+        "SDK repository pin write persists",
+        "SDK creates, comments on, closes, and reads an issue with exact text",
+        "SDK shared group create/update/read preserves membership"
+      ],
+      "implementation": "gleam",
+      "protocol_version": "2025-06-18",
+      "server_info": {
+        "name": "GitClub Gleam",
+        "version": "0.1.0"
+      },
+      "tool_count": 24,
+      "tools": [
+        "browse_tree",
+        "comment_on_issue",
+        "comment_on_pull_request",
+        "compare_refs",
+        "create_group",
+        "create_issue",
+        "create_pull_request",
+        "create_repository",
+        "get_issue",
+        "get_pull_request",
+        "get_repository",
+        "list_branches",
+        "list_commits",
+        "list_groups",
+        "list_issues",
+        "list_pull_requests",
+        "list_repositories",
+        "merge_pull_request",
+        "read_file",
+        "review_pull_request",
+        "set_repository_pin",
+        "update_group",
+        "update_issue",
+        "update_pull_request"
+      ],
+      "token_revoked": true
+    }
+  ]
+}

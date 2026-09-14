@@ -1,0 +1,142 @@
+{
+  "implementation": "go",
+  "url": "http://127.0.0.1:7793",
+  "started_at_unix": 1789345160.506828,
+  "elapsed_seconds": 10.865584,
+  "environment": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.1.8 ]",
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "git": "git version 2.54.0"
+  },
+  "mcp_tools_called": [
+    "browse_tree",
+    "comment_on_issue",
+    "comment_on_pull_request",
+    "compare_refs",
+    "create_group",
+    "create_issue",
+    "create_pull_request",
+    "create_repository",
+    "get_issue",
+    "get_pull_request",
+    "get_repository",
+    "list_branches",
+    "list_commits",
+    "list_groups",
+    "list_issues",
+    "list_pull_requests",
+    "list_repositories",
+    "merge_pull_request",
+    "read_file",
+    "review_pull_request",
+    "set_repository_pin",
+    "update_group",
+    "update_issue",
+    "update_pull_request"
+  ],
+  "results": [
+    {
+      "name": "fixture setup and health",
+      "status": "passed",
+      "elapsed_seconds": 0.542009
+    },
+    {
+      "name": "authentication, cookies, CSRF and logout",
+      "status": "passed",
+      "elapsed_seconds": 0.116171
+    },
+    {
+      "name": "namespace and repository authorization",
+      "status": "passed",
+      "elapsed_seconds": 0.005415
+    },
+    {
+      "name": "native Git import, private clone, branches and tags",
+      "status": "passed",
+      "elapsed_seconds": 1.598037
+    },
+    {
+      "name": "tree, blob, binary and history",
+      "status": "passed",
+      "elapsed_seconds": 0.194609
+    },
+    {
+      "name": "default-branch freshness and personal pins",
+      "status": "passed",
+      "elapsed_seconds": 0.738221
+    },
+    {
+      "name": "protected default branch rejects direct/force/delete pushes",
+      "status": "passed",
+      "elapsed_seconds": 0.734824
+    },
+    {
+      "name": "shared groups preserve repository access",
+      "status": "passed",
+      "elapsed_seconds": 0.00602
+    },
+    {
+      "name": "issues, edits and comments",
+      "status": "passed",
+      "elapsed_seconds": 0.003206
+    },
+    {
+      "name": "reviews, stale approvals, compare-and-swap and merge",
+      "status": "passed",
+      "elapsed_seconds": 1.305729
+    },
+    {
+      "name": "merge conflict preserves branch tip",
+      "status": "passed",
+      "elapsed_seconds": 1.026455
+    },
+    {
+      "name": "reviewer access, decisive reviews and concurrent merge",
+      "status": "passed",
+      "elapsed_seconds": 1.130856
+    },
+    {
+      "name": "bounded blob and default-branch change",
+      "status": "passed",
+      "elapsed_seconds": 0.582332
+    },
+    {
+      "name": "invalid input boundaries",
+      "status": "passed",
+      "elapsed_seconds": 0.101029
+    },
+    {
+      "name": "SSH key lifecycle and ownership",
+      "status": "passed",
+      "elapsed_seconds": 0.027901
+    },
+    {
+      "name": "MCP protocol and declared catalog",
+      "status": "passed",
+      "elapsed_seconds": 0.003945
+    },
+    {
+      "name": "all MCP tools execute with HTTP parity",
+      "status": "passed",
+      "elapsed_seconds": 1.428341
+    },
+    {
+      "name": "replacement refs cannot rewrite reviewed code",
+      "status": "passed",
+      "elapsed_seconds": 1.172743
+    },
+    {
+      "name": "browser security headers and SPA route",
+      "status": "passed",
+      "elapsed_seconds": 0.001484
+    },
+    {
+      "name": "missed default-branch notification recovery",
+      "status": "passed",
+      "elapsed_seconds": 0.145531
+    }
+  ],
+  "passed": 20,
+  "failed": 0,
+  "skipped": 0
+}

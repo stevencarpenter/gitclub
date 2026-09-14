@@ -1,0 +1,61 @@
+{
+  "rows": [
+    [
+      "Directory within mixed load, 40 repos, median",
+      "ms",
+      2.2167919960338622,
+      276.39474999159575,
+      3.98645899258554
+    ],
+    [
+      "Repository directory, 1,000 repos, p95",
+      "ms",
+      49.53079199185595,
+      594.051624997519,
+      84.24158400157467
+    ],
+    [
+      "Mixed HTTP workload, p95",
+      "ms",
+      56.514292024075985,
+      438.7444159947336,
+      58.286291983677074
+    ],
+    [
+      "Git clone, median",
+      "ms",
+      147.5800419866573,
+      230.9532500221394,
+      145.91970801120624
+    ],
+    [
+      "Git push, median",
+      "ms",
+      240.216167003382,
+      310.85008298396133,
+      251.1339579941705
+    ],
+    [
+      "Sampled server RSS peak",
+      "MiB",
+      23.796875,
+      73.859375,
+      8.765625
+    ],
+    [
+      "Sampled process-tree RSS peak",
+      "MiB",
+      71.359375,
+      135.5,
+      55.75
+    ]
+  ],
+  "conclusion": "Rust passes the same GitClub MVP contract.",
+  "reason": "Rust's mixed HTTP p95 was 58.29 ms, versus 56.51 ms for Go and 438.74 ms for Gleam. Rust had the lowest sampled server RSS at 8.77 MiB. These are single runs of this fixture, not language-wide performance claims.",
+  "rust_run_added_later": true,
+  "dependency_refresh": {
+    "date": "2026-09-14",
+    "benchmarks_rerun": false,
+    "performance_and_image_sizes": "Historical measurements from before the dependency refresh. See DEPENDENCIES.md for current versions and validation."
+  }
+}

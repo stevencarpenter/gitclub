@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "binary_sha256": "5c65477bef86ffb0430b3f0a1e7be1bb90faa44362fdc1c69195d28a0928687a",
+  "partial_header_seconds": 5.002496542001609,
+  "descendant_count": 5,
+  "pre_shutdown_commands": [
+    "/Users/carpenter/projects/gitclub/.build/gitclub-rust",
+    "/etc/profiles/per-user/carpenter/bin/git http-backend",
+    "/nix/store/b9sasvw5m9rpkjp2sxb6kbl1sb0c0frd-git-2.54.0/libexec/git-core/git-http-backend",
+    "/nix/store/b9sasvw5m9rpkjp2sxb6kbl1sb0c0frd-git-2.54.0/libexec/git-core/git receive-pack --stateless-rpc .",
+    "/etc/profiles/per-user/carpenter/bin/python3 /var/folders/v8/y545g92s5gd7tk27zk4nmhjm0000gn/T/gitclub-rust-shutdown-proof-esjdi8uo/bin/git --git-dir=/var/folders/v8/y545g92s5gd7tk27zk4nmhjm0000gn/T/gitclub-rust-shutdown-proof-esjdi8uo/data/repos/1.git -c core.quotepath=false -c diff.external= -c protocol.file.allow=never -c protocol.ext.allow=never log -50 --format=%H%x00%h%x00%s%x00%an%x00%aI%x00 9929efb52c6358eabaa9882e5a17a623fe8a0be7 --",
+    "/etc/profiles/per-user/carpenter/bin/python3 -c import time; time.sleep(180)"
+  ],
+  "shutdown_seconds": 15.027035584003897,
+  "exit_code": 0,
+  "survivors": [],
+  "startup_shutdown_seconds": 0.004568042000755668,
+  "startup_survivors": [],
+  "proof_directory": "/var/folders/v8/y545g92s5gd7tk27zk4nmhjm0000gn/T/gitclub-rust-shutdown-proof-esjdi8uo"
+}

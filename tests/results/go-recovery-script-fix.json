@@ -1,0 +1,154 @@
+{
+  "implementation": "go",
+  "source": "/Users/carpenter/projects/gitclub/.data/go-accept",
+  "started_at_unix": 1789344781.462837,
+  "status": "passed",
+  "backup": {
+    "arguments": [
+      "backup",
+      "go",
+      "/var/folders/v8/y545g92s5gd7tk27zk4nmhjm0000gn/T/gitclub-recovery-nkhc4goq/snapshot.tar.gz",
+      "--data-dir",
+      "/Users/carpenter/projects/gitclub/.data/go-accept"
+    ],
+    "stdout": "Backup verified: /private/var/folders/v8/y545g92s5gd7tk27zk4nmhjm0000gn/T/gitclub-recovery-nkhc4goq/snapshot.tar.gz\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  "archive_bytes": 237019,
+  "restore": {
+    "arguments": [
+      "restore",
+      "go",
+      "/var/folders/v8/y545g92s5gd7tk27zk4nmhjm0000gn/T/gitclub-recovery-nkhc4goq/snapshot.tar.gz",
+      "--data-dir",
+      "/var/folders/v8/y545g92s5gd7tk27zk4nmhjm0000gn/T/gitclub-recovery-nkhc4goq/restored"
+    ],
+    "stdout": "Restored and verified: /private/var/folders/v8/y545g92s5gd7tk27zk4nmhjm0000gn/T/gitclub-recovery-nkhc4goq/restored\n",
+    "stderr": "notice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\nnotice: No default references\n",
+    "exit_code": 0
+  },
+  "preserved": {
+    "database_dump_sha256": "42fb486c31ef6047540fbe5685088cb64913af3fcb5e70b9ec40e210ba9a4b37",
+    "table_rows": {
+      "comments": 12,
+      "group_repos": 6,
+      "groups": 6,
+      "issues": 6,
+      "namespace_members": 16,
+      "namespaces": 13,
+      "pins": 0,
+      "pull_requests": 11,
+      "repo_members": 6,
+      "repositories": 16,
+      "reviews": 23,
+      "ssh_keys": 1,
+      "tokens": 10,
+      "users": 10
+    },
+    "repositories": {
+      "1.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "5d1c178a3f4938b69aab574bd878b741ff92623d3ac2f1e69a0a4772c48e676a",
+        "objects_sha256": "b71210e89fd4bd316c87c7fa797e50eee6bfbd87a922ad860c5aff6d7fd3f3b0",
+        "objects": 33
+      },
+      "10.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "11.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "a776d121565eea5603f0298615466ff7231905430d98877cb9bacf689976ee77",
+        "objects_sha256": "dd196f397d07c023180104d939747355969f7ba77713d400dfc2ae2753cac1a6",
+        "objects": 40
+      },
+      "12.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "13.git": {
+        "head": "ref: refs/heads/published",
+        "refs_sha256": "f1dce33839c7876517a17d935b4f9863804ae27392febcbc9466f3ff93bd8ca0",
+        "objects_sha256": "c50056f17a7eb1d02084fec452538fbf186a9f783ccab05f947aca9874f2a3d8",
+        "objects": 10
+      },
+      "14.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "15.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "16.git": {
+        "head": "ref: refs/heads/main",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "2.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "3.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "6a925b30e5cd322b4dd1005ec2258ce7a385c3213b77657089c85f9e18856b08",
+        "objects_sha256": "6baeb630a3fa5fdb53fc1608bd42634294a886699f1d3d6292094aa7d90691c6",
+        "objects": 6
+      },
+      "4.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "5.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "6.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "3033ba1922535205252927b2c3e7aad6713e71c842f352b998659df57e0e4525",
+        "objects_sha256": "e442ce5773ac0609c331440847ad26648564068cf26cd4df6eee0fa2c89ea8f1",
+        "objects": 38
+      },
+      "7.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      },
+      "8.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "f1dce33839c7876517a17d935b4f9863804ae27392febcbc9466f3ff93bd8ca0",
+        "objects_sha256": "c50056f17a7eb1d02084fec452538fbf186a9f783ccab05f947aca9874f2a3d8",
+        "objects": 10
+      },
+      "9.git": {
+        "head": "ref: refs/heads/trunk",
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "objects": 0
+      }
+    }
+  },
+  "restored_directory": "temporary, verified and removed",
+  "overwrite_refusal": {
+    "exit_code": 1,
+    "stderr": "GitClub: Restore requires a new, empty data directory. Existing data will not be replaced.\n"
+  },
+  "elapsed_seconds": 3.6513450145721436
+}

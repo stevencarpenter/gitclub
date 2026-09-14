@@ -1,0 +1,6 @@
+{
+  "implementation": "gleam",
+  "sqlite_version": "3.53.4",
+  "expected": "3.53.4",
+  "status": "passed"
+}

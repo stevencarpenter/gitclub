@@ -1,0 +1,16 @@
+.data/
+artifacts/
+implementations/go/gitclub
+implementations/gleam/build/
+implementations/gleam/erl_crash.dump
+__pycache__/
+*.pyc
+.DS_Store
+.codebase-memory/
+
+.build/
+.env
+
+.impeccable/hook.cache.json
+.lavish/*.log
+implementations/rust/target/

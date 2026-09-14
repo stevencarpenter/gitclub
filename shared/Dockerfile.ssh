@@ -1,0 +1,10 @@
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends python3 git openssh-server ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --uid 10001 --create-home --shell /bin/sh git \
+    && passwd -d git \
+    && mkdir /data && chown git:git /data
+WORKDIR /app
+COPY shared /app/shared
+EXPOSE 2222
+ENTRYPOINT ["python3", "/app/shared/ssh-entrypoint.py"]

@@ -1,0 +1,979 @@
+[
+  {
+    "name": "list_repositories",
+    "description": "Find all accessible repositories across personal and organization owners, with pins and default-branch freshness ordering.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q": {
+          "type": "string",
+          "description": "Search owner, name or description"
+        },
+        "owner": {
+          "type": "string",
+          "description": "Optional owner namespace"
+        },
+        "group": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Optional group ID"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "http": {
+      "method": "GET",
+      "path": "/api/repos",
+      "query": [
+        "q",
+        "owner",
+        "group"
+      ],
+      "body": []
+    }
+  },
+  {
+    "name": "get_repository",
+    "description": "Read repository metadata, permissions and configured default branch.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        }
+      },
+      "required": [
+        "repo_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "http": {
+      "method": "GET",
+      "path": "/api/repos/{repo_id}",
+      "query": [],
+      "body": []
+    }
+  },
+  {
+    "name": "create_repository",
+    "description": "Create an empty repository in an accessible namespace. Import history with a standard Git mirror push.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "owner": {
+          "type": "string",
+          "description": "Owner namespace"
+        },
+        "name": {
+          "type": "string",
+          "description": "Repository name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "private",
+            "public"
+          ]
+        },
+        "default_branch": {
+          "type": "string",
+          "description": "Default branch name"
+        }
+      },
+      "required": [
+        "owner",
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false
+    },
+    "http": {
+      "method": "POST",
+      "path": "/api/repos",
+      "query": [],
+      "body": [
+        "owner",
+        "name",
+        "description",
+        "visibility",
+        "default_branch"
+      ]
+    }
+  },
+  {
+    "name": "list_branches",
+    "description": "List repository branches and commit IDs.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        }
+      },
+      "required": [
+        "repo_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "http": {
+      "method": "GET",
+      "path": "/api/repos/{repo_id}/branches",
+      "query": [],
+      "body": []
+    }
+  },
+  {
+    "name": "browse_tree",
+    "description": "List files and directories at a branch or commit.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        },
+        "ref": {
+          "type": "string",
+          "description": "Branch or commit, default is configured default branch"
+        },
+        "path": {
+          "type": "string",
+          "description": "Directory path"
+        }
+      },
+      "required": [
+        "repo_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "http": {
+      "method": "GET",
+      "path": "/api/repos/{repo_id}/tree",
+      "query": [
+        "ref",
+        "path"
+      ],
+      "body": []
+    }
+  },
+  {
+    "name": "read_file",
+    "description": "Read a source file as text. Binary files are identified and large files are marked truncated.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        },
+        "ref": {
+          "type": "string",
+          "description": "Branch or commit"
+        },
+        "path": {
+          "type": "string",
+          "description": "Repository-relative file path"
+        }
+      },
+      "required": [
+        "repo_id",
+        "path"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "http": {
+      "method": "GET",
+      "path": "/api/repos/{repo_id}/blob",
+      "query": [
+        "ref",
+        "path"
+      ],
+      "body": []
+    }
+  },
+  {
+    "name": "list_commits",
+    "description": "Read the latest 50 commits on a branch.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        },
+        "ref": {
+          "type": "string",
+          "description": "Branch or commit"
+        }
+      },
+      "required": [
+        "repo_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "http": {
+      "method": "GET",
+      "path": "/api/repos/{repo_id}/commits",
+      "query": [
+        "ref"
+      ],
+      "body": []
+    }
+  },
+  {
+    "name": "compare_refs",
+    "description": "Read a bounded unified diff between two Git refs.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        },
+        "base": {
+          "type": "string",
+          "description": "Base ref"
+        },
+        "head": {
+          "type": "string",
+          "description": "Head ref"
+        }
+      },
+      "required": [
+        "repo_id",
+        "base",
+        "head"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "http": {
+      "method": "GET",
+      "path": "/api/repos/{repo_id}/diff",
+      "query": [
+        "base",
+        "head"
+      ],
+      "body": []
+    }
+  },
+  {
+    "name": "set_repository_pin",
+    "description": "Pin or unpin a repository for the authenticated user.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        },
+        "pinned": {
+          "type": "boolean",
+          "description": "Whether repository should be pinned"
+        }
+      },
+      "required": [
+        "repo_id",
+        "pinned"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false
+    },
+    "http": {
+      "method": "POST",
+      "path": "/api/repos/{repo_id}/pin",
+      "query": [],
+      "body": [
+        "pinned"
+      ]
+    }
+  },
+  {
+    "name": "list_groups",
+    "description": "List own and shared groups; contents are filtered by repository access.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "http": {
+      "method": "GET",
+      "path": "/api/groups",
+      "query": [],
+      "body": []
+    }
+  },
+  {
+    "name": "create_group",
+    "description": "Create a named repository group, optionally shared.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Group name"
+        },
+        "shared": {
+          "type": "boolean",
+          "description": "Allow other authenticated users to see the group"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false
+    },
+    "http": {
+      "method": "POST",
+      "path": "/api/groups",
+      "query": [],
+      "body": [
+        "name",
+        "shared"
+      ]
+    }
+  },
+  {
+    "name": "update_group",
+    "description": "Update a group owned by the authenticated user; repo_ids replaces its repository collection. Sharing does not grant repository access.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "group_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Group ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "Group name"
+        },
+        "shared": {
+          "type": "boolean",
+          "description": "Shared group"
+        },
+        "repo_ids": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "group_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "http": {
+      "method": "PATCH",
+      "path": "/api/groups/{group_id}",
+      "query": [],
+      "body": [
+        "name",
+        "shared",
+        "repo_ids"
+      ]
+    }
+  },
+  {
+    "name": "list_issues",
+    "description": "List repository issues.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        }
+      },
+      "required": [
+        "repo_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "http": {
+      "method": "GET",
+      "path": "/api/repos/{repo_id}/issues",
+      "query": [],
+      "body": []
+    }
+  },
+  {
+    "name": "get_issue",
+    "description": "Read an issue and its comments.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        },
+        "issue_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Issue ID"
+        }
+      },
+      "required": [
+        "repo_id",
+        "issue_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "http": {
+      "method": "GET",
+      "path": "/api/repos/{repo_id}/issues/{issue_id}",
+      "query": [],
+      "body": []
+    }
+  },
+  {
+    "name": "create_issue",
+    "description": "Open an issue with a title and optional Markdown body.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        },
+        "title": {
+          "type": "string",
+          "description": "Issue title"
+        },
+        "body": {
+          "type": "string",
+          "description": "Issue body"
+        }
+      },
+      "required": [
+        "repo_id",
+        "title"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false
+    },
+    "http": {
+      "method": "POST",
+      "path": "/api/repos/{repo_id}/issues",
+      "query": [],
+      "body": [
+        "title",
+        "body"
+      ]
+    }
+  },
+  {
+    "name": "update_issue",
+    "description": "Update an issue title, body or open/closed state.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        },
+        "issue_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Issue ID"
+        },
+        "title": {
+          "type": "string",
+          "description": "Issue title"
+        },
+        "body": {
+          "type": "string",
+          "description": "Issue body"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "open",
+            "closed"
+          ]
+        }
+      },
+      "required": [
+        "repo_id",
+        "issue_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "http": {
+      "method": "PATCH",
+      "path": "/api/repos/{repo_id}/issues/{issue_id}",
+      "query": [],
+      "body": [
+        "title",
+        "body",
+        "state"
+      ]
+    }
+  },
+  {
+    "name": "comment_on_issue",
+    "description": "Add a comment to an issue.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        },
+        "issue_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Issue ID"
+        },
+        "body": {
+          "type": "string",
+          "description": "Comment body"
+        }
+      },
+      "required": [
+        "repo_id",
+        "issue_id",
+        "body"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false
+    },
+    "http": {
+      "method": "POST",
+      "path": "/api/repos/{repo_id}/issues/{issue_id}/comments",
+      "query": [],
+      "body": [
+        "body"
+      ]
+    }
+  },
+  {
+    "name": "list_pull_requests",
+    "description": "List pull requests for a repository.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        }
+      },
+      "required": [
+        "repo_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "http": {
+      "method": "GET",
+      "path": "/api/repos/{repo_id}/pulls",
+      "query": [],
+      "body": []
+    }
+  },
+  {
+    "name": "get_pull_request",
+    "description": "Read a pull request, latest diff, reviews, comments, and actionable merge blockers.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        },
+        "pull_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Pull request ID"
+        }
+      },
+      "required": [
+        "repo_id",
+        "pull_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "http": {
+      "method": "GET",
+      "path": "/api/repos/{repo_id}/pulls/{pull_id}",
+      "query": [],
+      "body": []
+    }
+  },
+  {
+    "name": "create_pull_request",
+    "description": "Open a pull request between existing branches in one repository.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        },
+        "title": {
+          "type": "string",
+          "description": "Pull request title"
+        },
+        "body": {
+          "type": "string",
+          "description": "Pull request body"
+        },
+        "base_branch": {
+          "type": "string",
+          "description": "Base branch, default is configured default branch"
+        },
+        "head_branch": {
+          "type": "string",
+          "description": "Branch containing proposed changes"
+        }
+      },
+      "required": [
+        "repo_id",
+        "title",
+        "head_branch"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false
+    },
+    "http": {
+      "method": "POST",
+      "path": "/api/repos/{repo_id}/pulls",
+      "query": [],
+      "body": [
+        "title",
+        "body",
+        "base_branch",
+        "head_branch"
+      ]
+    }
+  },
+  {
+    "name": "update_pull_request",
+    "description": "Update title, body or open/closed state of an unmerged pull request.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        },
+        "pull_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Pull request ID"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title"
+        },
+        "body": {
+          "type": "string",
+          "description": "Body"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "open",
+            "closed"
+          ]
+        }
+      },
+      "required": [
+        "repo_id",
+        "pull_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "http": {
+      "method": "PATCH",
+      "path": "/api/repos/{repo_id}/pulls/{pull_id}",
+      "query": [],
+      "body": [
+        "title",
+        "body",
+        "state"
+      ]
+    }
+  },
+  {
+    "name": "comment_on_pull_request",
+    "description": "Comment on a pull request, optionally anchored to a file/line at its current head commit.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        },
+        "pull_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Pull request ID"
+        },
+        "body": {
+          "type": "string",
+          "description": "Comment body"
+        },
+        "path": {
+          "type": "string",
+          "description": "Repository-relative file path"
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "commit_oid": {
+          "type": "string",
+          "description": "Current head OID when attaching an inline comment"
+        }
+      },
+      "required": [
+        "repo_id",
+        "pull_id",
+        "body"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false
+    },
+    "http": {
+      "method": "POST",
+      "path": "/api/repos/{repo_id}/pulls/{pull_id}/comments",
+      "query": [],
+      "body": [
+        "body",
+        "path",
+        "line",
+        "commit_oid"
+      ]
+    }
+  },
+  {
+    "name": "review_pull_request",
+    "description": "Review the exact head commit you inspected. A changed head rejects the review. Authors cannot approve their own pull requests.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        },
+        "pull_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Pull request ID"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "request_changes",
+            "comment"
+          ]
+        },
+        "body": {
+          "type": "string",
+          "description": "Review feedback"
+        },
+        "expected_head_oid": {
+          "type": "string",
+          "description": "Exact head OID of the diff actually reviewed; obtain from get_pull_request. A changed head rejects the review."
+        }
+      },
+      "required": [
+        "repo_id",
+        "pull_id",
+        "decision",
+        "expected_head_oid"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false
+    },
+    "http": {
+      "method": "POST",
+      "path": "/api/repos/{repo_id}/pulls/{pull_id}/reviews",
+      "query": [],
+      "body": [
+        "decision",
+        "body",
+        "expected_head_oid"
+      ]
+    }
+  },
+  {
+    "name": "merge_pull_request",
+    "description": "Merge an open pull request only if its head still matches expected_head_oid and permissions, approval and conflict checks pass.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "repo_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Repository ID returned by list_repositories"
+        },
+        "pull_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Pull request ID"
+        },
+        "expected_head_oid": {
+          "type": "string",
+          "description": "Exact head OID returned by get_pull_request"
+        }
+      },
+      "required": [
+        "repo_id",
+        "pull_id",
+        "expected_head_oid"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false
+    },
+    "http": {
+      "method": "POST",
+      "path": "/api/repos/{repo_id}/pulls/{pull_id}/merge",
+      "query": [],
+      "body": [
+        "expected_head_oid"
+      ]
+    }
+  }
+]
