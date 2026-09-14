@@ -2,6 +2,8 @@
 
 Three independent implementations of an original self-hosted Git collaboration server: Go, Gleam, and Rust. All serve the same browser interface and API contract. None calls another backend or incorporates another forge's application code.
 
+Go is the chosen implementation. [DECISION.md](DECISION.md) records that choice, the PostgreSQL and Railway deployment target, and the disaster recovery design. Tag `v0.0.0` marks the last commit holding all three implementations and their measurement evidence.
+
 ## Run all three
 
 Docker with Compose is the only prerequisite for the packaged installation:
