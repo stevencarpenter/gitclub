@@ -152,7 +152,7 @@ class Suite:
 
     def setup(self):
         health = self.anon.get("/health")
-        assert health["status"] == "ok" and health["implementation"] in ("go", "gleam", "rust")
+        assert health["status"] == "ok" and health["implementation"] == "go"
         self.implementation = health["implementation"]
         self.a, self.ua = self.register("a")
         self.b, self.ub = self.register("b")

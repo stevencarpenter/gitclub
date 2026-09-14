@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Three independently implemented servers, Go, Gleam on Erlang, and Rust, explicitly requested by the user for comparison. Shared browser interface and acceptance tests hold product behavior constant. Plain HTML, CSS, and browser JavaScript are an implementation default chosen to keep the comparison lean, not a separately confirmed user preference.
+A Go server, chosen from three independently implemented candidates the user requested for comparison. Plain HTML, CSS, and browser JavaScript are an implementation default chosen to keep the build lean, not a separately confirmed user preference.
 
 ## Users
 
@@ -32,7 +32,7 @@ Name: GitClub. The user wants a focused developer experience with no unnecessary
 
 ## Evidence on Hand
 
-MVP.md records requirements and proposed defaults. shared/CONTRACT.md defines equivalent behavior for the three implementations. COMPARISON.md records local benchmark results. Production uptime has not been measured. The interface must not invent projects, customers, or performance claims.
+MVP.md records requirements and proposed defaults. shared/CONTRACT.md defines required behavior. DECISION.md records the implementation choice and the deployment and recovery design. Production uptime has not been measured. The interface must not invent projects, customers, or performance claims.
 
 ## Product Principles
 
@@ -40,7 +40,7 @@ MVP.md records requirements and proposed defaults. shared/CONTRACT.md defines eq
 - Put current default-branch activity ahead of incidental viewing activity.
 - Keep Git operations reliable when optional work fails.
 - Support the user's existing agents through native operations.
-- Verify equivalent behavior before comparing implementations.
+- Verify behavior against the contract before claiming it.
 
 ## Accessibility & Inclusion
 

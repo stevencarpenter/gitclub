@@ -1,6 +1,0 @@
-{
-  "status": "passed",
-  "atomic_rebuild_changes_inode": true,
-  "running_server_survives_rebuild": true,
-  "command": "python3 scripts/gitclub build rust"
-}

@@ -3,7 +3,5 @@
 .build
 artifacts
 **/__pycache__
-**/build
 implementations/go/gitclub
 .env
-**/target

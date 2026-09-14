@@ -57,13 +57,12 @@ def checked_cli(*args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--implementation", choices=("go", "gleam", "rust"), required=True)
     parser.add_argument("--data-dir", type=Path, required=True)
     parser.add_argument("--restored-dir", type=Path, help="New empty restore directory; omitted uses temporary directory")
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
     source = args.data_dir.resolve()
-    report = {"implementation": args.implementation, "source": str(source), "started_at_unix": time.time(), "status": "failed"}
+    report = {"implementation": "go", "source": str(source), "started_at_unix": time.time(), "status": "failed"}
     try:
         assert (source / "gitclub.db").is_file(), "Source database does not exist"
         with (source / "server.lock").open("a+") as lock:
@@ -81,14 +80,14 @@ def main():
             archive = Path(temp) / "snapshot.tar.gz"
             restored = args.restored_dir.resolve() if args.restored_dir else Path(temp) / "restored"
             assert not restored.exists() or not any(restored.iterdir()), "Restore target must be empty"
-            report["backup"] = checked_cli("backup", args.implementation, str(archive), "--data-dir", str(source))
+            report["backup"] = checked_cli("backup", str(archive), "--data-dir", str(source))
             assert archive.stat().st_mode & 0o077 == 0, "Backup permissions expose private repositories/credentials"
             report["archive_bytes"] = archive.stat().st_size
-            report["restore"] = checked_cli("restore", args.implementation, str(archive), "--data-dir", str(restored))
+            report["restore"] = checked_cli("restore", str(archive), "--data-dir", str(restored))
             after = fingerprint(restored)
             assert before == after, "Restored database rows, Git refs or object set differs from source"
             assert before == fingerprint(source), "Backup/restore changed source data"
-            refusal = subprocess.run([sys.executable, str(ROOT / "scripts/gitclub"), "restore", args.implementation,
+            refusal = subprocess.run([sys.executable, str(ROOT / "scripts/gitclub"), "restore",
                                       str(archive), "--data-dir", str(restored)], capture_output=True, text=True, timeout=30)
             assert refusal.returncode != 0, "Restore overwrote a populated data directory"
             assert after == fingerprint(restored), "Rejected restore changed destination"

@@ -145,7 +145,7 @@ function renderSidebar() {
     el('div', { class: 'nav-section' }, el('div', { class: 'nav-caption' }, 'Default branch activity'), others.length ? others.map(smallRepo) : el('p', { class: 'nav-empty' }, pins.length ? 'All repositories are pinned.' : 'Your repositories appear here.')));
   const footer = el('div', { class: 'sidebar-footer' }, signed ? navLink('Agent access', '/agents', 'terminal', current === '/agents') : null, signed ? navLink('SSH keys', '/settings/ssh', 'key', current === '/settings/ssh') : null,
     signed ? el('div', { class: 'account' }, el('span', { class: 'avatar', 'aria-hidden': 'true' }, state.user.username.slice(0, 2)), el('span', { class: 'account-name' }, state.user.username), el('button', { class: 'subtle-button', type: 'button', title: 'Sign out', 'aria-label': 'Sign out', onClick: e => mutation(async () => { await api('/api/auth/logout', 'POST'); state.user = null; state.groups = []; state.namespaces = []; await refreshWorkspace(); go('/login'); }, e.currentTarget) }, icon('logout'))) : actionLink('Sign in', '/login', 'primary'),
-    el('div', { class: 'implementation' }, el('span', {}, 'SELF-HOSTED'), el('span', {}, state.implementation ? `${({ go: 'Go', gleam: 'Gleam', rust: 'Rust' })[state.implementation] || state.implementation} server` : 'GitClub')));
+    el('div', { class: 'implementation' }, el('span', {}, 'SELF-HOSTED'), el('span', {}, state.implementation ? `${({ go: 'Go' })[state.implementation] || state.implementation} server` : 'GitClub')));
   sidebar.replaceChildren(brand, close, switcher, primary, scroll, footer);
 }
 function shell() {

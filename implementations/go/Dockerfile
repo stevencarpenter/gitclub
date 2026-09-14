@@ -18,4 +18,4 @@ COPY scripts/gitclub /app/scripts/gitclub
 USER git
 ENV DATA_DIR=/data HOST=0.0.0.0 PORT=7701 WEB_DIR=/app/web SHARED_DIR=/app/shared
 EXPOSE 7701
-ENTRYPOINT ["python3", "/app/scripts/gitclub", "run", "go", "--no-build", "--host", "0.0.0.0", "--data-dir", "/data"]
+ENTRYPOINT ["python3", "/app/scripts/gitclub", "run", "--no-build", "--host", "0.0.0.0", "--data-dir", "/data"]

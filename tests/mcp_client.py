@@ -4,10 +4,9 @@
 # ///
 """Validate a disposable GitClub server with the official MCP Python SDK.
 
-Run: uv run --isolated tests/mcp_client.py http://127.0.0.1:17701 \
-    http://127.0.0.1:17702 --output reports/mcp-client.json
+Run: uv run --isolated tests/mcp_client.py http://127.0.0.1:17701 --output mcp-client.json
 
-Creates a private repository and issue under a disposable account on each server.
+Creates a private repository and issue under a disposable account on the server.
 Tokens are kept in memory and revoked at the end; no client configuration changes.
 """
 from __future__ import annotations

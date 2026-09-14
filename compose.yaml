@@ -16,40 +16,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  gleam:
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: implementations/gleam/Dockerfile
-    ports: ["127.0.0.1:7702:7702"]
-    environment:
-      PUBLIC_URL: http://localhost:7702
-      GITCLUB_SSH_SECRET: ${GITCLUB_SSH_SECRET:?Run ./scripts/gitclub up}
-    volumes: ["gleam-data:/data"]
-    init: true
-    stop_grace_period: 20s
-    healthcheck:
-      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7702/health', timeout=3)"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-  rust:
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: implementations/rust/Dockerfile
-    ports: ["127.0.0.1:7703:7703"]
-    environment:
-      PUBLIC_URL: http://localhost:7703
-      GITCLUB_SSH_SECRET: ${GITCLUB_SSH_SECRET:?Run ./scripts/gitclub up}
-    volumes: ["rust-data:/data"]
-    init: true
-    stop_grace_period: 20s
-    healthcheck:
-      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7703/health', timeout=3)"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
   go-ssh:
     restart: unless-stopped
     build:
@@ -62,31 +28,5 @@ services:
     volumes: ["go-data:/data"]
     depends_on:
       go: {condition: service_healthy}
-  gleam-ssh:
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: shared/Dockerfile.ssh
-    ports: ["127.0.0.1:2222:2222"]
-    environment:
-      GITCLUB_URL: http://gleam:7702
-      GITCLUB_SSH_SECRET: ${GITCLUB_SSH_SECRET:?Run ./scripts/gitclub up}
-    volumes: ["gleam-data:/data"]
-    depends_on:
-      gleam: {condition: service_healthy}
-  rust-ssh:
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: shared/Dockerfile.ssh
-    ports: ["127.0.0.1:2223:2222"]
-    environment:
-      GITCLUB_URL: http://rust:7703
-      GITCLUB_SSH_SECRET: ${GITCLUB_SSH_SECRET:?Run ./scripts/gitclub up}
-    volumes: ["rust-data:/data"]
-    depends_on:
-      rust: {condition: service_healthy}
 volumes:
-  rust-data:
   go-data:
-  gleam-data:

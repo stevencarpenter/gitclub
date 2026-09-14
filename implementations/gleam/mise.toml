@@ -1,5 +1,0 @@
-[tools]
-erlang = "latest"
-gleam = "latest"
-rebar = { version = "latest", asset_pattern = "rebar3" }
-

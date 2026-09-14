@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build, run, package and recover any GitClub implementation."""
+"""Build, run, package and recover GitClub."""
 from __future__ import annotations
 
 import argparse
@@ -37,49 +37,18 @@ def run_checked(command: list[str], **kwargs) -> None:
     subprocess.run(command, check=True, **kwargs)
 
 
-def build(implementation: str) -> Path:
+def build() -> Path:
     out = ROOT / '.build'
     out.mkdir(exist_ok=True)
     started = time.monotonic()
-    env = os.environ.copy()
-    if implementation in ('gleam', 'rust'):
-        sqlite = out / 'sqlite-3.53.4'
-        run_checked([sys.executable, str(ROOT / 'scripts/build-sqlite.py'), str(sqlite)])
-        env.update({'LIBSQLITE3_SYS_USE_PKG_CONFIG': '1', 'SQLITE3_NO_PKG_CONFIG': '1', 'SQLITE3_STATIC': '1',
-                    'SQLITE3_LIB_DIR': str(sqlite / 'lib'), 'SQLITE3_INCLUDE_DIR': str(sqlite / 'include'),
-                    'ESQLITE_USE_SYSTEM': '1',
-                    'CFLAGS': f"{env.get('CFLAGS', '')} -I{sqlite / 'include'}",
-                    'LDFLAGS': f"{env.get('LDFLAGS', '')} -L{sqlite / 'lib'}"})
-    if implementation == 'go':
-        target = out / 'gitclub-go'
-        run_checked([executable('go'), 'build', '-trimpath', '-ldflags=-s -w', '-o', str(target), '.'], cwd=ROOT / 'implementations/go')
-    elif implementation == 'rust':
-        # Cargo does not track changes to the external static archive itself.
-        run_checked([executable('cargo'), 'clean', '--release', '-p', 'libsqlite3-sys'], cwd=ROOT / 'implementations/rust')
-        run_checked([executable('cargo'), 'build', '--release', '--locked'], cwd=ROOT / 'implementations/rust', env=env)
-        target = out / 'gitclub-rust'
-        # Replacing the inode preserves running executables and macOS code-signature validity.
-        with tempfile.NamedTemporaryFile(dir=out, prefix='gitclub-rust-', delete=False) as temporary:
-            staged = Path(temporary.name)
-        try:
-            shutil.copy2(ROOT / 'implementations/rust/target/release/gitclub', staged)
-            staged.replace(target)
-        finally:
-            staged.unlink(missing_ok=True)
-    else:
-        if sys.platform == 'darwin':
-            # esqlite's system-library mode omits Darwin's Erlang host-symbol lookup.
-            env['LDFLAGS'] += ' -Wl,-undefined,dynamic_lookup'
-        # Recompile the NIF so a previous bundled SQLite cannot survive a linkage change.
-        run_checked([executable('gleam'), 'clean'], cwd=ROOT / 'implementations/gleam', env=env)
-        run_checked([executable('gleam'), 'export', 'erlang-shipment'], cwd=ROOT / 'implementations/gleam', env=env)
-        target = ROOT / 'implementations/gleam/build/erlang-shipment/entrypoint.sh'
-    print(f'{implementation} build: {time.monotonic() - started:.2f}s', flush=True)
+    target = out / 'gitclub-go'
+    run_checked([executable('go'), 'build', '-trimpath', '-ldflags=-s -w', '-o', str(target), '.'], cwd=ROOT / 'implementations/go')
+    print(f'go build: {time.monotonic() - started:.2f}s', flush=True)
     return target
 
 
-def data_path(implementation: str, override: str | None) -> Path:
-    return Path(override or ROOT / '.data' / implementation).resolve()
+def data_path(override: str | None) -> Path:
+    return Path(override or ROOT / '.data/go').resolve()
 
 
 @contextlib.contextmanager
@@ -94,19 +63,17 @@ def exclusive_data(directory: Path):
 
 
 def serve(args) -> None:
-    target = build(args.implementation) if not args.no_build else (
-        ROOT / 'implementations/gleam/build/erlang-shipment/entrypoint.sh' if args.implementation == 'gleam' else ROOT / f'.build/gitclub-{args.implementation}')
+    target = build() if not args.no_build else ROOT / '.build/gitclub-go'
     if not target.exists():
         raise RuntimeError('Build is missing. Run again without --no-build.')
-    directory = data_path(args.implementation, args.data_dir)
+    directory = data_path(args.data_dir)
     env = os.environ.copy()
     env['PATH'] = os.pathsep.join([str(Path.home() / '.local/share/mise/shims'), '/opt/homebrew/bin', env.get('PATH', '/usr/bin:/bin')])
     env.update({'DATA_DIR': str(directory), 'WEB_DIR': str(ROOT / 'web'), 'SHARED_DIR': str(ROOT / 'shared'),
-                'HOST': args.host, 'PORT': str(args.port or {'go': 7701, 'gleam': 7702, 'rust': 7703}[args.implementation])})
+                'HOST': args.host, 'PORT': str(args.port or 7701)})
     env.setdefault('PUBLIC_URL', f'http://localhost:{env["PORT"]}')
     with exclusive_data(directory):
-        command = ['sh', str(target), 'run'] if args.implementation == 'gleam' else [str(target)]
-        child = subprocess.Popen(command, cwd=ROOT, env=env, start_new_session=True)
+        child = subprocess.Popen([str(target)], cwd=ROOT, env=env, start_new_session=True)
         def stop(signum, frame):
             if child.poll() is None:
                 os.killpg(child.pid, signal.SIGTERM)
@@ -114,10 +81,10 @@ def serve(args) -> None:
         signal.signal(signal.SIGTERM, stop)
         (directory / 'server.pid').write_text(str(child.pid))
         try:
-            print(f'GitClub {args.implementation}: {env["PUBLIC_URL"]}', flush=True)
+            print(f'GitClub: {env["PUBLIC_URL"]}', flush=True)
             result = child.wait()
             if result not in (0, -signal.SIGTERM, -signal.SIGINT):
-                raise RuntimeError(f'{args.implementation} server exited with status {result}.')
+                raise RuntimeError(f'Server exited with status {result}.')
         finally:
             if child.poll() is None:
                 child.terminate()
@@ -149,7 +116,7 @@ def quiescent_transfers(directory: Path):
 
 
 def backup(args) -> None:
-    directory = data_path(args.implementation, args.data_dir)
+    directory = data_path(args.data_dir)
     archive = Path(args.archive).resolve()
     if archive == directory or directory in archive.parents:
         raise RuntimeError('Write the backup archive outside its source data directory.')
@@ -176,7 +143,7 @@ def backup(args) -> None:
         for name in ('ssh', 'merge-recovery'):
             if (directory / name).is_dir():
                 shutil.copytree(directory / name, snapshot / name, symlinks=False)
-        (snapshot / 'backup.json').write_text(json.dumps({'format': 1, 'implementation': args.implementation, 'created_at': int(time.time())}, indent=2))
+        (snapshot / 'backup.json').write_text(json.dumps({'format': 1, 'implementation': 'go', 'created_at': int(time.time())}, indent=2))
         archive.parent.mkdir(parents=True, exist_ok=True)
         descriptor = os.open(archive, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         with os.fdopen(descriptor, 'wb') as stream, tarfile.open(fileobj=stream, mode='w:gz') as tar:
@@ -185,7 +152,7 @@ def backup(args) -> None:
 
 
 def restore(args) -> None:
-    directory = data_path(args.implementation, args.data_dir)
+    directory = data_path(args.data_dir)
     archive = Path(args.archive).resolve()
     if directory.exists() and any(directory.iterdir()):
         raise RuntimeError('Restore requires a new, empty data directory. Existing data will not be replaced.')
@@ -225,7 +192,7 @@ def compose(args) -> None:
     command += ['up', '--build', '-d'] if args.command == 'up' else ['down']
     run_checked(command, cwd=ROOT)
     if args.command == 'up':
-        print('Go: http://localhost:7701 (SSH 2221)\nGleam: http://localhost:7702 (SSH 2222)\nRust: http://localhost:7703 (SSH 2223)')
+        print('GitClub: http://localhost:7701 (SSH 2221)')
 
 
 def main() -> int:
@@ -233,7 +200,6 @@ def main() -> int:
     commands = parser.add_subparsers(dest='command', required=True)
     for name in ('build', 'run', 'backup', 'restore'):
         command = commands.add_parser(name)
-        command.add_argument('implementation', choices=('go', 'gleam', 'rust'))
         if name in ('run', 'backup', 'restore'):
             command.add_argument('--data-dir')
         if name == 'run':
@@ -242,12 +208,12 @@ def main() -> int:
             command.add_argument('--no-build', action='store_true')
         if name in ('backup', 'restore'):
             command.add_argument('archive')
-    commands.add_parser('up', help='Build and run all implementations with SSH using Docker Compose')
+    commands.add_parser('up', help='Build and run GitClub with SSH using Docker Compose')
     commands.add_parser('down', help='Stop the Docker Compose services, preserving data volumes')
     args = parser.parse_args()
     try:
         if args.command == 'build':
-            build(args.implementation)
+            build()
         elif args.command == 'run':
             serve(args)
         elif args.command == 'backup':
