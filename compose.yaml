@@ -1,4 +1,19 @@
 services:
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: gitclub
+      POSTGRES_USER: gitclub
+      POSTGRES_PASSWORD: ${GITCLUB_DB_PASSWORD:?Run ./scripts/gitclub up}
+    # PostgreSQL 18 images place data in a version subdirectory, so the mount
+    # belongs at /var/lib/postgresql, not the pre-18 /var/lib/postgresql/data.
+    volumes: ["postgres-data:/var/lib/postgresql"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gitclub -d gitclub"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
   go:
     restart: unless-stopped
     build:
@@ -7,10 +22,13 @@ services:
     ports: ["127.0.0.1:7701:7701"]
     environment:
       PUBLIC_URL: http://localhost:7701
+      DATABASE_URL: postgres://gitclub:${GITCLUB_DB_PASSWORD:?Run ./scripts/gitclub up}@postgres:5432/gitclub?sslmode=disable
       GITCLUB_SSH_SECRET: ${GITCLUB_SSH_SECRET:?Run ./scripts/gitclub up}
     volumes: ["go-data:/data"]
     init: true
     stop_grace_period: 20s
+    depends_on:
+      postgres: {condition: service_healthy}
     healthcheck:
       test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7701/health', timeout=3)"]
       interval: 10s
@@ -30,3 +48,4 @@ services:
       go: {condition: service_healthy}
 volumes:
   go-data:
+  postgres-data:

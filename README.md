@@ -37,25 +37,28 @@ The official MCP SDK verifies initialization, tool discovery, and repository, is
 
 ## Run from source
 
-Use Go 1.27.1, Python 3.12+, Git 2.38+, and a C compiler. The single direct dependency is `go-sqlite3` 1.14.52, which embeds SQLite 3.53.4. Versions are locked in `implementations/go/go.mod` and `go.sum`.
+Use Go 1.27.1, Python 3.12+, Git 2.38+, and PostgreSQL 18 client tools (`psql`, `pg_dump`, `pg_restore`) for backup and restore. The single direct dependency is `pgx` v5, a pure-Go driver, so the build needs no C compiler. Versions are locked in `implementations/go/go.mod` and `go.sum`.
+
+The server requires `DATABASE_URL` and applies `shared/migrations/*.sql` at startup.
 
 ```sh
+export DATABASE_URL=postgres://gitclub:password@localhost:5432/gitclub?sslmode=disable
 ./scripts/gitclub run
 ```
 
-Native data defaults to `.data/go`. Use `--data-dir`, `--port`, or `--host` to override. `--no-build` reuses an existing build. Native launches provide HTTP Git; the Compose installation also configures OpenSSH.
+Git repositories still live on disk; native data defaults to `.data/go`. Use `--data-dir`, `--port`, or `--host` to override. `--no-build` reuses an existing build. Native launches provide HTTP Git; the Compose installation also configures OpenSSH.
 
 ## Backup and restore
 
-For a native installation, stop the server before backup. The helper refuses a locked data directory or active SSH transfer, verifies SQLite, and includes Git repositories, merge recovery records, and SSH host keys.
+Stop the server before backup. The helper refuses a locked data directory or an active SSH transfer, then captures a `pg_dump` custom-format archive and the Git repositories in one pass, along with merge recovery records and SSH host keys.
 
 ```sh
 ./scripts/gitclub backup ./backups/gitclub.tar.gz
-./scripts/gitclub restore ./backups/gitclub.tar.gz --data-dir .data/go-restored
+./scripts/gitclub restore ./backups/gitclub.tar.gz --data-dir .data/go-restored --database-url postgres://gitclub:password@localhost:5432/gitclub_restored
 ./scripts/gitclub run --data-dir .data/go-restored --port 7711
 ```
 
-Archives are mode `0600`. Restore requires a new empty destination, checks archive paths, runs SQLite integrity checks and `git fsck`, and refuses to overwrite existing data. Treat backups as credentials because they contain account and token records.
+Both commands take `--database-url`, defaulting to `DATABASE_URL`. Archives are mode `0600`. Restore requires both a new empty data directory and an empty target database, checks archive paths, verifies the dump parses, runs `git fsck`, and refuses to overwrite existing data. Treat backups as credentials because they contain account and token records.
 
 The database and the Git repositories are one consistency unit. Back them up together and restore them together; see the recovery ordering section of [DECISION.md](DECISION.md).
 
@@ -63,14 +66,14 @@ Compose data lives in a named volume, not the native `.data` directory. To make 
 
 ```sh
 docker compose --env-file .data/compose.env stop go go-ssh
-docker compose --env-file .data/compose.env run --name gitclub-backup --no-deps --entrypoint python3 go /app/scripts/gitclub backup /tmp/gitclub.tar.gz --data-dir /data
+docker compose --env-file .data/compose.env run --name gitclub-backup --entrypoint python3 go /app/scripts/gitclub backup /tmp/gitclub.tar.gz --data-dir /data
 docker cp gitclub-backup:/tmp/gitclub.tar.gz ./gitclub.tar.gz
 chmod 600 ./gitclub.tar.gz
 docker rm gitclub-backup
 docker compose --env-file .data/compose.env start go go-ssh
 ```
 
-The resulting archive restores to a native data directory with the helper above. Preserve `.data/compose.env` for the existing deployment's SSH service secret.
+The resulting archive restores to a native data directory with the helper above. Preserve `.data/compose.env`; it holds the deployment's SSH service secret and database password.
 
 ## Verification
 
@@ -80,6 +83,13 @@ The complete endpoint and behavior definition is [shared/CONTRACT.md](shared/CON
 (cd implementations/go && go test -race ./... && go vet ./...)
 python3 shared/test_adapters.py
 python3 tests/acceptance.py --url http://localhost:7701
+```
+
+Database-backed Go tests need a PostgreSQL instance and are skipped without one. They create and drop a disposable schema per test:
+
+```sh
+export GITCLUB_TEST_DATABASE_URL=postgres://gitclub:password@localhost:5432/gitclub?sslmode=disable
+(cd implementations/go && go test -race ./...)
 ```
 
 Acceptance tests create their own accounts and repositories. Use an isolated installation for tests and benchmarks. Successful local checks establish the tested behaviors, not production uptime or Internet-scale capacity.

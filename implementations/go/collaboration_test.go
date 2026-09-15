@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http/httptest"
@@ -34,27 +33,10 @@ func TestMergeIntentIsDurableAndCannotOverwrite(t *testing.T) {
 }
 
 func TestPullMergeAuthorizationFreshnessAndRecovery(t *testing.T) {
-	dataDir := t.TempDir()
-	db, err := sql.Open("sqlite3", "file:"+filepath.Join(dataDir, "gitclub.db")+"?_foreign_keys=on&_journal_mode=WAL&_busy_timeout=5000")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer db.Close()
-	sharedDir, err := filepath.Abs("../../shared")
-	if err != nil {
-		t.Fatal(err)
-	}
-	schema, err := os.ReadFile(filepath.Join(sharedDir, "schema.sql"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if _, err = db.Exec(string(schema)); err != nil {
-		t.Fatal(err)
-	}
-	s := &server{db: db, dataDir: dataDir, sharedDir: sharedDir, gitSlots: make(chan struct{}, 8), rates: map[string]rateEntry{}}
+	s := testServer(t, t.TempDir())
 	tokens := map[string]string{}
 	for _, name := range []string{"owner", "reviewer", "reader"} {
-		uid := s.exec("INSERT INTO users(username,password_hash,created_at) VALUES(?,'unused',?)", name, now())
+		uid := s.insert("INSERT INTO users(username,password_hash,created_at) VALUES(?,'unused',?)", name, now())
 		tokens[name] = s.newToken(uid)
 	}
 	s.exec("INSERT INTO namespaces(name,kind) VALUES('owner','user')")
@@ -146,7 +128,8 @@ func TestPullMergeAuthorizationFreshnessAndRecovery(t *testing.T) {
 	if actual := git("", "rev-parse", "main"); actual != base {
 		t.Fatal("failed transaction changed base")
 	}
-	s.exec("CREATE TRIGGER reject_merge BEFORE UPDATE ON pull_requests WHEN NEW.state='merged' BEGIN SELECT RAISE(ABORT,'injected metadata failure'); END")
+	s.exec("CREATE FUNCTION reject_merge() RETURNS trigger AS $$ BEGIN RAISE EXCEPTION 'injected metadata failure'; END; $$ LANGUAGE plpgsql")
+	s.exec("CREATE TRIGGER reject_merge BEFORE UPDATE ON pull_requests FOR EACH ROW WHEN (NEW.state='merged') EXECUTE FUNCTION reject_merge()")
 	request("owner", "POST", "/api/repos/1/pulls/1/merge", M{"expected_head_oid": newHead}, 500)
 	merged := git("", "rev-parse", "main")
 	if merged == base {
@@ -155,7 +138,8 @@ func TestPullMergeAuthorizationFreshnessAndRecovery(t *testing.T) {
 	if _, err := os.Stat(s.markerPath(1, 1)); err != nil {
 		t.Fatalf("missing recovery marker: %v", err)
 	}
-	s.exec("DROP TRIGGER reject_merge")
+	s.exec("DROP TRIGGER reject_merge ON pull_requests")
+	s.exec("DROP FUNCTION reject_merge()")
 	result := request("owner", "GET", "/api/repos/1/pulls/1", nil, 200)
 	p := result["pull"].(map[string]any)
 	if str(p, "state") != "merged" || str(p, "merged_oid") != merged {

@@ -11,7 +11,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
 	"io"
 	"log"
 	"net"
@@ -42,6 +41,8 @@ func num(m M, k string) int64 {
 		return v
 	case int:
 		return int64(v)
+	case int32:
+		return int64(v)
 	case float64:
 		return int64(v)
 	case json.Number:
@@ -55,6 +56,8 @@ func boolean(m M, k string) bool {
 	case bool:
 		return v
 	case int64:
+		return v != 0
+	case int32:
 		return v != 0
 	case float64:
 		return v != 0
@@ -108,63 +111,10 @@ type server struct {
 	db                                                            *sql.DB
 	dataDir, sharedDir, webDir, publicURL, internalURL, sshSecret string
 	gitSlots, transferSlots                                       chan struct{}
-	repoLocks                                                     sync.Map
 	rates                                                         map[string]rateEntry
 	rateMu                                                        sync.Mutex
 }
 
-func (s *server) rows(query string, args ...any) []M {
-	rs, e := s.db.Query(query, args...)
-	if e != nil {
-		log.Printf("database query: %v", e)
-		fail(500, "Database operation failed")
-	}
-	defer rs.Close()
-	cols, _ := rs.Columns()
-	out := []M{}
-	for rs.Next() {
-		vals := make([]any, len(cols))
-		ptr := make([]any, len(cols))
-		for i := range vals {
-			ptr[i] = &vals[i]
-		}
-		if rs.Scan(ptr...) != nil {
-			fail(500, "Database read failed")
-		}
-		m := M{}
-		for i, c := range cols {
-			if b, ok := vals[i].([]byte); ok {
-				m[c] = string(b)
-			} else {
-				m[c] = vals[i]
-			}
-		}
-		out = append(out, m)
-	}
-	if rs.Err() != nil {
-		fail(500, "Database read failed")
-	}
-	return out
-}
-func (s *server) one(q string, args ...any) M {
-	rows := s.rows(q, args...)
-	if len(rows) == 0 {
-		return nil
-	}
-	return rows[0]
-}
-func (s *server) exec(q string, args ...any) int64 {
-	r, e := s.db.Exec(q, args...)
-	if e != nil {
-		log.Printf("database write: %v", e)
-		if strings.Contains(e.Error(), "UNIQUE") {
-			fail(409, "That name or entry already exists")
-		}
-		fail(500, "Database operation failed")
-	}
-	id, _ := r.LastInsertId()
-	return id
-}
 func tokenHash(t string) string { h := sha256.Sum256([]byte(t)); return hex.EncodeToString(h[:]) }
 func (s *server) newToken(uid int64) string {
 	b := make([]byte, 32)
@@ -340,15 +290,14 @@ func (s *server) api(w http.ResponseWriter, r *http.Request, u M) {
 			fail(500, "Database operation failed")
 		}
 		defer tx.Rollback()
-		res, e := tx.Exec("INSERT INTO users(username,password_hash,created_at) VALUES(?,?,?)", username, hash, now())
-		if e != nil {
+		var id int64
+		if e = tx.QueryRow("INSERT INTO users(username,password_hash,created_at) VALUES($1,$2,$3) RETURNING id", username, hash, now()).Scan(&id); e != nil {
 			fail(409, "Username already exists")
 		}
-		id, _ := res.LastInsertId()
-		if _, e = tx.Exec("INSERT INTO namespaces(name,kind) VALUES(?,'user')", username); e != nil {
+		if _, e = tx.Exec("INSERT INTO namespaces(name,kind) VALUES($1,'user')", username); e != nil {
 			fail(409, "Namespace already exists")
 		}
-		if _, e = tx.Exec("INSERT INTO namespace_members(namespace,user_id,role) VALUES(?,?,'admin')", username, id); e != nil {
+		if _, e = tx.Exec("INSERT INTO namespace_members(namespace,user_id,role) VALUES($1,$2,'admin')", username, id); e != nil {
 			fail(500, "Registration failed")
 		}
 		if tx.Commit() != nil {
@@ -409,28 +358,6 @@ func (s *server) api(w http.ResponseWriter, r *http.Request, u M) {
 	}
 	fail(404, "Endpoint not found")
 }
-func (s *server) lockRepo(r *http.Request, id int64) func() {
-	lock := s.repoLock(id)
-	if lock.TryLock() {
-		return lock.Unlock
-	}
-	timeout := time.NewTimer(30 * time.Second)
-	defer timeout.Stop()
-	retry := time.NewTicker(10 * time.Millisecond)
-	defer retry.Stop()
-	for {
-		select {
-		case <-r.Context().Done():
-			fail(408, "Request canceled while waiting for repository")
-		case <-timeout.C:
-			fail(503, "Repository is busy; retry shortly")
-		case <-retry.C:
-			if lock.TryLock() {
-				return lock.Unlock
-			}
-		}
-	}
-}
 
 func env(key, def string) string {
 	if v := os.Getenv(key); v != "" {
@@ -449,18 +376,9 @@ func main() {
 	if e := os.MkdirAll(filepath.Join(s.dataDir, "repos"), 0700); e != nil {
 		log.Fatal(e)
 	}
-	db, e := sql.Open("sqlite3", "file:"+filepath.Join(s.dataDir, "gitclub.db")+"?_foreign_keys=on&_journal_mode=WAL&_busy_timeout=5000")
-	if e != nil {
-		log.Fatal(e)
-	}
-	db.SetMaxOpenConns(8)
-	s.db = db
-	defer db.Close()
-	schema, e := os.ReadFile(filepath.Join(s.sharedDir, "schema.sql"))
-	if e != nil {
-		log.Fatal(e)
-	}
-	if _, e = db.Exec(string(schema)); e != nil {
+	s.db = openDatabase()
+	defer s.db.Close()
+	if e := s.migrate(); e != nil {
 		log.Fatal(e)
 	}
 	srv := &http.Server{Addr: net.JoinHostPort(env("HOST", "127.0.0.1"), port), Handler: s, ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 130 * time.Second, IdleTimeout: 60 * time.Second, MaxHeaderBytes: 1 << 16}
@@ -475,7 +393,7 @@ func main() {
 		}
 	}()
 	log.Printf("GitClub Go listening on %s", srv.Addr)
-	if e = srv.ListenAndServe(); e != nil && !errors.Is(e, http.ErrServerClosed) {
+	if e := srv.ListenAndServe(); e != nil && !errors.Is(e, http.ErrServerClosed) {
 		log.Fatal(e)
 	}
 }

@@ -3,10 +3,19 @@ WORKDIR /src/implementations/go
 COPY implementations/go/go.mod implementations/go/go.sum ./
 RUN go mod download
 COPY implementations/go .
-RUN CGO_ENABLED=1 go build -trimpath -ldflags='-s -w' -o /gitclub .
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /gitclub .
 
-FROM debian:bookworm-slim
-RUN apt-get update && apt-get install -y --no-install-recommends git python3 ca-certificates openssh-client \
+FROM debian:trixie-slim
+# Debian ships pg_dump 15, which refuses to dump a PostgreSQL 18 server, so the
+# client tools that backup and restore shell out to come from PGDG instead.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl gnupg \
+    && install -d /usr/share/postgresql-common/pgdg \
+    && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
+    && echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt trixie-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends git python3 openssh-client postgresql-client-18 \
+    && apt-get purge -y curl gnupg && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --uid 10001 --create-home --shell /bin/sh git \
     && mkdir /data && chown git:git /data

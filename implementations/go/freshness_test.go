@@ -1,14 +1,13 @@
 package main
 
 import (
-	"database/sql"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 )
 
-func TestDefaultRefMetadataAndMissedHookRecovery(t *testing.T) {
+func TestDefaultRefMetadata(t *testing.T) {
 	root := t.TempDir()
 	s := &server{dataDir: root}
 	repo := M{"id": int64(1), "default_branch": "trunk", "default_oid": "old", "updated_at": int64(10)}
@@ -54,14 +53,32 @@ func TestDefaultRefMetadataAndMissedHookRecovery(t *testing.T) {
 	if _, e := s.defaultOID(repo); e == nil {
 		t.Fatal("unsafe symbolic target accepted")
 	}
-	db, err := sql.Open("sqlite3", ":memory:")
-	if err != nil {
-		t.Fatal(err)
+}
+
+func TestMissedHookRecovery(t *testing.T) {
+	s := testServer(t, t.TempDir())
+	repo := M{"id": int64(1), "default_branch": "trunk", "default_oid": "old", "updated_at": int64(10)}
+	bare := s.repoPath(1)
+	write := func(name, content string) {
+		t.Helper()
+		p := filepath.Join(bare, name)
+		if e := os.MkdirAll(filepath.Dir(p), 0700); e != nil {
+			t.Fatal(e)
+		}
+		if e := os.WriteFile(p, []byte(content), 0600); e != nil {
+			t.Fatal(e)
+		}
 	}
-	defer db.Close()
-	s.db = db
-	s.exec("CREATE TABLE repositories(id INTEGER PRIMARY KEY,default_oid TEXT,updated_at INTEGER)")
-	s.exec("INSERT INTO repositories VALUES(1,'old',10)")
+	remove := func(name string) {
+		t.Helper()
+		if e := os.Remove(filepath.Join(bare, name)); e != nil {
+			t.Fatal(e)
+		}
+	}
+	a := strings.Repeat("a", 40)
+	s.exec("INSERT INTO namespaces(name,kind) VALUES('owner','user')")
+	s.exec("INSERT INTO users(username,password_hash,created_at) VALUES('owner','unused',?)", now())
+	s.exec("INSERT INTO repositories(id,owner,name,default_branch,default_oid,created_at,updated_at) VALUES(1,'owner','test','trunk','old',10,10)")
 	for _, content := range []string{"invalid\n", strings.Repeat("0", 40), strings.Repeat("a", 1025)} {
 		write("refs/heads/trunk", content)
 		result := s.refresh(repo)
@@ -79,7 +96,6 @@ func TestDefaultRefMetadataAndMissedHookRecovery(t *testing.T) {
 		t.Fatal("unchanged default advanced freshness")
 	}
 	remove("refs/heads/trunk")
-	remove("packed-refs")
 	if num(s.refresh(result), "updated_at") != stamp {
 		t.Fatal("missing reference changed freshness")
 	}

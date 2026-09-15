@@ -77,10 +77,10 @@ func (s *server) namespaces(w http.ResponseWriter, r *http.Request, u M, rest []
 				fail(500, "Database operation failed")
 			}
 			defer tx.Rollback()
-			if _, e = tx.Exec("INSERT INTO namespaces(name,kind) VALUES(?,'organization')", name); e != nil {
+			if _, e = tx.Exec("INSERT INTO namespaces(name,kind) VALUES($1,'organization')", name); e != nil {
 				fail(409, "Namespace already exists")
 			}
-			if _, e = tx.Exec("INSERT INTO namespace_members(namespace,user_id,role) VALUES(?,?,'admin')", name, num(u, "id")); e != nil {
+			if _, e = tx.Exec("INSERT INTO namespace_members(namespace,user_id,role) VALUES($1,$2,'admin')", name, num(u, "id")); e != nil {
 				fail(500, "Namespace creation failed")
 			}
 			if tx.Commit() != nil {
@@ -177,7 +177,7 @@ func (s *server) repositories(w http.ResponseWriter, r *http.Request, u M, rest 
 				fail(400, "Description exceeds 4096 bytes")
 			}
 			timestamp := now()
-			id := s.exec("INSERT INTO repositories(owner,name,description,visibility,default_branch,created_at,updated_at) VALUES(?,?,?,?,?,?,?)", owner, name, description, visibility, branch, timestamp, timestamp)
+			id := s.insert("INSERT INTO repositories(owner,name,description,visibility,default_branch,created_at,updated_at) VALUES(?,?,?,?,?,?,?)", owner, name, description, visibility, branch, timestamp, timestamp)
 			repo := s.one("SELECT * FROM repositories WHERE id=?", id)
 			if e := s.initializeRepo(repo); e != nil {
 				s.exec("DELETE FROM repositories WHERE id=?", id)
@@ -254,7 +254,7 @@ func (s *server) repositories(w http.ResponseWriter, r *http.Request, u M, rest 
 			fail(400, "pinned must be boolean")
 		}
 		if pinned {
-			s.exec("INSERT OR IGNORE INTO pins(repo_id,user_id) VALUES(?,?)", id, num(u, "id"))
+			s.exec("INSERT INTO pins(repo_id,user_id) VALUES(?,?) ON CONFLICT DO NOTHING", id, num(u, "id"))
 		} else {
 			s.exec("DELETE FROM pins WHERE repo_id=? AND user_id=?", id, num(u, "id"))
 		}
@@ -302,7 +302,7 @@ func (s *server) groups(w http.ResponseWriter, r *http.Request, u M, rest []stri
 	if len(rest) == 0 {
 		if r.Method == "GET" {
 			out := []M{}
-			for _, g := range s.rows("SELECT * FROM groups WHERE creator_id=? OR shared=1 ORDER BY name,id", num(u, "id")) {
+			for _, g := range s.rows("SELECT * FROM groups WHERE creator_id=? OR shared ORDER BY name,id", num(u, "id")) {
 				out = append(out, s.groupView(g, u))
 			}
 			respond(w, 200, M{"groups": out})
@@ -322,7 +322,7 @@ func (s *server) groups(w http.ResponseWriter, r *http.Request, u M, rest []stri
 					fail(400, "shared must be boolean")
 				}
 			}
-			id := s.exec("INSERT INTO groups(name,creator_id,shared,created_at) VALUES(?,?,?,?)", name, num(u, "id"), shared, now())
+			id := s.insert("INSERT INTO groups(name,creator_id,shared,created_at) VALUES(?,?,?,?)", name, num(u, "id"), shared, now())
 			respond(w, 201, M{"group": s.groupView(s.group(id, u, false), u)})
 			return
 		}
@@ -375,15 +375,15 @@ func (s *server) groups(w http.ResponseWriter, r *http.Request, u M, rest []stri
 			fail(500, "Database operation failed")
 		}
 		defer tx.Rollback()
-		if _, e = tx.Exec("UPDATE groups SET name=?,shared=? WHERE id=?", str(g, "name"), shared, id); e != nil {
+		if _, e = tx.Exec("UPDATE groups SET name=$1,shared=$2 WHERE id=$3", str(g, "name"), shared, id); e != nil {
 			fail(500, "Group update failed")
 		}
 		if replace {
-			if _, e = tx.Exec("DELETE FROM group_repos WHERE group_id=?", id); e != nil {
+			if _, e = tx.Exec("DELETE FROM group_repos WHERE group_id=$1", id); e != nil {
 				fail(500, "Group update failed")
 			}
 			for _, repoID := range ids {
-				if _, e = tx.Exec("INSERT OR IGNORE INTO group_repos(group_id,repo_id) VALUES(?,?)", id, repoID); e != nil {
+				if _, e = tx.Exec("INSERT INTO group_repos(group_id,repo_id) VALUES($1,$2) ON CONFLICT DO NOTHING", id, repoID); e != nil {
 					fail(500, "Group update failed")
 				}
 			}

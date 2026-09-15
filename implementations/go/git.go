@@ -18,7 +18,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"sync"
 	"syscall"
 	"time"
 	"unicode/utf8"
@@ -45,10 +44,6 @@ func validGitPath(p string) bool {
 }
 func (s *server) repoPath(id int64) string {
 	return filepath.Join(s.dataDir, "repos", strconv.FormatInt(id, 10)+".git")
-}
-func (s *server) repoLock(id int64) *sync.Mutex {
-	v, _ := s.repoLocks.LoadOrStore(id, &sync.Mutex{})
-	return v.(*sync.Mutex)
 }
 
 type cappedOutput struct {
@@ -660,7 +655,7 @@ func (s *server) sshRoutes(w http.ResponseWriter, r *http.Request, u M) bool {
 				fail(409, "SSH key is already registered")
 			}
 			stamp := now()
-			id := s.exec("INSERT INTO ssh_keys(user_id,title,public_key,created_at) VALUES(?,?,?,?)", num(u, "id"), title, key, stamp)
+			id := s.insert("INSERT INTO ssh_keys(user_id,title,public_key,created_at) VALUES(?,?,?,?)", num(u, "id"), title, key, stamp)
 			respond(w, 201, M{"ssh_key": M{"id": id, "title": title, "public_key": key, "created_at": stamp}})
 			return true
 		}

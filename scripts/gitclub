@@ -10,7 +10,6 @@ import os
 import secrets
 import shutil
 import signal
-import sqlite3
 import subprocess
 import sys
 import tarfile
@@ -115,27 +114,33 @@ def quiescent_transfers(directory: Path):
             lock.close()
 
 
+def database_url(override: str | None) -> str:
+    url = override or os.environ.get('DATABASE_URL', '')
+    if not url:
+        raise RuntimeError('Set DATABASE_URL or pass --database-url (postgres://user:password@host:port/database).')
+    return url
+
+
 def backup(args) -> None:
+    """Snapshot the database and the Git repositories as one consistency unit.
+
+    Metadata rows reference Git object identifiers, so the dump and the
+    repositories must be captured while writes are held off. See DECISION.md.
+    """
     directory = data_path(args.data_dir)
+    url = database_url(args.database_url)
     archive = Path(args.archive).resolve()
     if archive == directory or directory in archive.parents:
         raise RuntimeError('Write the backup archive outside its source data directory.')
     if archive.exists():
         raise RuntimeError('Backup destination already exists. Choose another filename.')
-    if not (directory / 'gitclub.db').is_file():
-        raise RuntimeError('No GitClub database exists at the selected data directory.')
     with exclusive_data(directory), quiescent_transfers(directory), tempfile.TemporaryDirectory(prefix='gitclub-backup-') as tmp:
         snapshot = Path(tmp) / 'gitclub'
         snapshot.mkdir()
-        source = sqlite3.connect(f'file:{directory / "gitclub.db"}?mode=ro', uri=True)
-        destination = sqlite3.connect(snapshot / 'gitclub.db')
-        try:
-            source.backup(destination)
-            if destination.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
-                raise RuntimeError('Database integrity check failed.')
-        finally:
-            source.close()
-            destination.close()
+        run_checked([executable('pg_dump'), '--format=custom', '--no-owner', '--no-acl',
+                     '--file', str(snapshot / 'gitclub.dump'), url])
+        # Reading the archive's table of contents proves it is a parseable dump.
+        run_checked([executable('pg_restore'), '--list', str(snapshot / 'gitclub.dump')], stdout=subprocess.DEVNULL)
         if (directory / 'repos').exists():
             shutil.copytree(directory / 'repos', snapshot / 'repos', symlinks=False)
         for marker in directory.glob('merge-*.json'):
@@ -143,7 +148,7 @@ def backup(args) -> None:
         for name in ('ssh', 'merge-recovery'):
             if (directory / name).is_dir():
                 shutil.copytree(directory / name, snapshot / name, symlinks=False)
-        (snapshot / 'backup.json').write_text(json.dumps({'format': 1, 'implementation': 'go', 'created_at': int(time.time())}, indent=2))
+        (snapshot / 'backup.json').write_text(json.dumps({'format': 2, 'implementation': 'go', 'created_at': int(time.time())}, indent=2))
         archive.parent.mkdir(parents=True, exist_ok=True)
         descriptor = os.open(archive, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         with os.fdopen(descriptor, 'wb') as stream, tarfile.open(fileobj=stream, mode='w:gz') as tar:
@@ -153,9 +158,17 @@ def backup(args) -> None:
 
 def restore(args) -> None:
     directory = data_path(args.data_dir)
+    url = database_url(args.database_url)
     archive = Path(args.archive).resolve()
     if directory.exists() and any(directory.iterdir()):
         raise RuntimeError('Restore requires a new, empty data directory. Existing data will not be replaced.')
+    existing = subprocess.run([executable('psql'), url, '-tAc',
+                               "SELECT count(*) FROM information_schema.tables WHERE table_schema='public'"],
+                              capture_output=True, text=True, timeout=60)
+    if existing.returncode != 0:
+        raise RuntimeError(f'Cannot reach the target database: {existing.stderr.strip()}')
+    if existing.stdout.strip() not in ('0', ''):
+        raise RuntimeError('Restore requires an empty target database. Existing tables will not be replaced.')
     with tempfile.TemporaryDirectory(prefix='gitclub-restore-') as tmp:
         with tarfile.open(archive, 'r:gz') as tar:
             for member in tar.getmembers():
@@ -165,16 +178,13 @@ def restore(args) -> None:
             tar.extractall(tmp, filter='data')
         snapshot = Path(tmp) / 'gitclub'
         metadata = json.loads((snapshot / 'backup.json').read_text())
-        if metadata.get('format') != 1:
+        if metadata.get('format') != 2:
             raise RuntimeError('Unsupported backup format.')
-        database = sqlite3.connect(f'file:{snapshot / "gitclub.db"}?mode=ro', uri=True)
-        try:
-            if database.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
-                raise RuntimeError('Backup database integrity check failed.')
-        finally:
-            database.close()
+        run_checked([executable('pg_restore'), '--no-owner', '--no-acl', '--exit-on-error',
+                     '--dbname', url, str(snapshot / 'gitclub.dump')])
         for repository in (snapshot / 'repos').glob('*.git'):
             run_checked([executable('git'), '--git-dir', str(repository), 'fsck', '--full'], stdout=subprocess.DEVNULL)
+        (snapshot / 'gitclub.dump').unlink()
         directory.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(snapshot, directory, dirs_exist_ok=True)
         directory.chmod(0o700)
@@ -185,9 +195,14 @@ def compose(args) -> None:
     env_file = ROOT / '.data/compose.env'
     env_file.parent.mkdir(exist_ok=True)
     if not env_file.exists():
-        descriptor = os.open(env_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-        with os.fdopen(descriptor, 'w') as stream:
-            stream.write(f'GITCLUB_SSH_SECRET={secrets.token_hex(32)}\n')
+        os.close(os.open(env_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600))
+    # Add any secret a previous deployment predates, keeping the existing ones.
+    present = {line.split('=', 1)[0] for line in env_file.read_text().splitlines() if '=' in line}
+    missing = [name for name in ('GITCLUB_SSH_SECRET', 'GITCLUB_DB_PASSWORD') if name not in present]
+    if missing:
+        with env_file.open('a') as stream:
+            for name in missing:
+                stream.write(f'{name}={secrets.token_hex(32)}\n')
     command = [executable('docker'), 'compose', '--env-file', str(env_file), '-f', str(ROOT / 'compose.yaml')]
     command += ['up', '--build', '-d'] if args.command == 'up' else ['down']
     run_checked(command, cwd=ROOT)
@@ -208,6 +223,7 @@ def main() -> int:
             command.add_argument('--no-build', action='store_true')
         if name in ('backup', 'restore'):
             command.add_argument('archive')
+            command.add_argument('--database-url')
     commands.add_parser('up', help='Build and run GitClub with SSH using Docker Compose')
     commands.add_parser('down', help='Stop the Docker Compose services, preserving data volumes')
     args = parser.parse_args()
@@ -223,7 +239,7 @@ def main() -> int:
         else:
             compose(args)
         return 0
-    except (RuntimeError, OSError, ValueError, subprocess.CalledProcessError, tarfile.TarError, sqlite3.Error) as exc:
+    except (RuntimeError, OSError, ValueError, subprocess.CalledProcessError, tarfile.TarError) as exc:
         print(f'GitClub: {exc}', file=sys.stderr)
         return 1
 

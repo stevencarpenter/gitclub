@@ -67,10 +67,9 @@ func TestCappedOutputReadFrom(t *testing.T) {
 	}
 }
 func TestRepositoryLockHonorsCancellation(t *testing.T) {
-	s := &server{}
-	lock := s.repoLock(1)
-	lock.Lock()
-	defer lock.Unlock()
+	s := testServer(t, t.TempDir())
+	release := s.lockRepo(httptest.NewRequest("GET", "/", nil), 1)
+	defer release()
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	r := httptest.NewRequest("GET", "/", nil).WithContext(ctx)
@@ -81,4 +80,30 @@ func TestRepositoryLockHonorsCancellation(t *testing.T) {
 		}
 	}()
 	s.lockRepo(r, 1)
+}
+
+// A second holder must not obtain the same advisory lock while it is held.
+func TestRepositoryLockExcludesConcurrentHolder(t *testing.T) {
+	s := testServer(t, t.TempDir())
+	release := s.lockRepo(httptest.NewRequest("GET", "/", nil), 7)
+	conn, e := s.db.Conn(context.Background())
+	if e != nil {
+		t.Fatal(e)
+	}
+	defer conn.Close()
+	var held bool
+	if e := conn.QueryRowContext(context.Background(), "SELECT pg_try_advisory_lock($1)", int64(7)).Scan(&held); e != nil {
+		t.Fatal(e)
+	}
+	if held {
+		t.Fatal("advisory lock granted twice for the same repository")
+	}
+	release()
+	if e := conn.QueryRowContext(context.Background(), "SELECT pg_try_advisory_lock($1)", int64(7)).Scan(&held); e != nil {
+		t.Fatal(e)
+	}
+	if !held {
+		t.Fatal("advisory lock was not released")
+	}
+	conn.ExecContext(context.Background(), "SELECT pg_advisory_unlock($1)", int64(7))
 }

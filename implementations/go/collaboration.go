@@ -210,7 +210,7 @@ func (s *server) collaborationRoutes(w http.ResponseWriter, r *http.Request, u M
 			t := now()
 			var id int64
 			if !pull {
-				id = s.exec("INSERT INTO issues(repo_id,author_id,title,body,created_at,updated_at) VALUES(?,?,?,?,?,?)", rid, num(u, "id"), title, content, t, t)
+				id = s.insert("INSERT INTO issues(repo_id,author_id,title,body,created_at,updated_at) VALUES(?,?,?,?,?,?)", rid, num(u, "id"), title, content, t, t)
 			} else {
 				base := str(b, "base_branch")
 				if base == "" {
@@ -228,7 +228,7 @@ func (s *server) collaborationRoutes(w http.ResponseWriter, r *http.Request, u M
 				if err != nil || len(changed) == 0 {
 					fail(409, "Head branch must contain changes relative to base")
 				}
-				id = s.exec("INSERT INTO pull_requests(repo_id,author_id,title,body,base_branch,head_branch,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)", rid, num(u, "id"), title, content, base, head, t, t)
+				id = s.insert("INSERT INTO pull_requests(repo_id,author_id,title,body,base_branch,head_branch,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)", rid, num(u, "id"), title, content, base, head, t, t)
 			}
 			respond(w, 201, M{singular: s.discussion(rid, id, pull)})
 		default:
@@ -332,7 +332,7 @@ func (s *server) collaborationRoutes(w http.ResponseWriter, r *http.Request, u M
 				fail(400, "Comment line is outside the file")
 			}
 		}
-		cid := s.exec("INSERT INTO comments(repo_id,target_type,target_id,author_id,body,path,line,commit_oid,created_at) VALUES(?,?,?,?,?,?,?,?,?)", rid, kind, id, num(u, "id"), content, path, line, oid, now())
+		cid := s.insert("INSERT INTO comments(repo_id,target_type,target_id,author_id,body,path,line,commit_oid,created_at) VALUES(?,?,?,?,?,?,?,?,?)", rid, kind, id, num(u, "id"), content, path, line, oid, now())
 		respond(w, 201, M{"comment": s.one("SELECT c.id,c.author_id,u.username AS author,c.body,c.path,c.line,c.commit_oid,c.created_at FROM comments c JOIN users u ON u.id=c.author_id WHERE c.id=?", cid)})
 	case "reviews":
 		if !pull {
@@ -358,7 +358,7 @@ func (s *server) collaborationRoutes(w http.ResponseWriter, r *http.Request, u M
 		} else if expected != head {
 			fail(409, "Head changed; reload and review the current diff")
 		}
-		reviewID := s.exec("INSERT INTO reviews(pull_id,author_id,decision,body,commit_oid,created_at) VALUES(?,?,?,?,?,?)", id, num(u, "id"), decision, content, head, now())
+		reviewID := s.insert("INSERT INTO reviews(pull_id,author_id,decision,body,commit_oid,created_at) VALUES(?,?,?,?,?,?)", id, num(u, "id"), decision, content, head, now())
 		respond(w, 201, M{"review": s.one("SELECT r.id,r.author_id,u.username AS author,r.decision,r.body,r.commit_oid,r.created_at FROM reviews r JOIN users u ON u.id=r.author_id WHERE r.id=?", reviewID)})
 	case "merge":
 		if !pull {
