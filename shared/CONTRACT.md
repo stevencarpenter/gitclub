@@ -12,11 +12,11 @@ GET /health returns {"status":"ok","implementation":"go"}. Listen only after mig
 
 Timestamps are integer Unix milliseconds. IDs are PostgreSQL BIGINT identity values. JSON snake_case fields. Collections are enveloped in the plural resource name; errors {"error":"actionable message"}. Validation 400, missing authentication 401, forbidden mutation 403, inaccessible resource 404, state conflict 409. No stack traces, secrets, or subprocess stderr exposing private paths in API errors. GET responses never mutate user choices.
 
-User: {id,username}. Repository: {id,owner,name,full_name,description,visibility,default_branch,require_review,created_at,updated_at,pinned,role}; full_name=owner/name, booleans real JSON bools; role admin/write/read (public nonmembers read). Never expose password/token hashes. Namespace: {name,kind,role}. Group: {id,name,creator_id,shared,repo_ids}, with repo_ids filtered by requester access.
+User: {id,username}. Repository: {id,owner,name,full_name,description,visibility,default_branch,require_review,created_at,updated_at,pinned,role,kaneo_project_url}; full_name=owner/name, booleans real JSON bools; role admin/write/read (public nonmembers read). Never expose password/token hashes. Namespace: {name,kind,role}. Group: {id,name,creator_id,shared,repo_ids}, with repo_ids filtered by requester access.
 
 Password storage: PBKDF2-HMAC-SHA256, 600000 iterations, random 16-byte salt, 32-byte hash, format pbkdf2_sha256$600000$SALT_HEX$HASH_HEX. Password 12..256 UTF-8 bytes, username/namespace/repository lowercase ASCII [a-z0-9][a-z0-9._-]{0,62}, reject . and .. and .git suffix for repo names. Tokens random 32-byte hex, store SHA256(token) only. Authorization: Bearer TOKEN or HttpOnly SameSite=Strict gc_session cookie (Secure under HTTPS), Git HTTPS additionally supports Basic username:TOKEN. Check cookie-authenticated mutations have same-origin Origin or explicit X-GitClub-Request: 1 header and application/json; never allow cross-origin CORS. Registration open for this self-hosted MVP. Basic rate limit login/registration failures per peer with bounded state. Logging excludes request auth and passwords.
 
-Roles inherit namespace membership or repository membership, take highest. Organization creation gives creator admin. Personal namespace belongs to user. Read sees code and discussions; write may push branches/create and review PRs/issues; admin manages repository settings and membership. Only creator can edit group contents/sharing; any authenticated user can read shared group filtered by existing repository access. Sharing grants no repo access. All group membership inserts require creator already has repo read access. Pins per user.
+Roles inherit namespace membership or repository membership, take highest. Organization creation gives creator admin. Personal namespace belongs to user. Read sees code and discussions; write may push branches/create and review PRs; admin manages repository settings and membership. Only creator can edit group contents/sharing; any authenticated user can read shared group filtered by existing repository access. Sharing grants no repo access. All group membership inserts require creator already has repo read access. Pins per user.
 
 ## Authentication and ownership routes
 
@@ -37,7 +37,7 @@ DELETE /api/ssh-keys/ID -> {ok:true}, owner only.
 GET /api/repos?q=&owner=&group=ID -> {repositories:[Repository]}. Accessible repositories across ALL owners, pins first, then updated_at DESC, id ASC. Search case-insensitive owner/name/description. Group filter must enforce group visibility. Anonymous sees public repos only.
 POST /api/repos {owner,name,description?,visibility?,default_branch?} -> 201 {repository:Repository}. Namespace write/admin only. Initialize empty bare repo, HEAD to default branch, install shared hooks. created_at and updated_at=now, default_oid empty. No embedded demo data.
 GET /api/repos/ID -> {repository:Repository}.
-PATCH /api/repos/ID {description?,visibility?,default_branch?,require_review?} -> {repository:Repository}, admin only. Validate branch with git check-ref-format --branch; changing default updates symbolic HEAD and sets observed freshness to now.
+PATCH /api/repos/ID {description?,visibility?,default_branch?,require_review?,kaneo_project_url?} -> {repository:Repository}, admin only. Validate branch with git check-ref-format --branch; changing default updates symbolic HEAD and sets observed freshness to now.
 POST /api/repos/ID/members {username,role} -> {ok:true}, admin only.
 POST /api/repos/ID/pin {pinned:bool} -> {ok:true}, authenticated read access.
 GET /api/repos/ID/branches -> {branches:[{name,oid}],default_branch}.
@@ -53,19 +53,22 @@ POST /api/groups {name,shared?} -> 201 {group:Group}, name 1..80 chars.
 PATCH /api/groups/ID {name?,shared?,repo_ids?:[ID]} -> {group:Group}, creator only, replace membership atomically.
 DELETE /api/groups/ID -> {ok:true}, creator only.
 
-## Issues and pull requests
+## Kaneo links and pull requests
 
-Issue: {id,repo_id,author_id,author,title,body,state,created_at,updated_at}. Pull: {id,repo_id,author_id,author,title,body,base_branch,head_branch,state,created_at,updated_at,merged_oid}. Comment: {id,author_id,author,body,path,line,commit_oid,created_at}. Review: {id,author_id,author,decision,body,commit_oid,created_at}.
+Pull: {id,repo_id,author_id,author,title,body,base_branch,head_branch,state,created_at,updated_at,merged_oid,kaneo_task_url}. Comment: {id,author_id,author,body,path,line,commit_oid,created_at}. Review: {id,author_id,author,decision,body,commit_oid,created_at}.
 
-GET /api/repos/ID/issues -> {issues:[Issue]} newest first.
-POST /api/repos/ID/issues {title,body?} -> 201 {issue:Issue}, write access.
-GET /api/repos/ID/issues/ISSUE -> {issue:Issue,comments:[Comment]}.
-PATCH /api/repos/ID/issues/ISSUE {title?,body?,state?} -> {issue:Issue}, author or repo admin.
-POST /api/repos/ID/issues/ISSUE/comments {body} -> 201 {comment:Comment}, write access.
+Kaneo links are optional strings, empty when disconnected. Project URLs require HTTPS, no credentials or fragment, and at most 2048 bytes. Accept `/dashboard/workspace/WS/project/PROJECT` with optional board/list/overview suffix; normalize to `/board`. Task URLs accept the same project's `/task/TASK` path or board/list URL with `taskId`; normalize to `/task/TASK`. Workspace/project/task IDs use ASCII letters, digits, underscore or hyphen, 1..100 characters. A task must match the repository's configured project and origin. Wrong types, unsafe URLs, and foreign projects return 400. The server does not fetch these URLs. Only repository admins set project links; PR authors/admins set task links, and merged PRs remain immutable.
+
+`/api/repos/ID/issues` and its former child routes return 410 after repository read authorization. Issue MCP tools are absent. Existing issue rows and comments are retained by the additive migration and remain in backups.
+
+The i9 Kaneo worker polls explicitly configured GitClub repositories. It verifies the current project URL against its private allowlist, checks Kaneo task membership, and updates only status after a merged PR. A durable completion ledger prevents later manual task reopening from being overwritten. Errors are retried; no task update is part of the Git merge transaction.
+
+GET /api/repos/ID/kaneo/merges?after_id=0 -> {pulls:[{id,repo_id,state,kaneo_task_url}]}, authenticated repository read access. Return only merged PRs with nonempty task links and id greater than after_id, ordered by id ascending, at most 100 rows. Exclude titles and bodies. after_id defaults to 0 and must be one nonnegative BIGINT integer; invalid values return 400. Private inaccessible repositories retain 404. Reconcile pending merge intents before reading. Continue each sweep with the last returned id until a page has fewer than 100 rows; restart at 0 next sweep to discover older PRs merged later.
+
 GET /api/repos/ID/pulls -> {pulls:[Pull]} newest first.
-POST /api/repos/ID/pulls {title,body?,base_branch?,head_branch} -> 201 {pull:Pull}, write access, existing distinct branch tips with actual changes. default base configured default branch.
+POST /api/repos/ID/pulls {title,body?,base_branch?,head_branch,kaneo_task_url?} -> 201 {pull:Pull}, write access, existing distinct branch tips with actual changes. default base configured default branch.
 GET /api/repos/ID/pulls/PULL -> {pull:Pull,comments:[Comment],reviews:[Review],diff,base_oid,head_oid,truncated,mergeable:bool,merge_blockers:[string]}. Read latest heads for open PR; expose actionable blockers. No CI state.
-PATCH /api/repos/ID/pulls/PULL {title?,body?,state?} -> {pull:Pull}, author/admin, open/closed only, merged immutable.
+PATCH /api/repos/ID/pulls/PULL {title?,body?,state?,kaneo_task_url?} -> {pull:Pull}, author/admin, open/closed only, merged immutable.
 POST /api/repos/ID/pulls/PULL/comments {body,path?,line?,commit_oid?} -> 201 {comment:Comment}, write access. Optional inline location anchored to provided current head OID; reject stale/invalid OID, unsafe paths, negative lines.
 POST /api/repos/ID/pulls/PULL/reviews {expected_head_oid:OID,decision:"approve"|"request_changes"|"comment",body?} -> 201 {review:Review}, write access. Compare expected_head_oid against the current head under repository lock; reject stale reviews with 409. Record that exact reviewed head OID; author cannot approve own PR.
 POST /api/repos/ID/pulls/PULL/merge {expected_head_oid:OID} -> {pull:Pull,commit_oid:OID}, write access. Reject changed heads. Require open PR, no merge conflict, no current request_changes (latest decisive review per reviewer for current head), and when require_review true at least one approval of CURRENT head by another still-authorized writer. Serialize mutations per repo. Native git merge-tree --write-tree + commit-tree + update-ref compare-and-swap old base OID. Never reset or discard refs on failure. Mark merged and refresh default freshness after success. Handle a successful ref update with DB failure through explicit reconciliation/state marker. Use actual user's username as commit identity, no tool signatures.

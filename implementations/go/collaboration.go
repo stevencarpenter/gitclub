@@ -22,20 +22,16 @@ func discussionText(b M, key string, required bool, limit int) string {
 	return t
 }
 
-func (s *server) discussion(repoID, id int64, pull bool) M {
-	table := "issues"
-	if pull {
-		table = "pull_requests"
-	}
-	x := s.one("SELECT d.*,u.username AS author FROM "+table+" d JOIN users u ON u.id=d.author_id WHERE d.repo_id=? AND d.id=?", repoID, id)
+func (s *server) pullRequest(repoID, id int64) M {
+	x := s.one("SELECT d.*,u.username AS author FROM pull_requests d JOIN users u ON u.id=d.author_id WHERE d.repo_id=? AND d.id=?", repoID, id)
 	if x == nil {
-		fail(404, "Discussion not found")
+		fail(404, "Pull request not found")
 	}
 	return x
 }
 
-func (s *server) discussionComments(id int64, kind string) []M {
-	return s.rows("SELECT c.id,c.author_id,u.username AS author,c.body,c.path,c.line,c.commit_oid,c.created_at FROM comments c JOIN users u ON u.id=c.author_id WHERE c.target_type=? AND c.target_id=? ORDER BY c.id", kind, id)
+func (s *server) pullComments(id int64) []M {
+	return s.rows("SELECT c.id,c.author_id,u.username AS author,c.body,c.path,c.line,c.commit_oid,c.created_at FROM comments c JOIN users u ON u.id=c.author_id WHERE c.target_type='pull' AND c.target_id=? ORDER BY c.id", id)
 }
 
 func (s *server) pullReviews(id int64) []M {
@@ -174,13 +170,8 @@ func (s *server) reconcileMerges(repo M) {
 }
 
 func (s *server) collaborationRoutes(w http.ResponseWriter, r *http.Request, u M, repo M, rest []string) bool {
-	if len(rest) == 0 || (rest[0] != "issues" && rest[0] != "pulls") {
+	if len(rest) == 0 || rest[0] != "pulls" {
 		return false
-	}
-	pull := rest[0] == "pulls"
-	table, kind, singular := "issues", "issue", "issue"
-	if pull {
-		table, kind, singular = "pull_requests", "pull", "pull"
 	}
 	rid := num(repo, "id")
 	var b M
@@ -194,7 +185,7 @@ func (s *server) collaborationRoutes(w http.ResponseWriter, r *http.Request, u M
 	s.reconcileMerges(repo)
 	if r.Method != "GET" {
 		if u == nil {
-			fail(401, "Sign in to change discussions")
+			fail(401, "Sign in to change pull requests")
 		}
 		if rank(s.role(repo, u)) < rank("write") {
 			fail(403, "Repository write access required")
@@ -203,34 +194,33 @@ func (s *server) collaborationRoutes(w http.ResponseWriter, r *http.Request, u M
 	if len(rest) == 1 {
 		switch r.Method {
 		case "GET":
-			respond(w, 200, M{rest[0]: s.rows("SELECT d.*,u.username AS author FROM "+table+" d JOIN users u ON u.id=d.author_id WHERE d.repo_id=? ORDER BY d.id DESC", rid)})
+			respond(w, 200, M{"pulls": s.rows("SELECT d.*,u.username AS author FROM pull_requests d JOIN users u ON u.id=d.author_id WHERE d.repo_id=? ORDER BY d.id DESC", rid)})
 		case "POST":
 			title := discussionText(b, "title", true, 240)
 			content := discussionText(b, "body", false, 65536)
-			t := now()
-			var id int64
-			if !pull {
-				id = s.insert("INSERT INTO issues(repo_id,author_id,title,body,created_at,updated_at) VALUES(?,?,?,?,?,?)", rid, num(u, "id"), title, content, t, t)
-			} else {
-				base := str(b, "base_branch")
-				if base == "" {
-					base = str(repo, "default_branch")
-				}
-				head := str(b, "head_branch")
-				if !validBranch(base) || !validBranch(head) || base == head {
-					fail(400, "Choose distinct valid base and head branches")
-				}
-				baseOID, headOID, err := s.pullTips(repo, M{"base_branch": base, "head_branch": head})
-				if err != nil {
-					fail(400, "Both branches must exist")
-				}
-				changed, err := s.gitRun(rid, "diff", "--no-ext-diff", "--no-textconv", "--name-only", baseOID+"..."+headOID, "--")
-				if err != nil || len(changed) == 0 {
-					fail(409, "Head branch must contain changes relative to base")
-				}
-				id = s.insert("INSERT INTO pull_requests(repo_id,author_id,title,body,base_branch,head_branch,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)", rid, num(u, "id"), title, content, base, head, t, t)
+			taskURL := ""
+			if value, exists := b["kaneo_task_url"]; exists {
+				taskURL = kaneoTaskURL(value, str(repo, "kaneo_project_url"))
 			}
-			respond(w, 201, M{singular: s.discussion(rid, id, pull)})
+			t := now()
+			base := str(b, "base_branch")
+			if base == "" {
+				base = str(repo, "default_branch")
+			}
+			head := str(b, "head_branch")
+			if !validBranch(base) || !validBranch(head) || base == head {
+				fail(400, "Choose distinct valid base and head branches")
+			}
+			baseOID, headOID, err := s.pullTips(repo, M{"base_branch": base, "head_branch": head})
+			if err != nil {
+				fail(400, "Both branches must exist")
+			}
+			changed, err := s.gitRun(rid, "diff", "--no-ext-diff", "--no-textconv", "--name-only", baseOID+"..."+headOID, "--")
+			if err != nil || len(changed) == 0 {
+				fail(409, "Head branch must contain changes relative to base")
+			}
+			id := s.insert("INSERT INTO pull_requests(repo_id,author_id,title,body,base_branch,head_branch,kaneo_task_url,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?)", rid, num(u, "id"), title, content, base, head, taskURL, t, t)
+			respond(w, 201, M{"pull": s.pullRequest(rid, id)})
 		default:
 			fail(405, "Method not allowed")
 		}
@@ -238,40 +228,39 @@ func (s *server) collaborationRoutes(w http.ResponseWriter, r *http.Request, u M
 	}
 	id, err := strconv.ParseInt(rest[1], 10, 64)
 	if err != nil || id <= 0 {
-		fail(404, "Discussion not found")
+		fail(404, "Pull request not found")
 	}
-	d := s.discussion(rid, id, pull)
+	d := s.pullRequest(rid, id)
 	if len(rest) == 2 {
 		switch r.Method {
 		case "GET":
-			result := M{singular: d, "comments": s.discussionComments(id, kind)}
-			if pull {
-				base, head, _ := s.pullTips(repo, d)
-				blockers, _ := s.pullBlockers(repo, d, base, head)
-				if str(d, "state") == "merged" {
-					baseRaw, _ := s.gitRun(rid, "rev-parse", "--verify", str(d, "merged_oid")+"^1^{commit}")
-					headRaw, _ := s.gitRun(rid, "rev-parse", "--verify", str(d, "merged_oid")+"^2^{commit}")
-					base, head = strings.TrimSpace(string(baseRaw)), strings.TrimSpace(string(headRaw))
-				}
-				diff := []byte{}
-				if base != "" && head != "" {
-					diff, _ = s.gitRun(rid, "diff", "--no-ext-diff", "--no-textconv", base+"..."+head, "--")
-				}
-				truncated := len(diff) > 1<<20
-				if truncated {
-					diff = diff[:1<<20]
-				}
-				result["reviews"], result["diff"], result["base_oid"], result["head_oid"], result["truncated"], result["mergeable"], result["merge_blockers"] = s.pullReviews(id), string(diff), base, head, truncated, len(blockers) == 0, blockers
+			result := M{"pull": d, "comments": s.pullComments(id)}
+			base, head, _ := s.pullTips(repo, d)
+			blockers, _ := s.pullBlockers(repo, d, base, head)
+			if str(d, "state") == "merged" {
+				baseRaw, _ := s.gitRun(rid, "rev-parse", "--verify", str(d, "merged_oid")+"^1^{commit}")
+				headRaw, _ := s.gitRun(rid, "rev-parse", "--verify", str(d, "merged_oid")+"^2^{commit}")
+				base, head = strings.TrimSpace(string(baseRaw)), strings.TrimSpace(string(headRaw))
 			}
+			diff := []byte{}
+			if base != "" && head != "" {
+				diff, _ = s.gitRun(rid, "diff", "--no-ext-diff", "--no-textconv", base+"..."+head, "--")
+			}
+			truncated := len(diff) > 1<<20
+			if truncated {
+				diff = diff[:1<<20]
+			}
+			result["reviews"], result["diff"], result["base_oid"], result["head_oid"], result["truncated"], result["mergeable"], result["merge_blockers"] = s.pullReviews(id), string(diff), base, head, truncated, len(blockers) == 0, blockers
 			respond(w, 200, result)
 		case "PATCH":
 			if num(d, "author_id") != num(u, "id") && s.role(repo, u) != "admin" {
-				fail(403, "Only the author or repository admin can edit this discussion")
+				fail(403, "Only the author or repository admin can edit this pull request")
 			}
 			if str(d, "state") == "merged" {
 				fail(409, "Merged pull requests cannot be edited")
 			}
 			title, content, state := str(d, "title"), str(d, "body"), str(d, "state")
+			taskURL := str(d, "kaneo_task_url")
 			if _, ok := b["title"]; ok {
 				title = discussionText(b, "title", true, 240)
 			}
@@ -284,8 +273,11 @@ func (s *server) collaborationRoutes(w http.ResponseWriter, r *http.Request, u M
 					fail(400, "State must be open or closed")
 				}
 			}
-			s.exec("UPDATE "+table+" SET title=?,body=?,state=?,updated_at=? WHERE id=?", title, content, state, now(), id)
-			respond(w, 200, M{singular: s.discussion(rid, id, pull)})
+			if value, exists := b["kaneo_task_url"]; exists {
+				taskURL = kaneoTaskURL(value, str(repo, "kaneo_project_url"))
+			}
+			s.exec("UPDATE pull_requests SET title=?,body=?,state=?,kaneo_task_url=?,updated_at=? WHERE id=?", title, content, state, taskURL, now(), id)
+			respond(w, 200, M{"pull": s.pullRequest(rid, id)})
 		default:
 			fail(405, "Method not allowed")
 		}
@@ -317,7 +309,7 @@ func (s *server) collaborationRoutes(w http.ResponseWriter, r *http.Request, u M
 			fail(400, "Comment location is invalid")
 		}
 		if path != "" || oid != "" || line != 0 {
-			if !pull || path == "" || line <= 0 || oid == "" {
+			if path == "" || line <= 0 || oid == "" {
 				fail(400, "Inline comments require a file path, positive line, and current head commit_oid")
 			}
 			_, head, err := s.pullTips(repo, d)
@@ -332,12 +324,9 @@ func (s *server) collaborationRoutes(w http.ResponseWriter, r *http.Request, u M
 				fail(400, "Comment line is outside the file")
 			}
 		}
-		cid := s.insert("INSERT INTO comments(repo_id,target_type,target_id,author_id,body,path,line,commit_oid,created_at) VALUES(?,?,?,?,?,?,?,?,?)", rid, kind, id, num(u, "id"), content, path, line, oid, now())
+		cid := s.insert("INSERT INTO comments(repo_id,target_type,target_id,author_id,body,path,line,commit_oid,created_at) VALUES(?,'pull',?,?,?,?,?,?,?)", rid, id, num(u, "id"), content, path, line, oid, now())
 		respond(w, 201, M{"comment": s.one("SELECT c.id,c.author_id,u.username AS author,c.body,c.path,c.line,c.commit_oid,c.created_at FROM comments c JOIN users u ON u.id=c.author_id WHERE c.id=?", cid)})
 	case "reviews":
-		if !pull {
-			fail(404, "Route not found")
-		}
 		if str(d, "state") != "open" {
 			fail(409, "Only open pull requests can be reviewed")
 		}
@@ -361,9 +350,6 @@ func (s *server) collaborationRoutes(w http.ResponseWriter, r *http.Request, u M
 		reviewID := s.insert("INSERT INTO reviews(pull_id,author_id,decision,body,commit_oid,created_at) VALUES(?,?,?,?,?,?)", id, num(u, "id"), decision, content, head, now())
 		respond(w, 201, M{"review": s.one("SELECT r.id,r.author_id,u.username AS author,r.decision,r.body,r.commit_oid,r.created_at FROM reviews r JOIN users u ON u.id=r.author_id WHERE r.id=?", reviewID)})
 	case "merge":
-		if !pull {
-			fail(404, "Route not found")
-		}
 		base, head, err := s.pullTips(repo, d)
 		if err != nil {
 			fail(409, "Restore the pull request branches before merging")
@@ -390,14 +376,14 @@ func (s *server) collaborationRoutes(w http.ResponseWriter, r *http.Request, u M
 			// A killed subprocess may already have committed its ref transaction.
 			// Reconcile instead of discarding the intent on an ambiguous failure.
 			s.reconcileMerges(repo)
-			if recorded := s.discussion(rid, id, true); str(recorded, "merged_oid") == oid {
+			if recorded := s.pullRequest(rid, id); str(recorded, "merged_oid") == oid {
 				respond(w, 200, M{"pull": recorded, "commit_oid": oid})
 				return true
 			}
 			fail(409, "Base or head changed during merge; reload and try again")
 		}
 		s.reconcileMerges(repo)
-		respond(w, 200, M{"pull": s.discussion(rid, id, true), "commit_oid": oid})
+		respond(w, 200, M{"pull": s.pullRequest(rid, id), "commit_oid": oid})
 	default:
 		fail(404, "Route not found")
 	}

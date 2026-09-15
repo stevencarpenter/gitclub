@@ -450,207 +450,6 @@
     }
   },
   {
-    "name": "list_issues",
-    "description": "List repository issues.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "repo_id": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Repository ID returned by list_repositories"
-        }
-      },
-      "required": [
-        "repo_id"
-      ],
-      "additionalProperties": false
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "idempotentHint": true
-    },
-    "http": {
-      "method": "GET",
-      "path": "/api/repos/{repo_id}/issues",
-      "query": [],
-      "body": []
-    }
-  },
-  {
-    "name": "get_issue",
-    "description": "Read an issue and its comments.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "repo_id": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Repository ID returned by list_repositories"
-        },
-        "issue_id": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Issue ID"
-        }
-      },
-      "required": [
-        "repo_id",
-        "issue_id"
-      ],
-      "additionalProperties": false
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "idempotentHint": true
-    },
-    "http": {
-      "method": "GET",
-      "path": "/api/repos/{repo_id}/issues/{issue_id}",
-      "query": [],
-      "body": []
-    }
-  },
-  {
-    "name": "create_issue",
-    "description": "Open an issue with a title and optional Markdown body.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "repo_id": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Repository ID returned by list_repositories"
-        },
-        "title": {
-          "type": "string",
-          "description": "Issue title"
-        },
-        "body": {
-          "type": "string",
-          "description": "Issue body"
-        }
-      },
-      "required": [
-        "repo_id",
-        "title"
-      ],
-      "additionalProperties": false
-    },
-    "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": false,
-      "idempotentHint": false
-    },
-    "http": {
-      "method": "POST",
-      "path": "/api/repos/{repo_id}/issues",
-      "query": [],
-      "body": [
-        "title",
-        "body"
-      ]
-    }
-  },
-  {
-    "name": "update_issue",
-    "description": "Update an issue title, body or open/closed state.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "repo_id": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Repository ID returned by list_repositories"
-        },
-        "issue_id": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Issue ID"
-        },
-        "title": {
-          "type": "string",
-          "description": "Issue title"
-        },
-        "body": {
-          "type": "string",
-          "description": "Issue body"
-        },
-        "state": {
-          "type": "string",
-          "enum": [
-            "open",
-            "closed"
-          ]
-        }
-      },
-      "required": [
-        "repo_id",
-        "issue_id"
-      ],
-      "additionalProperties": false
-    },
-    "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": false,
-      "idempotentHint": true
-    },
-    "http": {
-      "method": "PATCH",
-      "path": "/api/repos/{repo_id}/issues/{issue_id}",
-      "query": [],
-      "body": [
-        "title",
-        "body",
-        "state"
-      ]
-    }
-  },
-  {
-    "name": "comment_on_issue",
-    "description": "Add a comment to an issue.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "repo_id": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Repository ID returned by list_repositories"
-        },
-        "issue_id": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Issue ID"
-        },
-        "body": {
-          "type": "string",
-          "description": "Comment body"
-        }
-      },
-      "required": [
-        "repo_id",
-        "issue_id",
-        "body"
-      ],
-      "additionalProperties": false
-    },
-    "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": false,
-      "idempotentHint": false
-    },
-    "http": {
-      "method": "POST",
-      "path": "/api/repos/{repo_id}/issues/{issue_id}/comments",
-      "query": [],
-      "body": [
-        "body"
-      ]
-    }
-  },
-  {
     "name": "list_pull_requests",
     "description": "List pull requests for a repository.",
     "inputSchema": {
@@ -740,6 +539,11 @@
         "head_branch": {
           "type": "string",
           "description": "Branch containing proposed changes"
+        },
+        "kaneo_task_url": {
+          "type": "string",
+          "maxLength": 2048,
+          "description": "Kaneo task URL in the repository's configured project; empty string clears the link"
         }
       },
       "required": [
@@ -762,13 +566,14 @@
         "title",
         "body",
         "base_branch",
-        "head_branch"
+        "head_branch",
+        "kaneo_task_url"
       ]
     }
   },
   {
     "name": "update_pull_request",
-    "description": "Update title, body or open/closed state of an unmerged pull request.",
+    "description": "Update title, body, open/closed state, or Kaneo task link of an unmerged pull request.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -796,6 +601,11 @@
             "open",
             "closed"
           ]
+        },
+        "kaneo_task_url": {
+          "type": "string",
+          "maxLength": 2048,
+          "description": "Kaneo task URL in the repository's configured project; empty string clears the link"
         }
       },
       "required": [
@@ -816,7 +626,8 @@
       "body": [
         "title",
         "body",
-        "state"
+        "state",
+        "kaneo_task_url"
       ]
     }
   },

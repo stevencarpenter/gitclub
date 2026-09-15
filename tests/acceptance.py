@@ -203,7 +203,7 @@ class Suite:
         self.b.post("/api/repos", {"owner": self.org, "name": "forbidden"}, expect=403)
         self.a.post("/api/namespaces/" + self.org + "/members", {"username": self.ub["username"], "role": "read"})
         assert self.b.get(self.path(self.other))["repository"]["role"] == "read"
-        self.b.post(self.path(self.other) + "/issues", {"title": "forbidden"}, expect=403)
+        self.b.post(self.path(self.other) + "/pulls", {"title": "forbidden"}, expect=403)
         self.a.post(self.path(self.other) + "/members", {"username": self.ub["username"], "role": "write"})
         assert self.b.get(self.path(self.other))["repository"]["role"] == "write"
         namespaces = self.a.get("/api/namespaces")["namespaces"]
@@ -315,23 +315,24 @@ class Suite:
         self.a.request("DELETE", p)
         assert group["id"] not in {g["id"] for g in self.a.get("/api/groups")["groups"]}
 
-    def issues(self):
-        issue = self.b.post(self.path() + "/issues", {"title": "Import verified", "body": "Keep the history."}, expect=201)["issue"]
-        p = self.path() + "/issues/" + str(issue["id"])
-        assert issue["author_id"] == self.ub["id"] and issue["state"] == "open"
-        comment = self.a.post(p + "/comments", {"body": "Reviewed <script>alert(1)</script>"}, expect=201)["comment"]
-        detail = self.b.get(p)
-        assert comment["body"] == detail["comments"][0]["body"]
-        self.b.patch(p, {"state": "closed", "title": "Import completed"})
-        assert self.a.get(p)["issue"]["state"] == "closed"
-        assert issue["id"] in {i["id"] for i in self.a.get(self.path() + "/issues")["issues"]}
-        self.a.get(self.path(self.other) + "/issues/" + str(issue["id"]), expect=404)
-        self.c.post(p + "/comments", {"body": "forbidden"}, expect=(403, 404))
+    def kaneo_links(self):
+        self.kaneo_project = "https://kaneo.example.test/dashboard/workspace/acceptance/project/gitclub/board"
+        self.kaneo_task = self.kaneo_project.removesuffix("/board") + "/task/acceptance"
+        self.b.patch(self.path(), {"kaneo_project_url": self.kaneo_project}, expect=403)
+        repo = self.a.patch(self.path(), {"kaneo_project_url": self.kaneo_project})["repository"]
+        assert repo["kaneo_project_url"] == self.kaneo_project
+        assert self.b.get(self.path())["repository"]["kaneo_project_url"] == self.kaneo_project
+        for method, suffix in (("GET", ""), ("POST", ""), ("GET", "/1"), ("PATCH", "/1"), ("POST", "/1/comments")):
+            self.a.request(method, self.path() + "/issues" + suffix, {}, expect=410)
+        self.c.get(self.path() + "/issues", expect=404)
+        self.a.post(self.path() + "/pulls", {"title": "Foreign task", "head_branch": "feature", "kaneo_task_url": self.kaneo_task.replace("/project/gitclub/", "/project/foreign/")}, expect=400)
 
     def reviews_and_merge(self):
-        pull = self.a.post(self.path() + "/pulls", {"title": "Feature proposal", "head_branch": "feature"}, expect=201)["pull"]
+        pull = self.a.post(self.path() + "/pulls", {"title": "Feature proposal", "head_branch": "feature", "kaneo_task_url": self.kaneo_task}, expect=201)["pull"]
         p = self.path() + "/pulls/" + str(pull["id"])
         self.pull_path = p
+        assert pull["kaneo_task_url"] == self.kaneo_task
+        self.b.patch(p, {"kaneo_task_url": ""}, expect=403)
         detail = self.a.get(p)
         assert detail["pull"]["base_branch"] == "trunk" and not detail["mergeable"] and detail["merge_blockers"]
         self.a.post(p + "/reviews", {"expected_head_oid": self.feature_oid, "decision": "approve"}, expect=(400, 403))
@@ -352,6 +353,7 @@ class Suite:
         self.b.post(p + "/reviews", {"expected_head_oid": self.feature_oid, "decision": "approve"}, expect=201)
         merged = self.a.post(p + "/merge", {"expected_head_oid": self.feature_oid})
         assert merged["pull"]["state"] == "merged" and merged["commit_oid"] == merged["pull"]["merged_oid"]
+        assert merged["pull"]["kaneo_task_url"] == self.kaneo_task
         git(self.work, "fetch", "origin", token=self.a.token)
         assert git(self.work, "rev-parse", "origin/trunk") == merged["commit_oid"]
         parents = git(self.work, "show", "-s", "--format=%P", "origin/trunk").split()
@@ -431,7 +433,7 @@ class Suite:
         self.a.patch(self.path(), {"visibility": "world"}, expect=400)
         self.a.post(self.path() + "/members", {"username": self.ub["username"], "role": "owner"}, expect=400)
         self.a.post(self.path() + "/pin", {"pinned": "false"}, expect=400)
-        self.a.post(self.path() + "/issues", {"title": ""}, expect=400)
+        self.a.post(self.path() + "/pulls", {"title": ""}, expect=400)
         self.a.post("/api/groups", {"name": ""}, expect=400)
         self.a.post(self.path() + "/pulls", {"title": "Invalid", "head_branch": "trunk"}, expect=400)
         for path in ("../secret", "/etc/passwd", "src/../../secret"):
@@ -522,7 +524,6 @@ class Suite:
             ("list_commits", dict(rid, ref="trunk"), self.path() + "/commits?ref=trunk"),
             ("compare_refs", dict(rid, base="trunk", head="conflict"), self.path() + "/diff?base=trunk&head=conflict"),
             ("list_groups", {}, "/api/groups"),
-            ("list_issues", rid, self.path() + "/issues"),
             ("list_pull_requests", rid, self.path() + "/pulls"),
         ]
         for name, arguments, path in reads:
@@ -537,27 +538,22 @@ class Suite:
         group = self.call_tool("create_group", {"name": self.prefix + " MCP", "shared": True})["group"]
         changed = self.call_tool("update_group", {"group_id": group["id"], "repo_ids": [self.r["id"], repo["id"]]})["group"]
         assert set(changed["repo_ids"]) == {self.r["id"], repo["id"]}
-        issue = self.call_tool("create_issue", dict(rid, title="MCP issue", body="Agent-created issue"))["issue"]
-        iid = dict(rid, issue_id=issue["id"])
-        self.call_tool("update_issue", dict(iid, title="MCP issue updated", state="closed"))
-        self.call_tool("comment_on_issue", dict(iid, body="MCP comment"))
-        issue_path = self.path() + "/issues/" + str(issue["id"])
-        detail = self.call_tool("get_issue", iid)
-        assert detail == self.a.get(issue_path) and detail["issue"]["state"] == "closed"
-        assert detail["comments"][0]["body"] == "MCP comment"
+        assert not any("issue" in tool["name"] for tool in self.tools)
+        assert self.mcp("tools/call", {"name": "create_issue", "arguments": dict(rid, title="Retired")})["error"]["code"] == -32602
         git(self.work, "fetch", "origin", token=self.a.token)
         git(self.work, "checkout", "-B", "mcp-feature", "origin/trunk")
         oid = commit(self.work, "mcp.txt", "Agent surface\n", "Integration proposal")
         git(self.work, "push", "origin", "mcp-feature", token=self.a.token)
-        pull = self.call_tool("create_pull_request", dict(rid, title="MCP proposal", head_branch="mcp-feature"))["pull"]
+        pull = self.call_tool("create_pull_request", dict(rid, title="MCP proposal", head_branch="mcp-feature", kaneo_task_url=self.kaneo_task))["pull"]
         pid = dict(rid, pull_id=pull["id"])
-        self.call_tool("update_pull_request", dict(pid, title="MCP proposal updated", body="Native integration"))
+        self.call_tool("update_pull_request", dict(pid, title="MCP proposal updated", body="Native integration", kaneo_task_url=self.kaneo_task + "-mcp"))
         self.call_tool("comment_on_pull_request", dict(pid, body="Agent inline comment", path="mcp.txt", line=1, commit_oid=oid))
         self.call_tool("review_pull_request", dict(pid, decision="approve", expected_head_oid=oid), error=True)
         self.call_tool("review_pull_request", dict(pid, decision="approve", expected_head_oid=oid, body="Independent approval"), client=self.b)
         pull_path = self.path() + "/pulls/" + str(pull["id"])
         detail = self.call_tool("get_pull_request", pid)
         assert detail == self.a.get(pull_path) and detail["mergeable"]
+        assert detail["pull"]["kaneo_task_url"] == self.kaneo_task + "-mcp"
         merged = self.call_tool("merge_pull_request", dict(pid, expected_head_oid=oid))
         assert merged["pull"]["state"] == "merged"
         git(self.work, "fetch", "origin", token=self.a.token)
@@ -604,8 +600,7 @@ class Suite:
 
     def save_state(self, destination):
         paths = [self.path(), self.path() + "/branches", self.path() + "/tree?ref=trunk",
-                 self.path() + "/commits?ref=trunk", self.path() + "/issues", self.path() + "/pulls", "/api/groups"]
-        paths += [self.path() + "/issues/" + str(issue["id"]) for issue in self.a.get(self.path() + "/issues")["issues"]]
+                 self.path() + "/commits?ref=trunk", self.path() + "/pulls", "/api/groups"]
         paths += [self.path() + "/pulls/" + str(pull["id"]) for pull in self.a.get(self.path() + "/pulls")["pulls"]]
         state = {"username": self.ua["username"], "password": self.password, "token": self.a.token,
                  "user": self.ua, "full_name": self.r["full_name"],
@@ -627,7 +622,7 @@ class Suite:
                                  ("default-branch freshness and personal pins", self.freshness),
                                  ("protected default branch rejects direct/force/delete pushes", self.protected_refs),
                                  ("shared groups preserve repository access", self.groups),
-                                 ("issues, edits and comments", self.issues),
+                                 ("Kaneo project/task boundaries and retired issues", self.kaneo_links),
                                  ("reviews, stale approvals, compare-and-swap and merge", self.reviews_and_merge),
                                  ("merge conflict preserves branch tip", self.merge_conflict),
                                  ("reviewer access, decisive reviews and concurrent merge", self.reviewer_authorization_and_race),

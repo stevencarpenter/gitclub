@@ -1,0 +1,7 @@
+{
+  "gitclub_url": "https://gitclub-production.up.railway.app",
+  "gitclub_token": "REPLACE_WITH_A_GITCLUB_READ_TOKEN",
+  "kaneo_url": "https://kaneo.snugmarina.org",
+  "kaneo_api_key": "REPLACE_WITH_A_KANEO_API_KEY",
+  "repositories": {}
+}

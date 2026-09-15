@@ -94,8 +94,6 @@ def build_fixture(suite, repo_count):
         suite.repo(f"benchmark-{n:03}", suite.org if n % 2 else None)
     group = suite.a.post("/api/groups", {"name": suite.prefix + " benchmark", "shared": True}, expect=201)["group"]
     suite.a.patch("/api/groups/" + str(group["id"]), {"repo_ids": [suite.r["id"], suite.other["id"]]})
-    for n in range(10):
-        suite.a.post(suite.path() + "/issues", {"title": f"Benchmark issue {n}", "body": "Fixed issue body."}, expect=201)
     pull = suite.a.post(suite.path() + "/pulls", {"title": "Benchmark review", "head_branch": "benchmark-diff"}, expect=201)["pull"]
     suite.b.post(suite.path() + "/pulls/" + str(pull["id"]) + "/reviews", {"decision": "approve", "expected_head_oid": head}, expect=201)
     return {"seed": 1729, "repositories": max(4, repo_count), "source_files": 100,
@@ -133,7 +131,7 @@ def benchmark(args):
         mix = [("repository_directory", "/api/repos"), ("repository_search", "/api/repos?q=benchmark"),
                ("tree", p + "/tree?ref=trunk&path=src"), ("blob", p + "/blob?ref=trunk&path=src/module_001.txt"),
                ("history", p + "/commits?ref=trunk"), ("diff", p + "/diff?base=trunk&head=benchmark-diff"),
-               ("issues", p + "/issues"), ("pull_review", p + "/pulls/" + str(report["fixture"]["pull_id"])),
+               ("pull_requests", p + "/pulls"), ("pull_review", p + "/pulls/" + str(report["fixture"]["pull_id"])),
                ("groups", "/api/groups"), ("branches", p + "/branches")]
         if args.directory_only:
             mix = mix[:2]

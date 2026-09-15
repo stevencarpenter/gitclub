@@ -1,0 +1,21 @@
+name: gitclub-kaneo
+
+services:
+  sync:
+    image: python:3.12-slim
+    command: [python, -B, -u, /app/sync.py, --config, /run/secrets/config, --state, /state/completed.sqlite3]
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    volumes:
+      - ./sync.py:/app/sync.py:ro
+      - state:/state
+    secrets: [config]
+
+volumes:
+  state:
+
+secrets:
+  config:
+    file: ${GITCLUB_KANEO_CONFIG:-${HOME}/.config/gitclub-kaneo/config.json}

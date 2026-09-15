@@ -43,7 +43,7 @@ func (s *server) repo(r *http.Request, id int64, u M, minRole string) M {
 }
 func (s *server) repositoryView(repo, u M) M {
 	v := M{}
-	for _, k := range []string{"id", "owner", "name", "description", "visibility", "default_branch", "created_at", "updated_at"} {
+	for _, k := range []string{"id", "owner", "name", "description", "visibility", "default_branch", "kaneo_project_url", "created_at", "updated_at"} {
 		v[k] = repo[k]
 	}
 	v["full_name"] = str(repo, "owner") + "/" + str(repo, "name")
@@ -201,7 +201,7 @@ func (s *server) repositories(w http.ResponseWriter, r *http.Request, u M, rest 
 			b := body(r)
 			unlock := s.lockRepo(r, id)
 			defer unlock()
-			repo = s.one("SELECT * FROM repositories WHERE id=?", id)
+			repo = s.repo(r, id, u, "admin")
 			for key := range b {
 				switch key {
 				case "description":
@@ -222,6 +222,8 @@ func (s *server) repositories(w http.ResponseWriter, r *http.Request, u M, rest 
 						fail(400, "require_review must be boolean")
 					}
 					repo[key] = v
+				case "kaneo_project_url":
+					repo[key] = kaneoProjectURL(b[key])
 				case "default_branch":
 					v := str(b, key)
 					if !validBranch(v) {
@@ -240,11 +242,18 @@ func (s *server) repositories(w http.ResponseWriter, r *http.Request, u M, rest 
 				repo["default_oid"] = oid
 				repo["updated_at"] = now()
 			}
-			s.exec("UPDATE repositories SET description=?,visibility=?,default_branch=?,require_review=?,updated_at=?,default_oid=? WHERE id=?", str(repo, "description"), str(repo, "visibility"), str(repo, "default_branch"), boolean(repo, "require_review"), num(repo, "updated_at"), str(repo, "default_oid"), id)
+			s.exec("UPDATE repositories SET description=?,visibility=?,default_branch=?,require_review=?,kaneo_project_url=?,updated_at=?,default_oid=? WHERE id=?", str(repo, "description"), str(repo, "visibility"), str(repo, "default_branch"), boolean(repo, "require_review"), str(repo, "kaneo_project_url"), num(repo, "updated_at"), str(repo, "default_oid"), id)
 			respond(w, 200, M{"repository": s.repositoryView(repo, u)})
 			return
 		}
 		fail(405, "Use GET or PATCH")
+	}
+	if rest[1] == "issues" {
+		fail(410, "Issue tracking moved to Kaneo")
+	}
+	if len(rest) == 3 && rest[1] == "kaneo" && rest[2] == "merges" {
+		s.kaneoMerges(w, r, u, repo)
+		return
 	}
 	if len(rest) == 2 && rest[1] == "pin" && r.Method == "POST" {
 		requireUser(u)

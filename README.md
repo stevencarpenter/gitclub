@@ -27,15 +27,27 @@ The Compose ports bind to localhost. For a remote installation, put HTTP behind 
 3. Find repositories across owners in **Repositories** or with `Cmd/Ctrl+K`. Pin repositories and collect them in shared or personal groups.
 4. Open a pull request, review its diff, and merge after another writer approves its current head.
 
-The configured default branch determines freshness. Feature-branch pushes, issue comments, and page visits do not change repository order. Pins appear first, with freshness ordering within each section. Shared groups reveal only repositories the viewer can access.
+The configured default branch determines freshness. Feature-branch pushes, pull request comments, and page visits do not change repository order. Pins appear first, with freshness ordering within each section. Shared groups reveal only repositories the viewer can access.
 
-The MVP includes code, history and diff browsing, issues and comments, pull requests, commit-bound reviews, inline comments, branch protection, repository roles, organization membership, tokens and SSH keys. CI and embedded agent execution are excluded.
+The MVP includes code, history and diff browsing, Kaneo task links, pull requests, commit-bound reviews, inline comments, branch protection, repository roles, organization membership, tokens and SSH keys. CI and embedded agent execution are excluded.
+
+## Kaneo task tracking
+
+Kaneo owns task tracking. GitClub keeps code review and merging.
+
+1. Set **Kaneo project URL** in repository **Settings**. The **Kaneo** tab opens that project.
+2. Paste a task URL when opening or editing a pull request. The link must belong to the connected project.
+3. Enable the [Kaneo sync worker](deploy/kaneo/README.md) for that repository to mark the linked task done after a merge.
+
+The worker runs on i9 and polls GitClub once per minute. It uses an explicit repository/project allowlist, keeps credentials in a private file, and retries failed task updates. A Kaneo outage does not block Git operations. Closed, unmerged pull requests do not complete tasks. Completed syncs are recorded so a later manual task reopening is preserved.
+
+Built-in issue routes and MCP tools are retired. Existing issue records remain in PostgreSQL and backups.
 
 ## Codex and Claude
 
-Open **Agent access** to create a token and copy the configuration for your installed client. `/mcp` provides 24 tools over authenticated Streamable HTTP. The JSON API uses the same authorization and collaboration logic. Git transfers use native Git.
+Open **Agent access** to create a token and copy the configuration for your installed client. `/mcp` provides 19 tools over authenticated Streamable HTTP. The JSON API uses the same authorization and collaboration logic. Git transfers use native Git.
 
-The official MCP SDK verifies initialization, tool discovery, and repository, issue, and group operations. Client setup flags were checked against installed Codex and Claude CLI help. The validation does not invoke a model or modify global client configuration.
+The official MCP SDK verifies initialization, tool discovery, and repository, pull request, and group operations. Client setup flags were checked against installed Codex and Claude CLI help. The validation does not invoke a model or modify global client configuration.
 
 ## Run from source
 

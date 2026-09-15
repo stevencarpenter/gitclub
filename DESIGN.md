@@ -8,6 +8,8 @@ The default content surface is a dark green neutral, with a darker navigation su
 
 Repository discovery occupies a single directory with explicit owner/name labels, optional owner and group filters, pinned repositories first, and default-branch freshness ordering. The sidebar preserves the same cross-owner context throughout repository work. It contains pins, accessible shared and personal groups, and repository links. Shared collections do not grant repository access.
 
+Repository navigation exposes code and pull requests, plus a Kaneo project link when configured. Repository settings connect the project; pull request forms accept a task URL from that project. Task planning stays in Kaneo. Legacy issue bookmarks explain the move and offer the connected project link.
+
 The layout uses compact rows, clear section boundaries, native form controls, and one consistent button vocabulary. Empty states explain the next available action. Source and discussion text are rendered as text. No fabricated repositories, activity, or performance claims appear.
 
 Desktop has a 252px navigation column and a bounded reading area. Below 800px, navigation becomes an explicitly opened overlay, repository metadata wraps, and toolbars stack. Keyboard users have a skip link, visible focus, a repository switcher, native dialog focus management, and descriptive action labels. Reduced motion disables the switcher reveal.

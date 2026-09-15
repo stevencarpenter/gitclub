@@ -6,7 +6,7 @@
 
 Run: uv run --isolated tests/mcp_client.py http://127.0.0.1:17701 --output mcp-client.json
 
-Creates a private repository and issue under a disposable account on the server.
+Creates a private repository and group under a disposable account on the server.
 Tokens are kept in memory and revoked at the end; no client configuration changes.
 """
 from __future__ import annotations
@@ -82,13 +82,9 @@ async def check(base: str) -> dict[str, Any]:
                     await call("set_repository_pin", {"repo_id": repo["id"], "pinned": True})
                     assert (await call("get_repository", {"repo_id": repo["id"]}))["repository"]["pinned"] is True
                     result["checks"].append("SDK repository pin write persists")
-                    issue = (await call("create_issue", {"repo_id": repo["id"], "title": "Official SDK interoperability", "body": "Read and write through the native MCP surface."}))["issue"]
-                    await call("comment_on_issue", {"repo_id": repo["id"], "issue_id": issue["id"], "body": "MCP check: plain text <tag> and Unicode café."})
-                    await call("update_issue", {"repo_id": repo["id"], "issue_id": issue["id"], "state": "closed"})
-                    detail = await call("get_issue", {"repo_id": repo["id"], "issue_id": issue["id"]})
-                    assert detail["issue"]["state"] == "closed"
-                    assert detail["comments"][-1]["body"] == "MCP check: plain text <tag> and Unicode café."
-                    result["checks"].append("SDK creates, comments on, closes, and reads an issue with exact text")
+                    assert not any("issue" in name for name in names), "Retired issue tools remain advertised"
+                    assert (await call("list_pull_requests", {"repo_id": repo["id"]}))["pulls"] == []
+                    result["checks"].append("SDK exposes pull requests and omits retired issue tools")
                     group = (await call("create_group", {"name": "SDK collection", "shared": True}))["group"]
                     await call("update_group", {"group_id": group["id"], "repo_ids": [repo["id"]]})
                     groups = (await call("list_groups", {}))["groups"]

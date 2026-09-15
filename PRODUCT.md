@@ -20,7 +20,7 @@ Self-host Git repositories and collaborate on code with responsive navigation an
 
 ## Operating Context
 
-Existing Git clients and external Codex and Claude tools. The user does not want GitClub to run agents. Repository import preserves Git history only. CI is excluded from the MVP.
+Existing Git clients and external Codex and Claude tools. The user does not want GitClub to run agents. Repository import preserves Git history only. CI is excluded from the MVP. Kaneo owns task tracking; GitClub links repositories and pull requests to Kaneo and completes linked tasks after merged pull requests. Built-in issues are excluded.
 
 ## Capabilities and Constraints
 

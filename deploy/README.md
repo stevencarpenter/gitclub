@@ -9,6 +9,11 @@ five minutes. The standby replays the PITR archive with `hot_standby=off`.
 Normal operation publishes no ports. [RUNBOOK.md](RUNBOOK.md) contains the
 deployment, health and recovery commands.
 
+The [Kaneo status worker](kaneo/README.md) runs separately on i9 under
+`~/gitclub-kaneo`. It polls explicitly configured repositories every 60 seconds
+and completes linked tasks after pull requests merge. Its private credentials
+and completion ledger are separate from the DR stack.
+
 ## Recovery invariant
 
 Restore PostgreSQL to the start of the last completed mirror sweep. The
@@ -31,7 +36,7 @@ server hooks and ownership before serving writes.
 | `i9/gitclub-verify-recovery`, `i9/prepare-repositories.py` | Object verification and repository preparation |
 
 Railway attaches the repository volume to one service, so the application and
-SSH transport share one container with one replica. i9 mounts archive
+SSH transport share one container with one replica. The DR stack mounts archive
 credentials only into standby/recovery containers and the GitClub token only
 into the mirror container. Railway bucket credentials have read/write access;
 the standby's read-only operations do not restrict the credentials themselves.

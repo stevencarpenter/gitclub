@@ -12,7 +12,7 @@ const paths = {
   lock: 'M5 10h14v11H5zM8 10V6a4 4 0 0 1 8 0v4',
   globe: 'M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0M2 12h20M12 2c5 5 5 15 0 20-5-5-5-15 0-20',
   code: 'm8 5-7 7 7 7M16 5l7 7-7 7',
-  issue: 'M12 8v4M12 16h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',
+  external: 'M14 3h7v7M21 3 10 14M10 3H3v18h18v-7',
   pull: 'M6 6v12M8 4a2 2 0 1 1-4 0 2 2 0 0 1 4 0M8 20a2 2 0 1 1-4 0 2 2 0 0 1 4 0M20 20a2 2 0 1 1-4 0 2 2 0 0 1 4 0M18 18V8a4 4 0 0 0-4-4h-2m3-3-3 3 3 3',
   settings: 'M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8M4 4l4-2 2 3h4l2-3 4 2-1 4 3 2v4l-3 2 1 4-4 2-2-3h-4l-2 3-4-2 1-4-3-2v-4l3-2-1-4Z',
   people: 'M17 21v-2a5 5 0 0 0-5-5H7a5 5 0 0 0-5 5v2M14 6a4 4 0 1 1-8 0 4 4 0 0 1 8 0M17 3a4 4 0 0 1 0 8M22 21v-2a5 5 0 0 0-4-5',
@@ -249,9 +249,9 @@ function namespacesPage() {
   return [heading('Namespaces', 'Ownership and access, without splitting your repository navigation.'), el('div', {}, state.namespaces.map(namespace => el('div', { class: 'section' }, el('div', { class: 'group-row' }, el('div', {}, el('h2', {}, namespace.name), el('p', {}, `${namespace.kind === 'personal' ? 'Personal namespace' : 'Organization'} · ${namespace.role}`)), actionLink('View repositories', `/repos?owner=${encodeURIComponent(namespace.name)}`, 'small')), namespace.kind !== 'personal' && namespace.role === 'admin' ? el('details', { class: 'details' }, el('summary', {}, 'Add or update a member'), memberForm(`/api/namespaces/${encodeURIComponent(namespace.name)}/members`)) : null))), section('Create an organization', 'An organization owns repositories and shares access through member roles.', form([field('Organization name', 'name', '', { required: true, pattern: '[a-z0-9][a-z0-9._-]{0,62}', maxlength: 63, placeholder: 'your-team' })], 'Create organization', async values => { await api('/api/namespaces', 'POST', values); await refreshWorkspace(); await renderRoute(false); }))];
 }
 function repoHeader(repo, active) {
-  const tabs = [['code', 'Code', 'code'], ['issues', 'Issues', 'issue'], ['pulls', 'Pull requests', 'pull']];
+  const tabs = [['code', 'Code', 'code'], ['pulls', 'Pull requests', 'pull']];
   if (repo.role === 'admin') tabs.push(['settings', 'Settings', 'settings']);
-  return [el('div', { class: 'repo-heading' }, heading(el('span', {}, el('span', { class: 'owner-name' }, `${repo.owner} / `), repo.name), repo.description || '', [badge(repo.visibility), state.user ? pinButton(repo) : null])), el('nav', { class: 'tabs', 'aria-label': 'Repository' }, tabs.map(([key, label, glyph]) => el('a', { href: repoPath(repo, key), class: `tab ${active === key ? 'active' : ''}`, ...(active === key ? { 'aria-current': 'page' } : {}) }, icon(glyph), label)))];
+  return [el('div', { class: 'repo-heading' }, heading(el('span', {}, el('span', { class: 'owner-name' }, `${repo.owner} / `), repo.name), repo.description || '', [badge(repo.visibility), state.user ? pinButton(repo) : null])), el('nav', { class: 'tabs', 'aria-label': 'Repository' }, tabs.map(([key, label, glyph]) => el('a', { href: repoPath(repo, key), class: `tab ${active === key ? 'active' : ''}`, ...(active === key ? { 'aria-current': 'page' } : {}) }, icon(glyph), label)), repo.kaneo_project_url ? el('a', { href: repo.kaneo_project_url, class: 'tab', target: '_blank', rel: 'noopener noreferrer', title: 'Open Kaneo project in a new tab' }, icon('external'), 'Kaneo') : null)];
 }
 function importInstructions(repo) {
   const remote = `${location.origin}/${repo.full_name}.git`;
@@ -321,54 +321,49 @@ function repoSettings(repo) {
   if (repo.role !== 'admin') throw new Error('Only repository administrators can change these settings.');
   return [heading('Repository settings', 'Manage the default branch, review requirements, and access.'), form([
     field('Description', 'description', repo.description, { maxlength: 500 }),
+    field('Kaneo project URL', 'kaneo_project_url', repo.kaneo_project_url || '', { type: 'url', maxlength: 2048, placeholder: 'https://kaneo.example.com/dashboard/workspace/WORKSPACE/project/PROJECT/board', help: 'Link this repository to its Kaneo project. Leave empty to disconnect. Task completion on merge requires the operator to enable sync for this repository.' }),
     el('div', { class: 'form-row' }, field('Visibility', 'visibility', repo.visibility, { choices: ['private', 'public'] }), field('Default branch', 'default_branch', repo.default_branch, { required: true, help: 'Changing this branch refreshes the repository’s activity time.' })),
     checkbox('Require an approval before merging into the default branch', 'require_review', repo.require_review),
     el('p', { class: 'content-note' }, 'Approval must come from another writer and apply to the current head commit. When enabled, direct pushes to an initialized default branch are blocked. Default-branch deletion and non-fast-forward pushes are always blocked.'),
-  ], 'Save settings', async (values, node, status) => { await api(`/api/repos/${repo.id}`, 'PATCH', values); status.textContent = 'Repository settings saved.'; await refreshWorkspace(); }), section('Repository membership', 'Add a user or change their repository role. Namespace access is inherited; the highest granted role applies.', memberForm(`/api/repos/${repo.id}/members`))];
+  ], 'Save settings', async values => { await api(`/api/repos/${repo.id}`, 'PATCH', values); await refreshWorkspace(); await renderRoute(false); const status = $('#main .form-status'); if (status) status.textContent = 'Repository settings saved.'; }), section('Repository membership', 'Add a user or change their repository role. Namespace access is inherited; the highest granted role applies.', memberForm(`/api/repos/${repo.id}/members`))];
 }
-function threadRow(repo, item, kind) {
-  return el('article', { class: 'thread-row' }, icon(kind === 'pulls' ? 'pull' : 'issue'), el('div', { class: 'thread-summary' }, link(item.title, repoPath(repo, `${kind}/${item.id}`), 'thread-title'), el('div', { class: 'thread-meta' }, el('span', {}, `#${item.id}`), badge(item.state), el('span', {}, `${item.author} opened `, time(item.created_at)), kind === 'pulls' ? el('span', { class: 'monospace' }, `${item.base_branch} ← ${item.head_branch}`) : null)), el('span', { class: 'thread-date version-copy' }, time(item.updated_at)));
+function pullRow(repo, item) {
+  return el('article', { class: 'thread-row' }, icon('pull'), el('div', { class: 'thread-summary' }, link(item.title, repoPath(repo, `pulls/${item.id}`), 'thread-title'), el('div', { class: 'thread-meta' }, el('span', {}, `#${item.id}`), badge(item.state), el('span', {}, `${item.author} opened `, time(item.created_at)), el('span', { class: 'monospace' }, `${item.base_branch} ← ${item.head_branch}`), item.kaneo_task_url ? link('Kaneo task', item.kaneo_task_url) : null)), el('span', { class: 'thread-date version-copy' }, time(item.updated_at)));
 }
-async function threadsPage(repo, kind) {
-  const isPull = kind === 'pulls';
-  const data = await api(`/api/repos/${repo.id}/${kind}`); const items = data[kind];
+async function pullsPage(repo) {
+  const { pulls: items } = await api(`/api/repos/${repo.id}/pulls`);
   const output = el('div', {});
-  const filter = el('select', { 'aria-label': `Filter ${isPull ? 'pull requests' : 'issues'} by state` }, el('option', { value: 'open' }, `Open (${items.filter(item => item.state === 'open').length})`), el('option', { value: 'all' }, `All (${items.length})`), el('option', { value: 'closed' }, `Closed (${items.filter(item => item.state === 'closed').length})`), isPull ? el('option', { value: 'merged' }, `Merged (${items.filter(item => item.state === 'merged').length})`) : null);
-  const search = el('input', { type: 'search', placeholder: `Search ${isPull ? 'pull requests' : 'issues'}…`, 'aria-label': `Search ${isPull ? 'pull requests' : 'issues'}` });
-  const update = () => { const q = search.value.toLowerCase(); const matching = items.filter(item => (filter.value === 'all' || item.state === filter.value) && `${item.title} ${item.body}`.toLowerCase().includes(q)); output.replaceChildren(matching.length ? el('div', { class: 'thread-list' }, matching.map(item => threadRow(repo, item, kind))) : empty(isPull ? 'No pull requests here yet' : 'No issues to show', search.value || filter.value !== 'open' ? 'Try another search or state filter.' : isPull ? 'Push a feature branch, then open a pull request to review its changes.' : 'Track a bug, a question, or a concrete piece of work.', state.user && repo.role !== 'read' ? [actionLink(isPull ? 'Open a pull request' : 'Create an issue', repoPath(repo, `${kind}/new`), 'primary', 'plus')] : [], true, isPull ? 'pull' : 'issue')); };
+  const filter = el('select', { 'aria-label': 'Filter pull requests by state' }, el('option', { value: 'open' }, `Open (${items.filter(item => item.state === 'open').length})`), el('option', { value: 'all' }, `All (${items.length})`), el('option', { value: 'closed' }, `Closed (${items.filter(item => item.state === 'closed').length})`), el('option', { value: 'merged' }, `Merged (${items.filter(item => item.state === 'merged').length})`));
+  const search = el('input', { type: 'search', placeholder: 'Search pull requests…', 'aria-label': 'Search pull requests' });
+  const update = () => { const q = search.value.toLowerCase(); const matching = items.filter(item => (filter.value === 'all' || item.state === filter.value) && `${item.title} ${item.body}`.toLowerCase().includes(q)); output.replaceChildren(matching.length ? el('div', { class: 'thread-list' }, matching.map(item => pullRow(repo, item))) : empty('No pull requests here yet', search.value || filter.value !== 'open' ? 'Try another search or state filter.' : 'Push a feature branch, then open a pull request to review its changes.', state.user && repo.role !== 'read' ? [actionLink('Open a pull request', repoPath(repo, 'pulls/new'), 'primary', 'plus')] : [], true, 'pull')); };
   filter.addEventListener('change', update); search.addEventListener('input', update); update();
-  return [heading(isPull ? 'Pull requests' : 'Issues', isPull ? 'Review changes and merge with confidence.' : 'Keep the work close to the code.', state.user && repo.role !== 'read' ? [actionLink(isPull ? 'New pull request' : 'New issue', repoPath(repo, `${kind}/new`), 'primary', 'plus')] : []), el('div', { class: 'toolbar' }, el('div', { class: 'search-field' }, icon('search'), search), filter), output];
+  return [heading('Pull requests', 'Review changes and merge with confidence.', state.user && repo.role !== 'read' ? [actionLink('New pull request', repoPath(repo, 'pulls/new'), 'primary', 'plus')] : []), el('div', { class: 'toolbar' }, el('div', { class: 'search-field' }, icon('search'), search), filter), output];
 }
-async function newThread(repo, kind, params) {
-  if (repo.role === 'read') throw new Error('Write access is required to create an issue or pull request.');
-  const isPull = kind === 'pulls'; let branchFields = [];
-  if (isPull) {
-    const { branches } = await api(`/api/repos/${repo.id}/branches`);
-    if (branches.length < 2) return [heading('Open a pull request', 'A pull request compares two branches in this repository.'), empty('Push a feature branch first', 'Create a branch locally, commit your changes, and push it to GitClub. You can then review it against the default branch.', [actionLink('Back to code', repoPath(repo), 'primary')], true, 'branch')];
-    const base = params.get('base') || repo.default_branch;
-    branchFields = [el('div', { class: 'form-row' }, field('Base branch', 'base_branch', base, { choices: branches.map(branch => branch.name), required: true }), field('Head branch', 'head_branch', params.get('head') || branches.find(branch => branch.name !== base)?.name, { choices: branches.map(branch => branch.name), required: true }))];
-  }
-  return [heading(isPull ? 'Open a pull request' : 'New issue', isPull ? 'Describe what changed and what the reviewer should check.' : 'Describe the problem or the work to be done.'), form([...branchFields, field('Title', 'title', '', { required: true, maxlength: 240, placeholder: isPull ? 'What does this change accomplish?' : 'A specific, actionable title' }), field(isPull ? 'Description' : 'Details', 'body', '', { type: 'textarea', rows: 9, maxlength: 100000, help: 'Plain text. Drafts are saved locally in this browser.' })], isPull ? 'Open pull request' : 'Create issue', async (values, node) => { const data = await api(`/api/repos/${repo.id}/${kind}`, 'POST', values); node.clearDraft?.(); go(repoPath(repo, `${kind}/${data[isPull ? 'pull' : 'issue'].id}`)); }, { cancel: repoPath(repo, kind), draft: `${repo.id}:${kind}:new` })];
+function kaneoTaskField(repo, value = '') {
+  return repo.kaneo_project_url || value ? field('Kaneo task URL', 'kaneo_task_url', value, { type: 'url', maxlength: 2048, help: 'Optional. Paste a task link from this repository’s Kaneo project.' }) : null;
 }
-function editThread(repo, item, kind) {
+async function newPull(repo, params) {
+  if (repo.role === 'read') throw new Error('Write access is required to create a pull request.');
+  const { branches } = await api(`/api/repos/${repo.id}/branches`);
+  if (branches.length < 2) return [heading('Open a pull request', 'A pull request compares two branches in this repository.'), empty('Push a feature branch first', 'Create a branch locally, commit your changes, and push it to GitClub. You can then review it against the default branch.', [actionLink('Back to code', repoPath(repo), 'primary')], true, 'branch')];
+  const base = params.get('base') || repo.default_branch;
+  const branchFields = [el('div', { class: 'form-row' }, field('Base branch', 'base_branch', base, { choices: branches.map(branch => branch.name), required: true }), field('Head branch', 'head_branch', params.get('head') || branches.find(branch => branch.name !== base)?.name, { choices: branches.map(branch => branch.name), required: true }))];
+  return [heading('Open a pull request', 'Describe what changed and what the reviewer should check.'), form([...branchFields, field('Title', 'title', '', { required: true, maxlength: 240, placeholder: 'What does this change accomplish?' }), field('Description', 'body', '', { type: 'textarea', rows: 9, maxlength: 100000, help: 'Plain text. Drafts are saved locally in this browser.' }), kaneoTaskField(repo)], 'Open pull request', async (values, node) => { const data = await api(`/api/repos/${repo.id}/pulls`, 'POST', values); node.clearDraft?.(); go(repoPath(repo, `pulls/${data.pull.id}`)); }, { cancel: repoPath(repo, 'pulls'), draft: `${repo.id}:pulls:new` })];
+}
+function editPull(repo, item) {
   if (!state.user || !(state.user.id === item.author_id || repo.role === 'admin') || item.state === 'merged') return null;
-  return el('details', { class: 'details' }, el('summary', {}, 'Edit title or description'), form([field('Title', 'title', item.title, { required: true, maxlength: 240 }), field('Description', 'body', item.body, { type: 'textarea', rows: 6, maxlength: 100000 })], 'Save changes', async values => { await api(`/api/repos/${repo.id}/${kind}/${item.id}`, 'PATCH', values); await renderRoute(false); }));
+  return el('details', { class: 'details' }, el('summary', {}, 'Edit pull request'), form([field('Title', 'title', item.title, { required: true, maxlength: 240 }), field('Description', 'body', item.body, { type: 'textarea', rows: 6, maxlength: 100000 }), kaneoTaskField(repo, item.kaneo_task_url || '')], 'Save changes', async values => { await api(`/api/repos/${repo.id}/pulls/${item.id}`, 'PATCH', values); await renderRoute(false); }));
 }
-function stateButton(repo, item, kind) {
+function pullStateButton(repo, item) {
   if (!state.user || !(state.user.id === item.author_id || repo.role === 'admin') || item.state === 'merged') return null;
   const next = item.state === 'open' ? 'closed' : 'open';
-  return button(next === 'closed' ? (kind === 'pulls' ? 'Close pull request' : 'Close issue') : 'Reopen', event => mutation(async () => { await api(`/api/repos/${repo.id}/${kind}/${item.id}`, 'PATCH', { state: next }); await renderRoute(false); }, event.currentTarget), next === 'closed' ? '' : 'primary');
+  return button(next === 'closed' ? 'Close pull request' : 'Reopen', event => mutation(async () => { await api(`/api/repos/${repo.id}/pulls/${item.id}`, 'PATCH', { state: next }); await renderRoute(false); }, event.currentTarget), next === 'closed' ? '' : 'primary');
 }
 function commentItem(comment) {
   return el('article', { class: 'comment' }, el('div', { class: 'comment-header' }, el('span', { class: 'avatar', 'aria-hidden': 'true' }, comment.author.slice(0, 2)), el('strong', {}, comment.author), time(comment.created_at)), comment.path ? el('p', { class: 'comment-location' }, `${comment.path}:${comment.line} · ${(comment.commit_oid || '').slice(0, 8)}`) : null, el('p', { class: 'prose' }, comment.body));
 }
-function threadHeading(item, isPull) { return heading(el('span', {}, item.title, el('span', { class: 'owner-name' }, ` #${item.id}`)), '', [badge(item.state)]); }
+function threadHeading(item) { return heading(el('span', {}, item.title, el('span', { class: 'owner-name' }, ` #${item.id}`)), '', [badge(item.state)]); }
 function discussionBody(item) { return el('div', { class: 'discussion-body' }, el('div', { class: 'thread-meta' }, el('strong', {}, item.author), 'opened ', time(item.created_at)), el('p', { class: 'prose' }, item.body || 'No description provided.')); }
-async function issueDetail(repo, id) {
-  const data = await api(`/api/repos/${repo.id}/issues/${id}`); const item = data.issue;
-  const commentForm = state.user && repo.role !== 'read' ? section('Add a comment', '', form([field('Comment', 'body', '', { type: 'textarea', required: true, maxlength: 100000, help: 'Your draft is saved locally until you post it.' })], 'Post comment', async (values, node) => { await api(`/api/repos/${repo.id}/issues/${id}/comments`, 'POST', values); node.clearDraft?.(); await renderRoute(false); }, { draft: `${repo.id}:issues:${id}:comment` })) : el('p', { class: 'content-note' }, state.user ? 'Write access is required to comment.' : link('Sign in to participate', '/login'));
-  return [threadHeading(item, false), discussionBody(item), editThread(repo, item, 'issues'), el('div', { class: 'actions' }, stateButton(repo, item, 'issues')), section(`Discussion (${data.comments.length})`, '', data.comments.length ? data.comments.map(commentItem) : el('p', { class: 'content-note' }, 'No comments yet.')), commentForm];
-}
 async function pullDetail(repo, id) {
   const data = await api(`/api/repos/${repo.id}/pulls/${id}`); const item = data.pull;
   const canWrite = !!state.user && repo.role !== 'read';
@@ -395,7 +390,7 @@ async function pullDetail(repo, id) {
   const blockers = data.merge_blockers || [];
   const merge = el('section', { class: 'merge-panel' }, el('h2', {}, item.state === 'merged' ? 'Changes merged' : item.state === 'closed' ? 'Pull request closed' : data.mergeable ? 'Ready to merge' : 'Merge blocked'), item.state === 'merged' ? el('p', {}, 'Merged commit ', el('code', {}, item.merged_oid)) : item.state === 'open' ? [blockers.length ? el('ul', {}, blockers.map(blocker => el('li', {}, blocker))) : el('p', {}, 'The branches can be merged and the review requirements are satisfied.'), canWrite ? button('Merge pull request', event => mutation(async () => { await api(`/api/repos/${repo.id}/pulls/${id}/merge`, 'POST', { expected_head_oid: data.head_oid }); await refreshWorkspace(); await renderRoute(false); announce('Pull request merged'); }, event.currentTarget), 'primary', 'pull') : el('p', {}, 'Write access is required to merge.')] : el('p', {}, 'Reopen this pull request to continue reviewing and merging.'));
   const mergeButton = $('button', merge); if (mergeButton) mergeButton.disabled = !data.mergeable;
-  return [threadHeading(item, true), discussionBody(item), editThread(repo, item, 'pulls'), el('div', { class: 'actions' }, stateButton(repo, item, 'pulls')), section('Changes', '', diffToolbar, diffArea), section(`Reviews (${data.reviews.length})`, '', reviews.length ? reviews : el('p', { class: 'content-note' }, 'No reviews yet.')), reviewForm, merge, section(`Discussion (${data.comments.length})`, '', data.comments.length ? data.comments.map(commentItem) : el('p', { class: 'content-note' }, 'No comments yet.')), commentForm ? section('Add a comment', '', commentForm) : el('p', { class: 'content-note' }, state.user ? 'Write access is required to comment.' : link('Sign in to participate', '/login'))];
+  return [threadHeading(item), discussionBody(item), item.kaneo_task_url ? el('p', { class: 'content-note' }, el('a', { href: item.kaneo_task_url, target: '_blank', rel: 'noopener noreferrer' }, 'Open linked Kaneo task ', icon('external'))) : null, editPull(repo, item), el('div', { class: 'actions' }, pullStateButton(repo, item)), section('Changes', '', diffToolbar, diffArea), section(`Reviews (${data.reviews.length})`, '', reviews.length ? reviews : el('p', { class: 'content-note' }, 'No reviews yet.')), reviewForm, merge, section(`Discussion (${data.comments.length})`, '', data.comments.length ? data.comments.map(commentItem) : el('p', { class: 'content-note' }, 'No comments yet.')), commentForm ? section('Add a comment', '', commentForm) : el('p', { class: 'content-note' }, state.user ? 'Write access is required to comment.' : link('Sign in to participate', '/login'))];
 }
 async function sshPage() {
   const { ssh_keys } = await api('/api/ssh-keys');
@@ -412,7 +407,7 @@ function agentsPage() {
     status.textContent = 'Token created. Copy it before leaving this page.';
     credentials.scrollIntoView({ block: 'start' });
   });
-  return [heading('Agent access', 'Connect the Codex and Claude tools you already use.'), el('div', { class: 'notice' }, 'Agents work through your account’s repository permissions and branch protections. GitClub provides the collaboration surface; your agent runs in your own tools.'), section('MCP endpoint', '', codeBlock(endpoint)), section('Available operations', '', el('ul', { class: 'api-list' }, ['Find repositories across owners and read repository code.', 'Read, create, and update issues and pull requests.', 'Inspect diffs, leave comments, and submit reviews.', 'Merge pull requests when repository protections allow it.'].map(text => el('li', {}, text)))), section('Create a credential', 'Credentials stay out of browser storage. Use a dedicated account if you want to limit an agent’s access.', tokenForm), credentials, section('Git authentication', 'For HTTPS clone and push, use your GitClub username and an access token as the password. Let your Git credential helper store it; avoid putting tokens into remote URLs.', codeBlock(`git clone ${location.origin}/OWNER/REPOSITORY.git`))];
+  return [heading('Agent access', 'Connect the Codex and Claude tools you already use.'), el('div', { class: 'notice' }, 'Agents work through your account’s repository permissions and branch protections. GitClub provides the collaboration surface; your agent runs in your own tools.'), section('MCP endpoint', '', codeBlock(endpoint)), section('Available operations', '', el('ul', { class: 'api-list' }, ['Find repositories across owners and read repository code.', 'Read, create, and update pull requests linked to Kaneo tasks.', 'Inspect diffs, leave comments, and submit reviews.', 'Merge pull requests when repository protections allow it.'].map(text => el('li', {}, text)))), section('Create a credential', 'Credentials stay out of browser storage. Use a dedicated account if you want to limit an agent’s access.', tokenForm), credentials, section('Git authentication', 'For HTTPS clone and push, use your GitClub username and an access token as the password. Let your Git credential helper store it; avoid putting tokens into remote URLs.', codeBlock(`git clone ${location.origin}/OWNER/REPOSITORY.git`))];
 }
 async function renderRoute(focus = true) {
   const generation = ++state.page;
@@ -438,13 +433,15 @@ async function renderRoute(focus = true) {
       let body;
       if (['code', 'file', 'history', 'compare'].includes(type)) body = await codePage(repo, type, params);
       else if (type === 'settings') { requireUser(); body = repoSettings(repo); }
-      else if (type === 'issues' || type === 'pulls') {
-        if (!itemId) body = await threadsPage(repo, type);
-        else if (itemId === 'new') { requireUser(); body = await newThread(repo, type, params); }
-        else if (/^\d+$/.test(itemId)) body = type === 'issues' ? await issueDetail(repo, itemId) : await pullDetail(repo, itemId);
+      else if (type === 'issues') {
+        body = [heading('Issue tracking moved to Kaneo', repo.kaneo_project_url ? 'Open the connected project to manage tasks.' : 'A repository administrator can connect a Kaneo project in Settings.'), repo.kaneo_project_url ? actionLink('Open Kaneo project', repo.kaneo_project_url, 'primary', 'external') : repo.role === 'admin' ? actionLink('Connect Kaneo', repoPath(repo, 'settings'), 'primary') : null];
+      } else if (type === 'pulls') {
+        if (!itemId) body = await pullsPage(repo);
+        else if (itemId === 'new') { requireUser(); body = await newPull(repo, params); }
+        else if (/^\d+$/.test(itemId)) body = await pullDetail(repo, itemId);
         else throw new Error('This page does not exist. Return to the repository to continue.');
       } else throw new Error('This page does not exist. Return to the repository to continue.');
-      contents = [...repoHeader(repo, ['issues', 'pulls', 'settings'].includes(type) ? type : 'code'), ...body];
+      contents = [...repoHeader(repo, ['pulls', 'settings'].includes(type) ? type : 'code'), ...body];
     } else contents = [heading('Page not found', 'This address does not match a GitClub page.'), actionLink('Open repositories', '/repos', 'primary')];
     if (generation !== state.page) return;
     main.replaceChildren(...contents.flat(Infinity).filter(Boolean));
