@@ -30,6 +30,10 @@ PostgreSQL replaces SQLite. The driver is the requirement: continuous write-ahea
 
 Pin the image to `postgres-ssl:18`, the major tag only. Point-in-time recovery rejects minor pins, and high availability requires a pinned major. PostgreSQL 18.6 is the current stable release; 19 was at Beta 3 on this date.
 
+PostgreSQL 19 was considered and rejected for now on two independent grounds. It is not released: the newest published image is `19beta3`, with no `19` or release-candidate tag, and `latest` still resolves to 18. Railway cannot run it either: `ghcr.io/railwayapp-templates/postgres-ssl` publishes no 19 tag at all, its high availability conversion lists majors 14 through 18, and point-in-time recovery requires that official image. Choosing 19 would therefore forfeit the write-ahead log shipping that the recovery design depends on, in exchange for a database the project does not support upgrading from beta to final without a dump and restore.
+
+The application is nonetheless verified against 19. On 2026-09-14 the full Go suite under `-race` and all 19 acceptance groups passed against `postgres:19beta3` with no code change. When 19 ships and Railway publishes the image, the move is Railway's in-place `pg_upgrade` flow rather than a port. That flow currently documents source majors 14 through 17, so 18 has to join the supported source list before an in-place 18 to 19 upgrade is available.
+
 Railway PostgreSQL high availability, which is Patroni with etcd and HAProxy, is deferred. It converts one billed service into roughly nine and buys uptime, while the stated requirement is durability. Point-in-time recovery and the standby cover durability. High availability converts in place later if measured uptime justifies it.
 
 ## Disaster recovery
