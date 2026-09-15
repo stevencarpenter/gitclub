@@ -2,9 +2,9 @@
 
 <!-- impeccable:design-schema 1 -->
 
-GitClub uses a restrained light workspace optimized for sustained reading, repository discovery, and code review. The interface was built directly from the agreed navigation requirements, as requested, with a restrained visual direction for sustained developer work.
+GitClub uses a restrained workspace with dark mode as the default, optimized for sustained reading, repository discovery, and code review. The interface was built directly from the agreed navigation requirements, as requested, with a restrained visual direction for sustained developer work.
 
-The content surface is warm white. The persistent navigation surface is a slightly darker neutral. Dark green identifies the wordmark, primary actions, and selection. Muted text remains readable. Red identifies destructive decisions and errors. Source code and identifiers use the platform monospace family; interface text uses the platform sans family.
+The default content surface is a dark green neutral, with a darker navigation surface and raised panels. Soft green identifies the wordmark, primary actions, and selection. Light mode retains the warm white content surface, neutral navigation, and dark green accents. Muted text remains readable in both modes. Red identifies destructive decisions and errors. The header theme control saves the browser’s explicit choice; new visits default to dark regardless of the operating system setting. The saved choice is applied before the stylesheet paints, and theme switching remains available when browser storage is disabled. Source code and identifiers use the platform monospace family; interface text uses the platform sans family.
 
 Repository discovery occupies a single directory with explicit owner/name labels, optional owner and group filters, pinned repositories first, and default-branch freshness ordering. The sidebar preserves the same cross-owner context throughout repository work. It contains pins, accessible shared and personal groups, and repository links. Shared collections do not grant repository access.
 

@@ -26,6 +26,8 @@ const paths = {
   copy: 'M9 8h12v13H9zM5 16H2V2h13v3',
   check: 'm4 12 5 5L20 6',
   refresh: 'M21 4v6h-6M3 20v-6h6M4 9a8 8 0 0 1 13-5l4 6M3 14l4 6a8 8 0 0 0 13-5',
+  sun: 'M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5',
+  moon: 'M21 13a9 9 0 0 1-10-10 9 9 0 1 0 10 10Z',
 };
 function icon(name, extra = '') {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -150,8 +152,24 @@ function renderSidebar() {
 }
 function shell() {
   const root = $('#app');
-  root.replaceChildren(el('div', { class: 'shell' }, el('aside', { id: 'sidebar', class: 'sidebar', 'aria-label': 'Repository navigation' }), el('button', { type: 'button', class: 'backdrop', 'aria-label': 'Close navigation', tabindex: '-1', onClick: () => setNav(false) }), el('div', { class: 'workspace' }, el('header', { class: 'topbar' }, el('button', { class: 'subtle-button mobile-menu', type: 'button', 'aria-label': 'Open navigation', 'aria-controls': 'sidebar', 'aria-expanded': 'false', onClick: () => setNav(!state.navOpen) }, icon('menu')), el('span', { class: 'context' }, 'Your workspace'), el('div', { class: 'right' }, el('span', { class: 'context-help' }, 'Code, together.'), button('Find repository', openSwitcher, 'small', 'search'))), el('main', { id: 'main', class: 'main', tabindex: '-1' }))));
+  root.replaceChildren(el('div', { class: 'shell' }, el('aside', { id: 'sidebar', class: 'sidebar', 'aria-label': 'Repository navigation' }), el('button', { type: 'button', class: 'backdrop', 'aria-label': 'Close navigation', tabindex: '-1', onClick: () => setNav(false) }), el('div', { class: 'workspace' }, el('header', { class: 'topbar' }, el('button', { class: 'subtle-button mobile-menu', type: 'button', 'aria-label': 'Open navigation', 'aria-controls': 'sidebar', 'aria-expanded': 'false', onClick: () => setNav(!state.navOpen) }, icon('menu')), el('span', { class: 'context' }, 'Your workspace'), el('div', { class: 'right' }, el('span', { class: 'context-help' }, 'Code, together.'), button('Find repository', openSwitcher, 'small', 'search'), themeToggle())), el('main', { id: 'main', class: 'main', tabindex: '-1' }))));
   renderSidebar();
+}
+function themeToggle() {
+  const control = el('button', { type: 'button', class: 'subtle-button theme-toggle', onClick: () => {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    window.setGitClubTheme(next, true);
+    update();
+    announce(`${next === 'dark' ? 'Dark' : 'Light'} mode enabled`);
+  } });
+  const update = () => {
+    const dark = document.documentElement.dataset.theme === 'dark';
+    control.title = `Switch to ${dark ? 'light' : 'dark'} mode`;
+    control.setAttribute('aria-label', control.title);
+    control.replaceChildren(icon(dark ? 'sun' : 'moon'));
+  };
+  update();
+  return control;
 }
 async function refreshWorkspace() {
   const results = await Promise.all([api('/api/repos'), state.user ? api('/api/groups') : Promise.resolve({ groups: [] }), state.user ? api('/api/namespaces') : Promise.resolve({ namespaces: [] })]);

@@ -12,3 +12,4 @@ __pycache__/
 .impeccable/hook.cache.json
 .lavish/*.log
 node_modules/
+.playwright-cli/
