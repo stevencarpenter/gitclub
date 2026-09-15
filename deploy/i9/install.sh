@@ -23,6 +23,7 @@ fi
 
 install -m 0755 "$HERE/gitclub-mirror-sweep" "$PREFIX/gitclub-mirror-sweep"
 install -m 0755 "$HERE/gitclub-recover" "$PREFIX/gitclub-recover"
+install -m 0755 "$HERE/gitclub-verify-recovery" "$PREFIX/gitclub-verify-recovery"
 install -d -o gitclub -g gitclub -m 0750 "$MIRRORS"
 install -d -m 0755 /etc/gitclub /etc/pgbackrest
 
@@ -38,6 +39,7 @@ for template in mirror-sweep.env:/etc/gitclub/mirror-sweep.env \
   fi
 done
 chown gitclub:gitclub /etc/gitclub/mirror-sweep.env
+chown postgres:postgres /etc/pgbackrest/pgbackrest.conf
 
 install -m 0644 "$HERE/systemd/gitclub-mirror-sweep.service" /etc/systemd/system/
 install -m 0644 "$HERE/systemd/gitclub-mirror-sweep.timer" /etc/systemd/system/
@@ -49,7 +51,8 @@ cat <<'NEXT'
 Installed. Remaining steps, in order:
 
   1. Fill in /etc/pgbackrest/pgbackrest.conf from the Railway Postgres
-     service's WAL_ARCHIVE_* variables (read-only key).
+     service's pgBackRest configuration, including its cluster-specific path.
+     Railway bucket credentials have read/write access; protect this file.
   2. sudo ./bootstrap-standby.sh
   3. systemctl enable --now gitclub-standby.service
   4. Fill in /etc/gitclub/mirror-sweep.env with the server URL and a token

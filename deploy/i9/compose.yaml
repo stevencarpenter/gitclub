@@ -1,0 +1,49 @@
+name: gitclub-dr
+
+x-runtime: &runtime
+  build: .
+  image: gitclub-dr:local
+  restart: unless-stopped
+
+services:
+  standby:
+    <<: *runtime
+    command: [standby]
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    volumes:
+      - standby:/var/lib/gitclub/standby
+    secrets: [pgbackrest]
+
+  mirror:
+    <<: *runtime
+    command: [mirror]
+    volumes:
+      - mirrors:/var/lib/gitclub/mirrors
+    secrets: [mirror-sweep]
+
+  recovery:
+    <<: *runtime
+    profiles: [drill]
+    restart: "no"
+    environment:
+      PGDATA: /var/lib/gitclub/recovered
+    command: [postgres, -D, /var/lib/gitclub/recovered, -c, "listen_addresses=", -c, "port=5433", -c, "ssl=off", -c, "archive_mode=off", -c, "logging_collector=off"]
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    volumes:
+      - standby:/var/lib/gitclub/standby:ro
+      - mirrors:/var/lib/gitclub/mirrors:ro
+      - recovered:/var/lib/gitclub/recovered
+    secrets: [pgbackrest]
+
+volumes:
+  standby:
+  mirrors:
+  recovered:
+
+secrets:
+  pgbackrest:
+    file: ${GITCLUB_DR_CONFIG_DIR:-${HOME}/.config/gitclub-dr}/pgbackrest.conf
+  mirror-sweep:
+    file: ${GITCLUB_DR_CONFIG_DIR:-${HOME}/.config/gitclub-dr}/mirror-sweep.env

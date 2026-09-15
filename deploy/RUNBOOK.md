@@ -1,135 +1,228 @@
-# GitClub disaster recovery runbook
+# GitClub deployment and recovery
 
-Railway serves GitClub. The i9 machine holds a PostgreSQL standby and a set of
-Git mirrors and serves nothing. Recovery restores the database to the mirror
-sweep's recovery target, not to the standby's current position.
+Railway serves GitClub at <https://gitclub-production.up.railway.app>.
+SSH Git uses `switchyard.proxy.rlwy.net:10681`. The i9 host runs the DR
+containers under OrbStack at `~/gitclub-dr`. Its normal configuration publishes
+no ports.
 
-The rule everything else follows: **restore PostgreSQL to a point at or before
-the start of the last completed Git mirror sweep.** Metadata behind code is
-safe. Code behind metadata is not, because `repositories.default_oid`,
-`pull_requests.merged_oid`, `comments.commit_oid` and `reviews.commit_oid` would
-name Git objects this machine does not hold.
+**Restore PostgreSQL to the start of the last completed Git mirror sweep.**
+The standby normally replays beyond that point. Promoting it directly can
+leave database rows referencing Git objects that were never mirrored.
 
-## Bring-up order
+## Verified deployment (2026-09-15 UTC)
 
-Each step depends on the one before it.
+1. Production application revision `508d237`: 19 HTTP acceptance groups and
+   six SSH acceptance groups passed. The remote HTTP run skipped the optional
+   missed-hook test that requires direct access to the application data volume.
+2. i9 restored backup `20260915-050840F` and entered continuous archive recovery
+   with PostgreSQL 18.6 and pgBackRest 2.59.1. Database connections are refused.
+3. The isolated drill restored to `2026-09-15T05:34:28Z`. Verification found
+   all six repositories and 17 metadata commit references. Original login,
+   token, 13 API readbacks, Git refs and clone integrity passed. All 19 HTTP
+   acceptance groups passed on the recovered application, and its restored
+   receive hook rejected a protected push to an existing repository.
+4. Elapsed time from starting the restore through completed verification was
+   181 seconds. Drill services were stopped and normal mirroring resumed.
 
-1. **Railway project and service.** From the repository root, `railway login`,
-   `railway link`, then `railway config plan` and `railway config apply`. The
-   definition is `.railway/railway.ts`.
-2. **Sealed SSH secret.** Set `GITCLUB_SSH_SECRET` on the `gitclub` service to
-   at least 32 random characters (`python3 -c "import secrets;
-   print(secrets.token_hex(32))"`). The IaC file keeps it with `preserve()` so
-   it never enters git. Without it the container serves HTTP Git only.
-3. **SSH TCP proxy.** Service Settings, Networking, Public Access, port 2222.
-   Railway allows one TCP proxy per service; HTTP goes through the domain.
-4. **Point-in-Time Recovery.** Postgres service, Backups tab, Enable PITR.
-   This creates the `Postgres-PITR` bucket and starts archiving every WAL
-   segment. **Nothing downstream works until this is on**, because the bucket
-   is how write-ahead log reaches the i9.
-5. **Read-only bucket credentials** for the i9, from the Postgres service's
-   `WAL_ARCHIVE_*` variables.
-6. **i9 standby.** Install `pgbackrest.conf` from `deploy/i9/pgbackrest.conf.example`,
-   then `sudo deploy/i9/bootstrap-standby.sh`, then
-   `systemctl enable --now gitclub-standby.service`.
-7. **i9 mirror sweep.** Create a GitClub account with read access to every
-   repository, mint a token, fill `/etc/gitclub/mirror-sweep.env` from
-   `deploy/i9/mirror-sweep.env.example`, install the unit and timer, then
-   `systemctl enable --now gitclub-mirror-sweep.timer`.
-8. **Run the drill below.** An untested recovery path is not a recovery path.
+## Railway provisioning
 
-## Health
+Run these commands from the repository root with Railway CLI 5.57 or later:
 
 ```sh
-gitclub-recover status
+npm ci --prefix .railway --ignore-scripts
+railway login
+railway link --project 4c952b84-85a6-4fb6-89fa-c4ecb1589b31 --environment production
+umask 077
+railway config plan --out /tmp/gitclub-plan.json
 ```
 
-Reports what the mirror covers, what the standby has replayed, and warns when
-the recovery target is stale. A stale target is the common real failure: the
-sweep timer stopped and nobody noticed, so the recoverable point silently aged.
+Review the saved plan before applying it. The definition retains the
+`Postgres-PITR` bucket: omitting it would propose deleting the live archive.
+The repository volume is 5,000 MB, the current workspace limit. Its region is
+explicit because omitting that region produces persistent drift.
 
-Check these when something looks wrong:
+```sh
+railway config apply --plan /tmp/gitclub-plan.json --yes --json > /tmp/gitclub-apply.json
+```
 
-- `systemctl status gitclub-mirror-sweep.timer` and `journalctl -u gitclub-mirror-sweep`
-- `systemctl status gitclub-standby` and `pg_controldata -D /var/lib/gitclub/standby`
-- `pgbackrest --stanza=main info` for archive freshness
-- Railway, Postgres service, Backups tab for archiver health
+Inspect the JSON result and verify its apply status is `applied`. CLI 5.57.0
+returned exit status zero when a backend apply failed; a zero shell status alone
+does not prove success. Keep plan and result files private and outside git.
 
-## Recovery
+For a new environment, complete these operations after provisioning:
 
-Do this when Railway is lost and GitClub must come back on the i9.
+1. Generate a public domain for `gitclub`, targeting port 7701. `PUBLIC_URL`
+   resolves to `https://${{RAILWAY_PUBLIC_DOMAIN}}`. It must equal the browser's
+   external origin or browser writes return 403.
+2. Set `GITCLUB_SSH_SECRET` as a sealed variable on `gitclub`, using at least
+   32 random characters. The definition preserves the sealed value.
+3. Create SSH networking with
+   `railway tcp-proxy create --service gitclub --port 2222`.
+4. Enable archiving with `railway postgres pitr enable --service postgres`.
+   Wait for the initial backup and healthy archiver in
+   `railway postgres pitr status --service postgres --json`.
+5. Run `railway config plan` again. It must retain both volumes, both services
+   and the PITR bucket without proposing a destructive change.
 
-1. **Stop the sweep.** `systemctl stop gitclub-mirror-sweep.timer`. A sweep
-   against a dead or half-dead primary can fail midway and is noise you do not
-   need during recovery.
-2. **Read the target.** `gitclub-recover status`. Note the recovery target and
-   how old it is. Everything pushed after it is not recoverable. If that
-   window is unacceptable, stop and decide whether to wait for Railway instead.
-3. **Review the plan.** `gitclub-recover plan`. It prints the exact
-   `pgbackrest restore` and changes nothing.
-4. **Restore.** `gitclub-recover promote --yes`. This restores into
-   `/var/lib/gitclub/recovered` and promotes. The standby at
-   `/var/lib/gitclub/standby` is left untouched, so a failed restore costs
-   nothing and can be retried.
-5. **Place the repositories.** Copy the mirrors into the new server's data
-   directory as `repos/<id>.git`. The mirror directories are already named by
-   repository id:
+## i9 configuration
+
+The checked-in Compose runtime uses the same PostgreSQL 18 image family as
+Railway. Both were verified with PostgreSQL 18.6 and pgBackRest 2.59.1.
+
+Copy `deploy/i9/` to `i9:~/gitclub-dr/`. Store these two files in
+`i9:~/.config/gitclub-dr/`, with directory mode 0700 and file mode 0600:
+
+1. `pgbackrest.conf`, based on `pgbackrest.conf.example`. Copy the primary's
+   exact `repo1-*` connection values from `/etc/pgbackrest/pgbackrest.conf`.
+   The live archive path is `/pgbackrest/cluster-7685622405611208769`;
+   `WAL_ARCHIVE_PATH=/pgbackrest` omits the required cluster directory.
+   Railway issues read/write bucket credentials only. Direct i9 archive
+   access was approved for this deployment. Only the standby and recovery
+   containers receive this file.
+2. `mirror-sweep.env`, based on `mirror-sweep.env.example`. Use the public
+   URL and the `gitclub-dr` account's token. This account needs read access
+   to every namespace. New repositories in an existing namespace inherit
+   that access. Grant access whenever a new namespace is created.
+
+The current `gitclub-dr` account has read access to every existing namespace.
+For newly created namespaces, an operator can grant the same access on the
+primary database:
+
+```sql
+INSERT INTO namespace_members(namespace, user_id, role)
+SELECT n.name, u.id, 'read'
+FROM namespaces n CROSS JOIN users u
+WHERE u.username = 'gitclub-dr'
+ON CONFLICT (namespace, user_id) DO NOTHING;
+```
+
+The sweep cannot discover private repositories its token cannot see. Its
+shrinking-count guard detects revoked access, but cannot detect a namespace
+that was never granted.
+
+After both private files are configured, run on i9:
+
+```sh
+cd ~/gitclub-dr
+docker compose build standby
+docker compose run --rm standby bootstrap
+docker compose up -d standby mirror
+docker compose run --rm recovery gitclub-recover status
+```
+
+Bootstrap refuses a populated standby directory. The standby has
+`hot_standby=off` and refuses database connections while replaying the archive.
+The mirror runs every five minutes. Its token is mounted only into the mirror
+container and is excluded from Git configuration and URLs.
+
+`install.sh` and `systemd/` remain available for a Linux host. They are not the
+runtime used by this macOS i9.
+
+## Health checks
+
+```sh
+curl -fsS https://gitclub-production.up.railway.app/health
+railway postgres pitr status --service postgres --json
+ssh i9 'cd ~/gitclub-dr && docker compose ps'
+ssh i9 'cd ~/gitclub-dr && docker compose logs --tail=30 standby mirror'
+ssh i9 'cd ~/gitclub-dr && docker compose run --rm recovery gitclub-recover status'
+```
+
+Require a recent completed mirror sweep, a healthy Railway archiver and a
+standby in archive recovery. The recovery point is the mirror sweep's start
+time, so a stalled sweep increases potential data loss even if WAL replay is
+current. `gitclub-recover status` returns nonzero when that target is over
+60 minutes old.
+
+For detailed local checks on i9:
+
+```sh
+cd ~/gitclub-dr
+docker compose exec -u postgres standby pg_controldata -D /var/lib/gitclub/standby
+docker compose exec -u postgres standby pgbackrest --stanza=main info
+```
+
+The control file should report `in archive recovery`. The primary's
+`max_connections` and other replay-sensitive settings must not be reduced on
+the standby.
+
+## Restore and drill
+
+Run this quarterly and after changes to the recovery tools or schema. The
+`recovered` and `serving` volumes are separate from the standby and mirrors.
+The application is reachable only through i9's loopback port 17701.
+
+1. **Prepare the application image.** On i9, build the application revision
+   being recovered from a complete repository checkout:
+
    ```sh
-   install -d -m 0700 /var/lib/gitclub/serving/repos
-   cp -a /var/lib/gitclub/mirrors/*.git /var/lib/gitclub/serving/repos/
+   docker build -f deploy/railway/Dockerfile -t gitclub-railway:drill .
+   cd ~/gitclub-dr
+   docker compose stop mirror
+   docker compose run --rm recovery gitclub-recover status
+   docker compose run --rm recovery gitclub-recover plan
    ```
-6. **Start GitClub** against the recovered database and that data directory,
-   with `PUBLIC_URL` set to the new external origin. Browser writes validate
-   Origin against it, so a wrong value rejects every mutation with 403.
-7. **Verify before announcing.** See below.
-8. **Repoint DNS** once verification passes.
 
-### Verify a recovery
+   Record the target and elapsed-time start. Stop the mirror only to freeze
+   its state during the drill. The standby continues replaying.
 
-```sh
-curl -fsS "$PUBLIC_URL/health"
-python3 tests/acceptance.py --url "$PUBLIC_URL"
-```
+2. **Restore and complete database recovery.** Use empty scratch volumes:
 
-Then confirm the invariant actually held, which the acceptance suite does not
-check because it creates its own fixtures:
+   ```sh
+   docker compose run --rm recovery gitclub-recover promote --yes
+   docker compose -f compose.yaml -f compose.drill.yaml --profile drill up -d --wait recovery
+   docker compose exec -u postgres recovery psql -p 5433 -d railway -tAc 'SELECT pg_is_in_recovery()'
+   docker compose exec -u postgres recovery gitclub-verify-recovery
+   ```
 
-```sh
-# Every Git object id the database names must exist in the restored repository.
-psql "$DATABASE_URL" -tAc "SELECT id, default_oid FROM repositories WHERE default_oid <> ''" |
-while IFS='|' read -r id oid; do
-  git --git-dir="/var/lib/gitclub/serving/repos/$id.git" cat-file -e "$oid^{commit}" \
-    || echo "MISSING default_oid $oid in repository $id"
-done
-```
+   `promote` restores the base backup and writes a time recovery target.
+   Starting PostgreSQL performs replay and promotion. Require
+   `pg_is_in_recovery()` to return `f`. Require zero missing repositories and
+   commits. Verification covers `default_oid`, `merged_oid`, comment commits
+   and review commits. A failure blocks application startup.
 
-Repeat for `pull_requests.merged_oid`. Output means the ordering invariant was
-violated and the database is ahead of the mirrors: restore again to an earlier
-target.
+3. **Prepare repositories and start the application.**
 
-### When the mirror is too far behind
+   ```sh
+   docker compose -f compose.yaml -f compose.drill.yaml --profile drill run --rm --no-deps prepare
+   docker compose -f compose.yaml -f compose.drill.yaml --profile drill up -d app
+   curl -fsS http://127.0.0.1:17701/health
+   ```
 
-If the recovery target is hours old and the standby is current, the choice is
-between losing recent pushes and having metadata reference missing objects.
-Restoring the standby's current position is possible but leaves specific broken
-references, not general corruption: repositories and pull requests whose head
-commits were never mirrored return errors on those resources while the rest of
-the instance works. Prefer the sweep target. Take the newer position only
-deliberately, and re-run the verification above to learn exactly which
-repositories are affected.
+   Preparation copies mirrors into the separate serving volume, installs both
+   receive hooks, sets the database's default branch and applies the app's
+   Git settings and file ownership. It refuses to overwrite existing repos.
+   A plain `cp` would omit the hooks required for push authorization.
 
-## Drill
+4. **Verify recovered data and writes.** From the development machine, open
+   `ssh -N -L 17701:127.0.0.1:17701 i9`. In a second terminal at the repository:
 
-Run this quarterly and after any change to the sweep, the standby, or the
-schema. It exercises the real path without touching production.
+   ```sh
+   python3 tests/readback.py --url http://127.0.0.1:17701 --state-file /tmp/gitclub-production-readback.json --report /tmp/gitclub-drill-readback.json
+   python3 tests/acceptance.py --url http://127.0.0.1:17701 --report /tmp/gitclub-drill-acceptance.json
+   ```
 
-1. `gitclub-recover status` and record the target.
-2. `gitclub-recover promote --yes --target-dir /var/lib/gitclub/drill`.
-3. Start PostgreSQL against `/var/lib/gitclub/drill` on a spare port.
-4. Copy mirrors to a scratch data directory and start GitClub against both.
-5. Run `python3 tests/acceptance.py` and the object-existence check above.
-6. Record the wall-clock time from step 2 to a passing step 5. That number is
-   your real recovery time objective; the estimate is not.
-7. Destroy the drill directories. Leave the standby and the timer running.
+   `readback.py` checks the original login, token, metadata, Git refs and a
+   cloned repository. Its private state file is produced by a previous
+   production acceptance run with `--state-file`; keep it outside git.
+   Also attempt a prohibited push against an existing recovered protected
+   repository, since acceptance creates new repositories. Record the elapsed
+   time to passing verification as measured recovery time.
 
-A drill that has never been run is the most likely reason a recovery fails.
+5. **Stop the drill and resume mirroring.** On i9:
+
+   ```sh
+   docker compose -f compose.yaml -f compose.drill.yaml --profile drill stop app recovery
+   docker compose up -d mirror
+   ```
+
+   The scratch volumes remain available for inspection. Before repeating the
+   drill, explicitly remove only the stopped drill containers and the
+   `gitclub-dr_recovered` and `gitclub-dr_serving` volumes. Never use
+   `docker compose down -v`: it would also delete the standby and mirrors.
+
+For an actual outage, leave mirroring stopped until the source of truth is
+settled. Complete the same restore and verification, then configure the new
+external origin, TLS and SSH endpoint before routing users to i9. Repository
+mirrors do not preserve SSH host keys; a newly served SSH endpoint has a new
+host-key identity.

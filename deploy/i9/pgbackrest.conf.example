@@ -1,24 +1,27 @@
 ; pgBackRest configuration for the GitClub disaster recovery standby.
 ;
-; Install at /etc/pgbackrest/pgbackrest.conf, owned by the postgres user, mode
-; 0640. Every value below comes from the Railway Postgres service's variables
-; after Point-in-Time Recovery is enabled on it:
+; OrbStack: ~/.config/gitclub-dr/pgbackrest.conf, mode 0600. The container
+; copies it into /etc/pgbackrest as postgres, mode 0600.
+; Linux: /etc/pgbackrest/pgbackrest.conf, owned by postgres, mode 0600.
 ;
-;   railway variables --service postgres | grep WAL_ARCHIVE
+; Copy the repo1-* values from the primary's /etc/pgbackrest/pgbackrest.conf
+; after enabling PITR. In particular, repo1-path includes a cluster ID that
+; WAL_ARCHIVE_PATH alone omits. Keep credentials out of terminal output.
 ;
 ; Railway names the bucket Postgres-PITR and creates the stanza as "main".
-; Give this machine a READ-ONLY key: the standby only ever reads the archive,
-; and a read-only credential cannot damage the primary's recovery history.
+; Railway currently issues read/write bucket credentials only. The standby
+; uses read operations, but a stolen key can alter or delete the archive.
+; Mount this file only into the standby and recovery containers.
 
 [global]
 repo1-type=s3
 repo1-s3-endpoint=CHANGEME_WAL_ARCHIVE_ENDPOINT
 repo1-s3-bucket=CHANGEME_WAL_ARCHIVE_BUCKET
 repo1-s3-region=CHANGEME_WAL_ARCHIVE_REGION
-repo1-s3-key=CHANGEME_WAL_ARCHIVE_ACCESS_KEY_ID
-repo1-s3-key-secret=CHANGEME_WAL_ARCHIVE_SECRET_ACCESS_KEY
+repo1-s3-key=CHANGEME_WAL_ARCHIVE_KEY
+repo1-s3-key-secret=CHANGEME_WAL_ARCHIVE_SECRET
 repo1-s3-uri-style=path
-repo1-path=/pgbackrest
+repo1-path=/pgbackrest/CHANGEME_CLUSTER_DIRECTORY_FROM_PRIMARY_CONFIG
 
 ; The archive is written by the primary. This machine must never expire or
 ; write to it, so no retention is configured here on purpose.

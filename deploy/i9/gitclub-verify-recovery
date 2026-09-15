@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Check every repository and every commit ID stored in the recovered database.
+set -euo pipefail
+
+mirrors="${1:-${GITCLUB_MIRRORS:-/var/lib/gitclub/mirrors}}"
+database="${DATABASE_URL:-postgresql:///railway?host=/var/run/postgresql&port=5433}"
+rows=$(psql "$database" -X -v ON_ERROR_STOP=1 -At -F '|' -c "
+  SELECT id, 'repository', '' FROM repositories
+  UNION ALL SELECT id, 'default_oid', default_oid FROM repositories WHERE default_oid <> ''
+  UNION ALL SELECT repo_id, 'merged_oid', merged_oid FROM pull_requests WHERE merged_oid <> ''
+  UNION ALL SELECT repo_id, 'comment_oid', commit_oid FROM comments WHERE commit_oid <> ''
+  UNION ALL SELECT p.repo_id, 'review_oid', r.commit_oid
+    FROM reviews r JOIN pull_requests p ON p.id = r.pull_id WHERE r.commit_oid <> '';")
+
+repositories=0
+commits=0
+missing=0
+while IFS='|' read -r id field oid; do
+  [ -n "$id" ] || continue
+  if [ "$field" = repository ]; then
+    repositories=$((repositories + 1))
+    if [ ! -f "$mirrors/$id.git/HEAD" ]; then
+      echo "MISSING repository $id" >&2
+      missing=$((missing + 1))
+    fi
+  else
+    commits=$((commits + 1))
+    if ! GIT_NO_REPLACE_OBJECTS=1 git --git-dir="$mirrors/$id.git" cat-file -e "$oid^{commit}"; then
+      echo "MISSING $field $oid in repository $id" >&2
+      missing=$((missing + 1))
+    fi
+  fi
+done <<< "$rows"
+echo "Checked $repositories repositories and $commits commit references; $missing missing."
+[ "$missing" -eq 0 ]

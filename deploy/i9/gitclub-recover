@@ -91,15 +91,17 @@ def status(args) -> int:
 
 
 def restore_command(args, state: dict) -> list[str]:
-    return [
+    command = [
         "pgbackrest", "restore",
         f"--stanza={args.stanza}",
         f"--pg1-path={args.target_dir}",
         "--type=time",
         f"--target={state['recovery_target_utc'].replace('T', ' ').replace('Z', '+00')}",
         "--target-action=promote",
-        "--delta",
     ]
+    if getattr(args, "delta", False):
+        command.append("--delta")
+    return command
 
 
 def plan(args) -> int:
@@ -123,16 +125,14 @@ def promote(args) -> int:
         fail(f"{target_dir} is not empty. Pass --delta to restore over it, or choose an "
              f"empty directory.")
     command = restore_command(args, state)
-    if not args.delta:
-        command.remove("--delta")
     print("running: " + shlex.join(command), flush=True)
     result = subprocess.run(command)
     if result.returncode != 0:
         fail(f"pgbackrest restore failed with status {result.returncode}. The standby at "
              f"{args.data_dir} is untouched.")
-    print(f"\nRestored to {state['recovery_target_utc']} in {target_dir}.")
-    print("Next: start PostgreSQL against that directory, point DATABASE_URL at it, and")
-    print(f"copy the mirrors from {args.mirrors} into the server's repos directory.")
+    print(f"\nBase backup restored into {target_dir}.")
+    print(f"Next: start PostgreSQL to replay to {state['recovery_target_utc']} and promote.")
+    print("Verify recovery completed before running prepare-repositories.py and starting GitClub.")
     print("deploy/RUNBOOK.md covers the remaining steps and the verification.")
     return 0
 

@@ -1,0 +1,42 @@
+# Use with compose.yaml after restoring the separate recovery volume.
+# Build gitclub-railway:drill from the application revision being recovered.
+services:
+  recovery:
+    ports: ["127.0.0.1:17701:7701"]
+    command:
+      - bash
+      - -ec
+      - |
+        printf 'local all all trust\nhost all all 127.0.0.1/32 trust\n' > "$$PGDATA/pg_hba.drill.conf"
+        exec postgres -D "$$PGDATA" -c listen_addresses=127.0.0.1 -c port=5433 \
+          -c "hba_file=$$PGDATA/pg_hba.drill.conf" -c hot_standby=off \
+          -c ssl=off -c archive_mode=off -c logging_collector=off
+    healthcheck:
+      test: [CMD, pg_isready, -h, 127.0.0.1, -p, "5433", -U, postgres, -d, railway]
+      interval: 2s
+      timeout: 3s
+      retries: 90
+
+  prepare:
+    profiles: [drill]
+    image: gitclub-railway:drill
+    network_mode: service:recovery
+    environment:
+      DATABASE_URL: postgresql://postgres@127.0.0.1:5433/railway
+    entrypoint: [python3, /prepare-repositories.py]
+    volumes:
+      - mirrors:/mirrors:ro
+      - serving:/data
+      - ./prepare-repositories.py:/prepare-repositories.py:ro
+
+  app:
+    profiles: [drill]
+    image: gitclub-railway:drill
+    network_mode: service:recovery
+    environment:
+      DATABASE_URL: postgresql://postgres@127.0.0.1:5433/railway
+      PUBLIC_URL: http://127.0.0.1:17701
+    volumes: [serving:/data]
+
+volumes:
+  serving:
