@@ -198,13 +198,15 @@ The application is reachable only through i9's loopback port 17701.
    `ssh -N -L 17701:127.0.0.1:17701 i9`. In a second terminal at the repository:
 
    ```sh
-   python3 tests/readback.py --url http://127.0.0.1:17701 --state-file /tmp/gitclub-production-readback.json --report /tmp/gitclub-drill-readback.json
+   python3 tests/readback.py --url http://127.0.0.1:17701 --state-file "$HOME/.config/gitclub/production-readback.json" --report /tmp/gitclub-drill-readback.json
    python3 tests/acceptance.py --url http://127.0.0.1:17701 --report /tmp/gitclub-drill-acceptance.json
    ```
 
    `readback.py` checks the original login, token, metadata, Git refs and a
    cloned repository. Its private state file is produced by a previous
-   production acceptance run with `--state-file`; keep it outside git.
+   production acceptance run with `--state-file`; keep it outside git. The
+   deployed fixture and drill reports are stored in `~/.config/gitclub/` on
+   the development machine.
    Also attempt a prohibited push against an existing recovered protected
    repository, since acceptance creates new repositories. Record the elapsed
    time to passing verification as measured recovery time.
