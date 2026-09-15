@@ -251,7 +251,9 @@ function namespacesPage() {
 function repoHeader(repo, active) {
   const tabs = [['code', 'Code', 'code'], ['pulls', 'Pull requests', 'pull']];
   if (repo.role === 'admin') tabs.push(['settings', 'Settings', 'settings']);
-  return [el('div', { class: 'repo-heading' }, heading(el('span', {}, el('span', { class: 'owner-name' }, `${repo.owner} / `), repo.name), repo.description || '', [badge(repo.visibility), state.user ? pinButton(repo) : null])), el('nav', { class: 'tabs', 'aria-label': 'Repository' }, tabs.map(([key, label, glyph]) => el('a', { href: repoPath(repo, key), class: `tab ${active === key ? 'active' : ''}`, ...(active === key ? { 'aria-current': 'page' } : {}) }, icon(glyph), label)), repo.kaneo_project_url ? el('a', { href: repo.kaneo_project_url, class: 'tab', target: '_blank', rel: 'noopener noreferrer', title: 'Open Kaneo project in a new tab' }, icon('external'), 'Kaneo') : null)];
+  const links = tabs.map(([key, label, glyph]) => el('a', { href: repoPath(repo, key), class: `tab ${active === key ? 'active' : ''}`, ...(active === key ? { 'aria-current': 'page' } : {}) }, icon(glyph), label));
+  if (repo.kaneo_project_url) links.splice(1, 0, el('a', { href: repo.kaneo_project_url, class: 'tab', target: '_blank', rel: 'noopener noreferrer', title: 'Open Kaneo project in a new tab' }, icon('external'), 'Kaneo'));
+  return [el('div', { class: 'repo-heading' }, heading(el('span', {}, el('span', { class: 'owner-name' }, `${repo.owner} / `), repo.name), repo.description || '', [badge(repo.visibility), state.user ? pinButton(repo) : null])), el('nav', { class: 'tabs', 'aria-label': 'Repository' }, links)];
 }
 function importInstructions(repo) {
   const remote = `${location.origin}/${repo.full_name}.git`;
