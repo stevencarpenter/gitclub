@@ -110,6 +110,7 @@ type rateEntry struct {
 type server struct {
 	db                                                            *sql.DB
 	dataDir, sharedDir, webDir, publicURL, internalURL, sshSecret string
+	backupUserID                                                  int64
 	gitSlots, transferSlots                                       chan struct{}
 	rates                                                         map[string]rateEntry
 	rateMu                                                        sync.Mutex
@@ -379,6 +380,9 @@ func main() {
 	s.db = openDatabase()
 	defer s.db.Close()
 	if e := s.migrate(); e != nil {
+		log.Fatal(e)
+	}
+	if e := s.configureBackupUser(os.Getenv("GITCLUB_BACKUP_USERNAME")); e != nil {
 		log.Fatal(e)
 	}
 	srv := &http.Server{Addr: net.JoinHostPort(env("HOST", "127.0.0.1"), port), Handler: s, ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 130 * time.Second, IdleTimeout: 60 * time.Second, MaxHeaderBytes: 1 << 16}

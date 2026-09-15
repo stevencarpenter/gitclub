@@ -80,25 +80,18 @@ Copy `deploy/i9/` to `i9:~/gitclub-dr/`. Store these two files in
    access was approved for this deployment. Only the standby and recovery
    containers receive this file.
 2. `mirror-sweep.env`, based on `mirror-sweep.env.example`. Use the public
-   URL and the `gitclub-dr` account's token. This account needs read access
-   to every namespace. New repositories in an existing namespace inherit
-   that access. Grant access whenever a new namespace is created.
+   URL and the `gitclub-dr` account's token. Create this account before setting
+   `GITCLUB_BACKUP_USERNAME=gitclub-dr` on the application service.
 
-The current `gitclub-dr` account has read access to every existing namespace.
-For newly created namespaces, an operator can grant the same access on the
-primary database:
+The application resolves `GITCLUB_BACKUP_USERNAME` to an existing account at
+startup and grants that account read access to every repository, including
+private repositories in namespaces created later. Existing memberships still
+control write and admin access. Keep this account's credentials private. The
+application refuses to start if the configured account does not exist.
 
-```sql
-INSERT INTO namespace_members(namespace, user_id, role)
-SELECT n.name, u.id, 'read'
-FROM namespaces n CROSS JOIN users u
-WHERE u.username = 'gitclub-dr'
-ON CONFLICT (namespace, user_id) DO NOTHING;
-```
-
-The sweep cannot discover private repositories its token cannot see. Its
-shrinking-count guard detects revoked access, but cannot detect a namespace
-that was never granted.
+The Railway IaC preserves this setting. Enable it only after creating the
+backup account. Per-namespace grants are insufficient for DR: a new private
+namespace can otherwise be absent from both the inventory and its count.
 
 After both private files are configured, run on i9:
 

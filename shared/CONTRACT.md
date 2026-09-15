@@ -18,6 +18,8 @@ Password storage: PBKDF2-HMAC-SHA256, 600000 iterations, random 16-byte salt, 32
 
 Roles inherit namespace membership or repository membership, take highest. Organization creation gives creator admin. Personal namespace belongs to user. Read sees code and discussions; write may push branches/create and review PRs; admin manages repository settings and membership. Only creator can edit group contents/sharing; any authenticated user can read shared group filtered by existing repository access. Sharing grants no repo access. All group membership inserts require creator already has repo read access. Pins per user.
 
+Optional GITCLUB_BACKUP_USERNAME resolves to an existing user ID after migrations and before listening; an unknown account fails startup. That authenticated account receives fallback repository read access across all namespaces, including newly created private repositories. Existing memberships still determine any write/admin access. An unset value grants no additional access. The setting supplies no authentication credential and does not grant namespace membership.
+
 ## Authentication and ownership routes
 
 POST /api/auth/register {username,password} -> 201 {user,token}, creates personal namespace, signs in with cookie.
@@ -25,7 +27,7 @@ POST /api/auth/login {username,password} -> 200 {user,token}, sets cookie.
 POST /api/auth/logout -> {ok:true}, revokes current token and clears cookie.
 GET /api/session -> {user:User|null}.
 GET /api/users -> {users:[User]} authenticated, search optional ?q=, max 100.
-GET /api/namespaces -> {namespaces:[Namespace]} requester memberships only.
+GET /api/namespaces -> {namespaces:[Namespace]} requester memberships; the configured backup account also sees other namespaces with fallback read role.
 POST /api/namespaces {name} -> 201 {namespace:Namespace} organization.
 POST /api/namespaces/NAME/members {username,role} -> {ok:true}, admin only.
 GET /api/ssh-keys -> {ssh_keys:[{id,title,public_key,created_at}]} own keys.

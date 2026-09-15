@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -9,9 +11,28 @@ import (
 	"strings"
 )
 
+func (s *server) configureBackupUser(username string) error {
+	s.backupUserID = 0
+	if username == "" {
+		return nil
+	}
+	err := s.db.QueryRow("SELECT id FROM users WHERE username=$1", username).Scan(&s.backupUserID)
+	if err == sql.ErrNoRows {
+		return fmt.Errorf("GITCLUB_BACKUP_USERNAME %q must identify an existing account; create the backup account before enabling this setting", username)
+	}
+	if err != nil {
+		return fmt.Errorf("load configured backup account: %w", err)
+	}
+	return nil
+}
+
+func (s *server) isBackupUser(u M) bool {
+	return s.backupUserID > 0 && num(u, "id") == s.backupUserID
+}
+
 func (s *server) role(repo, u M) string {
 	best := ""
-	if str(repo, "visibility") == "public" {
+	if str(repo, "visibility") == "public" || s.isBackupUser(u) {
 		best = "read"
 	}
 	if u == nil {
@@ -63,7 +84,11 @@ func (s *server) namespaces(w http.ResponseWriter, r *http.Request, u M, rest []
 	requireUser(u)
 	if len(rest) == 0 {
 		if r.Method == "GET" {
-			respond(w, 200, M{"namespaces": s.rows("SELECT namespaces.name,kind,role FROM namespaces JOIN namespace_members ON namespace=name WHERE user_id=? ORDER BY name", num(u, "id"))})
+			query := "SELECT namespaces.name,kind,role FROM namespaces JOIN namespace_members ON namespace=name WHERE user_id=? ORDER BY name"
+			if s.isBackupUser(u) {
+				query = "SELECT namespaces.name,kind,COALESCE(role,'read') AS role FROM namespaces LEFT JOIN namespace_members ON namespace=name AND user_id=? ORDER BY name"
+			}
+			respond(w, 200, M{"namespaces": s.rows(query, num(u, "id"))})
 			return
 		}
 		if r.Method == "POST" {

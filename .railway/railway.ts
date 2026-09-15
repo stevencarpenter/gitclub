@@ -51,6 +51,9 @@ export default defineRailway(() => {
       // Set once in the Railway dashboard as a sealed variable, at least 32
       // characters. preserve() keeps it out of this file and out of git.
       GITCLUB_SSH_SECRET: preserve(),
+      // Set to an existing account after provisioning it. Its global read
+      // access keeps newly created private namespaces in the DR inventory.
+      GITCLUB_BACKUP_USERNAME: preserve(),
     },
   });
 

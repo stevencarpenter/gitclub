@@ -9,6 +9,10 @@ five minutes. The standby replays the PITR archive with `hot_standby=off`.
 Normal operation publishes no ports. [RUNBOOK.md](RUNBOOK.md) contains the
 deployment, health and recovery commands.
 
+The application sets `GITCLUB_BACKUP_USERNAME=gitclub-dr` after that account is
+created. Its repository read access includes private namespaces created later,
+so the DR inventory covers the entire database.
+
 The [Kaneo status worker](kaneo/README.md) runs separately on i9 under
 `~/gitclub-kaneo`. It polls explicitly configured repositories every 60 seconds
 and completes linked tasks after pull requests merge. Its private credentials
