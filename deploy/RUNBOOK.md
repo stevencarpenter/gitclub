@@ -11,18 +11,37 @@ leave database rows referencing Git objects that were never mirrored.
 
 ## Verified deployment (2026-09-15 UTC)
 
-1. Production application revision `508d237`: 19 HTTP acceptance groups and
-   six SSH acceptance groups passed. The remote HTTP run skipped the optional
-   missed-hook test that requires direct access to the application data volume.
-2. i9 restored backup `20260915-050840F` and entered continuous archive recovery
-   with PostgreSQL 18.6 and pgBackRest 2.59.1. Database connections are refused.
-3. The isolated drill restored to `2026-09-15T05:34:28Z`. Verification found
-   all six repositories and 17 metadata commit references. Original login,
-   token, 13 API readbacks, Git refs and clone integrity passed. All 19 HTTP
-   acceptance groups passed on the recovered application, and its restored
-   receive hook rejected a protected push to an existing repository.
-4. Elapsed time from starting the restore through completed verification was
-   181 seconds. Drill services were stopped and normal mirroring resumed.
+1. Production application revision `4b86716` includes default dark mode and
+   the Kaneo integration from `cad427f`. Built-in issue routes are retired;
+   19 MCP tools remain. The `gitclub-dr` backup account can read repositories
+   in new private namespaces. The drill detected a missing private namespace
+   before this access-policy fix and refused application startup.
+2. i9 runs PostgreSQL 18.6 and pgBackRest 2.59.1 in continuous archive recovery.
+   The isolated drill restored to `2026-09-15T07:08:27Z`. Verification found
+   seven repositories, 17 metadata commit references and zero missing objects.
+   Both Kaneo columns existed before application startup. Two historical
+   issues and two comments matched their original fixtures.
+3. All 20 HTTP acceptance groups passed on the recovered application, with
+   zero skipped. Original login, token, 10 API readbacks, Git refs and clone
+   integrity passed. The restored receive hook rejected a protected push to
+   an existing repository. Total elapsed time was 1,488.1 seconds, including
+   the access-policy repair and deployment wait. Final verification of the
+   prepared restore took 13.3 seconds.
+4. The normal mirror sweep at `2026-09-15T07:40:15Z` covered eight repositories.
+   The hello-world merge commit `8e4b284d7f115b5a8022a006cc44b4ea4e6e9f2f`
+   matched mirrored `main`, existed as an object and passed full Git fsck.
+   Mirror and standby containers are running without published ports; the
+   standby refuses database connections. Drill app and recovery are stopped.
+5. Private repository `stevencarpenter/hello-world` is connected to Kaneo
+   project `HELLO`. Merging PR #5 automatically moved task `HELLO-1` from
+   In Progress to Done through the normal i9 worker. Its completion ledger
+   contains one completed repository/PR pair. The `steve` account has repo
+   admin access.
+
+Private drill evidence is stored in
+`~/.config/gitclub/live-drill.cad427f.passed.json` on the development machine.
+The initial drill and failed-attempt reports remain preserved. Demo links and
+merge verification are recorded in `~/.config/gitclub/hello-world.json`.
 
 ## Railway provisioning
 
