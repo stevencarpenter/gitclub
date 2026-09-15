@@ -4,6 +4,8 @@ An original self-hosted Git collaboration server written in Go. It does not inco
 
 [DECISION.md](DECISION.md) records why Go was chosen over the Gleam and Rust implementations that preceded it, the PostgreSQL and Railway deployment target, and the disaster recovery design. Tag `v0.0.0` holds all three implementations and their measurement evidence.
 
+[deploy/](deploy) holds the Railway and disaster recovery infrastructure, and [deploy/RUNBOOK.md](deploy/RUNBOOK.md) the bring-up order, recovery procedure, and drill.
+
 ## Run
 
 Docker with Compose is the only prerequisite for the packaged installation:

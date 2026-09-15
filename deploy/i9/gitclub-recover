@@ -1,0 +1,170 @@
+#!/usr/bin/env python3
+"""Inspect and execute GitClub disaster recovery on the standby machine.
+
+The standby replays continuously and is therefore normally AHEAD of the Git
+mirror. Promoting it as it stands would leave metadata referencing objects this
+machine does not hold. Recovery instead restores the database to the mirror
+sweep's recovery target, which is the newest point both halves cover.
+
+  status   what the mirror covers, what the standby has replayed, and whether
+           promoting as-is would put metadata ahead of code
+  plan     print the restore that recovery would run, changing nothing
+  promote  restore to the sweep recovery target and promote
+
+See DECISION.md, "Recovery ordering", and deploy/RUNBOOK.md.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import shlex
+import shutil
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+STATE_NAME = "sweep-state.json"
+
+
+def fail(message: str) -> None:
+    print(f"gitclub-recover: {message}", file=sys.stderr)
+    raise SystemExit(1)
+
+
+def sweep_state(mirrors: Path) -> dict:
+    path = mirrors / STATE_NAME
+    if not path.is_file():
+        fail(f"no sweep state at {path}. The mirror has never completed a sweep, so there "
+             f"is no recovery target and no Git objects to recover against.")
+    state = json.loads(path.read_text())
+    if state.get("format") != 1:
+        fail(f"unsupported sweep state format in {path}")
+    return state
+
+
+def controldata(data_dir: Path) -> dict:
+    binary = shutil.which("pg_controldata")
+    if binary is None or not (data_dir / "global" / "pg_control").is_file():
+        return {}
+    result = subprocess.run([binary, "-D", str(data_dir)], capture_output=True, text=True, timeout=30)
+    if result.returncode != 0:
+        return {}
+    fields = {}
+    for line in result.stdout.splitlines():
+        if ":" in line:
+            key, _, value = line.partition(":")
+            fields[key.strip()] = value.strip()
+    return fields
+
+
+def status(args) -> int:
+    state = sweep_state(args.mirrors)
+    target = state["recovery_target_unix"]
+    age = time.time() - target
+    print(f"Mirror sweep")
+    print(f"  recovery target      {state['recovery_target_utc']} ({age / 60:.1f} minutes ago)")
+    print(f"  repositories         {state['repository_count']}")
+    print(f"  orphaned mirrors     {len(state.get('orphaned', {}))}")
+    print(f"  completed            {time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(state['completed_at_unix']))}")
+
+    fields = controldata(args.data_dir)
+    print(f"Standby at {args.data_dir}")
+    if not fields:
+        print("  no readable control file; the standby has not been bootstrapped")
+    else:
+        for key in ("Database cluster state", "Latest checkpoint's REDO location",
+                    "Time of latest checkpoint"):
+            if key in fields:
+                print(f"  {key.lower():<20} {fields[key]}")
+        checkpoint = fields.get("Time of latest checkpoint", "")
+        print(f"  replay is normally ahead of the mirror; recovery rewinds to the target above")
+        if checkpoint:
+            print(f"  last checkpoint      {checkpoint}")
+
+    if age > args.stale_after_minutes * 60:
+        print(f"\nWARNING: the recovery target is older than {args.stale_after_minutes} minutes. "
+              f"Recovering now would discard every push since then. Check the sweep timer.")
+        return 1
+    return 0
+
+
+def restore_command(args, state: dict) -> list[str]:
+    return [
+        "pgbackrest", "restore",
+        f"--stanza={args.stanza}",
+        f"--pg1-path={args.target_dir}",
+        "--type=time",
+        f"--target={state['recovery_target_utc'].replace('T', ' ').replace('Z', '+00')}",
+        "--target-action=promote",
+        "--delta",
+    ]
+
+
+def plan(args) -> int:
+    state = sweep_state(args.mirrors)
+    print("Recovery would restore the database to the mirror sweep's target, not to the")
+    print("standby's current position, so metadata cannot reference missing Git objects.\n")
+    print(f"  target    {state['recovery_target_utc']}")
+    print(f"  mirrors   {args.mirrors} ({state['repository_count']} repositories)")
+    print(f"  into      {args.target_dir}\n")
+    print("  " + shlex.join(restore_command(args, state)))
+    return 0
+
+
+def promote(args) -> int:
+    state = sweep_state(args.mirrors)
+    if not args.yes:
+        fail("promote makes an irreversible change. Re-run with --yes once you have read "
+             "the plan (gitclub-recover plan) and deploy/RUNBOOK.md.")
+    target_dir = Path(args.target_dir)
+    if target_dir.exists() and any(target_dir.iterdir()) and not args.delta:
+        fail(f"{target_dir} is not empty. Pass --delta to restore over it, or choose an "
+             f"empty directory.")
+    command = restore_command(args, state)
+    if not args.delta:
+        command.remove("--delta")
+    print("running: " + shlex.join(command), flush=True)
+    result = subprocess.run(command)
+    if result.returncode != 0:
+        fail(f"pgbackrest restore failed with status {result.returncode}. The standby at "
+             f"{args.data_dir} is untouched.")
+    print(f"\nRestored to {state['recovery_target_utc']} in {target_dir}.")
+    print("Next: start PostgreSQL against that directory, point DATABASE_URL at it, and")
+    print(f"copy the mirrors from {args.mirrors} into the server's repos directory.")
+    print("deploy/RUNBOOK.md covers the remaining steps and the verification.")
+    return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--mirrors", type=Path,
+                        default=Path(os.environ.get("GITCLUB_MIRRORS", "/var/lib/gitclub/mirrors")))
+    parser.add_argument("--data-dir", type=Path,
+                        default=Path(os.environ.get("GITCLUB_STANDBY_PGDATA", "/var/lib/gitclub/standby")))
+    parser.add_argument("--target-dir", type=Path,
+                        default=Path(os.environ.get("GITCLUB_RECOVERY_PGDATA", "/var/lib/gitclub/recovered")))
+    parser.add_argument("--stanza", default=os.environ.get("GITCLUB_STANZA", "main"))
+    parser.add_argument("--port", type=int, default=int(os.environ.get("GITCLUB_STANDBY_PORT", "5433")))
+    parser.add_argument("--stale-after-minutes", type=float, default=60.0)
+    commands = parser.add_subparsers(dest="command", required=True)
+    commands.add_parser("status", help="Show mirror coverage and standby position")
+    commands.add_parser("plan", help="Print the restore recovery would run")
+    promotion = commands.add_parser("promote", help="Restore to the sweep target and promote")
+    promotion.add_argument("--yes", action="store_true", help="Confirm the irreversible restore")
+    promotion.add_argument("--delta", action="store_true", help="Restore over a non-empty directory")
+    # Accepted on either side of the subcommand. During an outage nobody should
+    # lose a minute to argparse ordering. SUPPRESS keeps the subparser from
+    # overwriting a value already given before the subcommand.
+    for repeated in (commands.choices["status"], commands.choices["plan"], promotion):
+        repeated.add_argument("--mirrors", type=Path, default=argparse.SUPPRESS)
+        repeated.add_argument("--target-dir", type=Path, default=argparse.SUPPRESS)
+        repeated.add_argument("--stanza", default=argparse.SUPPRESS)
+    args = parser.parse_args()
+    return {"status": status, "plan": plan, "promote": promote}[args.command](args)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

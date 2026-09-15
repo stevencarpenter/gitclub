@@ -1,0 +1,250 @@
+#!/usr/bin/env python3
+"""Mirror every GitClub repository onto the disaster recovery machine.
+
+The sweep start timestamp is taken before any repository is fetched and is
+published only when every repository succeeded. That timestamp is the
+PostgreSQL recovery target: metadata restored at or before it can only name
+Git objects this sweep already had the chance to fetch. Restoring the database
+past it would leave default_oid, merged_oid and commit_oid columns pointing at
+objects this machine does not hold. See DECISION.md, "Recovery ordering".
+
+Environment:
+  GITCLUB_URL      Base URL of the GitClub server, e.g. https://git.example.com
+  GITCLUB_TOKEN    API token whose account can read every repository
+  GITCLUB_MIRRORS  Directory holding the mirrors and the sweep state
+"""
+from __future__ import annotations
+
+import argparse
+import base64
+import email.utils
+import hashlib
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import time
+import urllib.error
+import urllib.request
+from pathlib import Path
+
+STATE_FORMAT = 1
+STATE_NAME = "sweep-state.json"
+
+# git clone --mirror sets remote.origin.mirror, under which a fetch deletes
+# refs that vanished upstream. A disaster recovery mirror must never discard
+# history the database may still reference, so mirror and prune are disabled
+# and reflogs are kept forever to hold objects behind force-pushed refs.
+MIRROR_CONFIG = [
+    ("remote.origin.mirror", "false"),
+    ("remote.origin.prune", "false"),
+    ("remote.origin.pruneTags", "false"),
+    ("remote.origin.fetch", "+refs/*:refs/*"),
+    ("fetch.prune", "false"),
+    ("fetch.pruneTags", "false"),
+    ("core.logAllRefUpdates", "true"),
+    ("gc.reflogExpire", "never"),
+    ("gc.reflogExpireUnreachable", "never"),
+]
+
+# The token reaches git through a credential helper reading the environment,
+# so it is never written into .git/config and never appears in argv.
+CREDENTIAL_HELPER = '!f() { printf "username=gitclub\\npassword=%s\\n" "$GITCLUB_TOKEN"; }; f'
+
+
+class SweepError(RuntimeError):
+    pass
+
+
+def git(*args: str, cwd: Path | None = None, timeout: int = 1800) -> str:
+    command = ["git", "-c", f"credential.helper={CREDENTIAL_HELPER}", *args]
+    environment = dict(os.environ, GIT_TERMINAL_PROMPT="0", GIT_CONFIG_NOSYSTEM="1")
+    result = subprocess.run(command, cwd=cwd, capture_output=True, text=True,
+                            timeout=timeout, env=environment)
+    if result.returncode != 0:
+        raise SweepError(f"git {' '.join(args[:3])}: {result.stderr.strip()[:400]}")
+    return result.stdout
+
+
+def repositories(base: str, token: str, timeout: int = 60) -> tuple[list[dict], float]:
+    """Return the readable repositories and the server's clock at that moment.
+
+    The Date response header is the server's time, which is the clock the
+    write-ahead log timestamps come from. Using it instead of this machine's
+    clock removes skew between the two sites from the recovery target.
+    """
+    request = urllib.request.Request(
+        base.rstrip("/") + "/api/repos",
+        headers={"Authorization": "Bearer " + token, "Accept": "application/json"})
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            payload = json.loads(response.read().decode())
+            served = response.headers.get("Date")
+    except urllib.error.HTTPError as error:
+        raise SweepError(f"repository listing failed: HTTP {error.code}") from error
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as error:
+        raise SweepError(f"repository listing failed: {error}") from error
+    listed = payload.get("repositories")
+    if not isinstance(listed, list):
+        raise SweepError("repository listing did not contain a repositories array")
+    when = time.time()
+    if served:
+        parsed = email.utils.parsedate_to_datetime(served)
+        if parsed is not None:
+            when = parsed.timestamp()
+    return listed, when
+
+
+def read_state(path: Path) -> dict:
+    if not path.is_file():
+        return {}
+    try:
+        state = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError) as error:
+        raise SweepError(f"cannot read sweep state {path}: {error}") from error
+    if state.get("format") != STATE_FORMAT:
+        raise SweepError(f"unsupported sweep state format in {path}")
+    return state
+
+
+def write_state(path: Path, state: dict) -> None:
+    """Publish the state atomically so a crash cannot leave it half written."""
+    handle, staged = tempfile.mkstemp(dir=str(path.parent), prefix=".sweep-state-")
+    try:
+        with os.fdopen(handle, "w") as stream:
+            json.dump(state, stream, indent=2, sort_keys=True)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.chmod(staged, 0o600)
+        os.replace(staged, path)
+        directory = os.open(str(path.parent), os.O_RDONLY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    except BaseException:
+        Path(staged).unlink(missing_ok=True)
+        raise
+
+
+def clone_url(base: str, full_name: str) -> str:
+    return base.rstrip("/") + "/" + full_name + ".git"
+
+
+def mirror(repository: dict, base: str, root: Path) -> dict:
+    identifier = str(repository["id"])
+    full_name = repository["full_name"]
+    target = root / f"{identifier}.git"
+    url = clone_url(base, full_name)
+    if not (target / "HEAD").is_file():
+        # Clone into a staging path so an interrupted first clone never leaves
+        # a directory that later runs mistake for a usable mirror.
+        staging = root / f".incoming-{identifier}.git"
+        subprocess.run(["rm", "-rf", str(staging)], check=False)
+        git("clone", "--mirror", url, str(staging))
+        for key, value in MIRROR_CONFIG:
+            git("config", key, value, cwd=staging)
+        os.replace(staging, target)
+    else:
+        for key, value in MIRROR_CONFIG:
+            git("config", key, value, cwd=target)
+        git("remote", "set-url", "origin", url, cwd=target)
+        git("fetch", "origin", cwd=target)
+    refs = git("for-each-ref", "--format=%(refname) %(objectname)", cwd=target)
+    return {
+        "full_name": full_name,
+        "path": str(target),
+        "refs_sha256": hashlib.sha256(refs.encode()).hexdigest(),
+        "refs": len(refs.splitlines()),
+        "fetched_at_unix": time.time(),
+    }
+
+
+def sweep(base: str, token: str, root: Path, margin: float, allow_shrink: bool) -> dict:
+    root.mkdir(parents=True, exist_ok=True)
+    state_path = root / STATE_NAME
+    previous = read_state(state_path)
+    listed, served_at = repositories(base, token)
+
+    # A token that silently loses access would produce a short list, and
+    # advancing the recovery target on it would claim coverage this machine
+    # does not have. Any drop is refused rather than a proportional one: at a
+    # personal instance's repository count a percentage threshold never fires.
+    before = int(previous.get("repository_count", 0))
+    if before and len(listed) < before and not allow_shrink:
+        raise SweepError(
+            f"repository count fell from {before} to {len(listed)}; refusing to advance "
+            f"the recovery target. Check the sweep token's access, or pass "
+            f"--allow-shrink to accept a genuine deletion.")
+
+    # Subtracting a margin keeps the target conservative against residual clock
+    # skew. Restoring earlier than necessary is safe; later is not.
+    target = served_at - margin
+    mirrored, failures = {}, []
+    for repository in sorted(listed, key=lambda r: int(r["id"])):
+        try:
+            mirrored[str(repository["id"])] = mirror(repository, base, root)
+        except (SweepError, subprocess.SubprocessError, OSError) as error:
+            failures.append({"id": repository.get("id"), "full_name": repository.get("full_name"),
+                             "error": str(error)})
+
+    if failures:
+        # The recovery target must not move past a repository this machine
+        # failed to fetch, so the previous target stands.
+        raise SweepError(
+            f"{len(failures)} of {len(listed)} repositories failed; recovery target held at "
+            f"{previous.get('recovery_target_utc', 'none')}. First failure: "
+            f"{failures[0]['full_name']}: {failures[0]['error']}")
+
+    retained = {key: value for key, value in previous.get("repositories", {}).items()
+                if key not in mirrored}
+    state = {
+        "format": STATE_FORMAT,
+        "recovery_target_unix": target,
+        "recovery_target_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(target)),
+        "server_time_unix": served_at,
+        "safety_margin_seconds": margin,
+        "completed_at_unix": time.time(),
+        "repository_count": len(mirrored),
+        "repositories": mirrored,
+        # Repositories deleted upstream keep their mirrors; a disaster recovery
+        # copy never discards history on the strength of an upstream deletion.
+        "orphaned": retained,
+    }
+    write_state(state_path, state)
+    return state
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--url", default=os.environ.get("GITCLUB_URL", ""))
+    parser.add_argument("--mirrors", default=os.environ.get("GITCLUB_MIRRORS", ""))
+    parser.add_argument("--safety-margin-seconds", type=float, default=60.0,
+                        help="Subtracted from the server clock when setting the recovery target")
+    parser.add_argument("--allow-shrink", action="store_true",
+                        help="Accept any drop in repository count (use after a real deletion)")
+    parser.add_argument("--quiet", action="store_true")
+    args = parser.parse_args()
+
+    token = os.environ.get("GITCLUB_TOKEN", "")
+    if not args.url or not args.mirrors or not token:
+        print("gitclub-mirror-sweep: set GITCLUB_URL, GITCLUB_TOKEN and GITCLUB_MIRRORS "
+              "(or pass --url and --mirrors).", file=sys.stderr)
+        return 2
+    try:
+        state = sweep(args.url, token, Path(args.mirrors).resolve(),
+                      args.safety_margin_seconds, args.allow_shrink)
+    except SweepError as error:
+        print(f"gitclub-mirror-sweep: {error}", file=sys.stderr)
+        return 1
+    if not args.quiet:
+        print(f"mirrored {state['repository_count']} repositories; "
+              f"recovery target {state['recovery_target_utc']}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

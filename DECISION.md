@@ -75,6 +75,18 @@ Backup and restore were rewritten around `pg_dump` and `pg_restore`, preserving 
 
 Two packaging facts surfaced during verification. PostgreSQL 18 images place data in a version subdirectory, so the container mount belongs at `/var/lib/postgresql` rather than the pre-18 `/var/lib/postgresql/data`. Debian's `postgresql-client` is version 15 and refuses to dump an 18 server, so the image installs `postgresql-client-18` from PGDG; the runtime base moved to trixie for Python 3.12 or newer, which `tarfile.extractall(filter=...)` requires.
 
+## Deployment infrastructure
+
+Written 2026-09-14 under `deploy/`, with the Railway project in `.railway/railway.ts`. Railway's Config as Code (`railway.json`) is deprecated and closed to new services, so the project is defined through Infrastructure as Code, which the CLI plans and applies against a linked environment.
+
+Two Railway constraints shaped the result. A volume attaches to exactly one service, so the Compose topology of an application service and an OpenSSH service sharing `go-data` is not expressible: the transport needs the same `/data` for host keys and for the bare repositories its forced commands run Git against. `deploy/railway/Dockerfile` therefore builds both into one image and `deploy/railway/entrypoint.py` supervises them, exiting the container when either process dies so Railway restarts a whole one rather than leaving a half-serving container. The service is pinned to one replica: repository mutations serialize on a PostgreSQL advisory lock, but the Git objects live on that single-service volume and `shared/git-hook.py` calls back to `127.0.0.1`, so a second replica would hold no repositories and no route to the first one's hooks.
+
+The mirror sweep carries the recovery ordering invariant. It takes its timestamp from the repository listing's `Date` response header, which is the server's clock and therefore the clock the write-ahead log timestamps come from, less a safety margin. It publishes that timestamp only when every repository succeeded, so a single failed fetch holds the recovery target where it was. It refuses to advance when the repository count drops, which catches a sweep token that lost access rather than silently claiming coverage. It disables `remote.origin.mirror` and every prune setting that `git clone --mirror` turns on by default, because a mirror fetch would otherwise delete refs removed upstream, and it keeps reflogs forever so objects behind a force-pushed ref survive. The token reaches Git through a credential helper reading the environment, so it is written neither into `.git/config` nor into any process's argv.
+
+The sweep interval is the recovery point objective, not the write-ahead log shipping lag. A push landing between sweeps cannot be recovered, because the database can only be restored to the last completed sweep. The timer ships at five minutes.
+
+Recovery does not promote the standby. Continuous replay leaves it ahead of the mirror, so `gitclub-recover promote` runs a point-in-time restore to the sweep target into a separate directory and leaves the standby untouched.
+
 ## Remaining single-node assumptions
 
 `main.go:448` hardcodes `internalURL` to `http://127.0.0.1:PORT` for the `shared/git-hook.py` callback. This is correct while the Git store and the application are colocated, and it is a hard constraint against splitting them: a push must be served by the node holding that repository's disk. `rates` at `main.go:112` is per-instance and would permit a multiple of the intended limit across instances.

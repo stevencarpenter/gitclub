@@ -1,0 +1,31 @@
+[Unit]
+Description=Mirror GitClub repositories and publish the recovery target
+Documentation=https://github.com/stevencarpenter/gitclub/blob/main/deploy/RUNBOOK.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=gitclub
+Group=gitclub
+
+# GITCLUB_URL, GITCLUB_TOKEN and GITCLUB_MIRRORS live here. The token can read
+# every repository, so the file must be 0600 and owned by the gitclub user.
+EnvironmentFile=/etc/gitclub/mirror-sweep.env
+ExecStart=/usr/local/bin/gitclub-mirror-sweep
+
+# A sweep that overruns its interval should be cut off rather than overlap the
+# next one; the timer's Persistent= will pick it up again.
+TimeoutStartSec=3600
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/gitclub/mirrors
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+
+[Install]
+WantedBy=multi-user.target

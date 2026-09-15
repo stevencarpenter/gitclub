@@ -1,0 +1,32 @@
+[Unit]
+Description=GitClub disaster recovery PostgreSQL standby
+Documentation=https://github.com/stevencarpenter/gitclub/blob/main/deploy/RUNBOOK.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+User=postgres
+Group=postgres
+Environment=PGDATA=/var/lib/gitclub/standby
+ExecStart=/usr/lib/postgresql/18/bin/postgres -D ${PGDATA}
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+KillSignal=SIGINT
+TimeoutStartSec=infinity
+TimeoutStopSec=120
+Restart=always
+RestartSec=10
+
+# The standby reads the archive and writes its own data directory. Nothing else.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/gitclub/standby /var/log/pgbackrest
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+
+[Install]
+WantedBy=multi-user.target

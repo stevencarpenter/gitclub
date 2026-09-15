@@ -1,0 +1,19 @@
+[Unit]
+Description=Sweep GitClub repository mirrors every 5 minutes
+Documentation=https://github.com/stevencarpenter/gitclub/blob/main/deploy/RUNBOOK.md
+
+[Timer]
+# The sweep interval IS the recovery point objective. A push landing between
+# sweeps is not recoverable, because the database can only be restored to the
+# last completed sweep. Shortening this shortens the window; it costs one API
+# call plus an incremental fetch per repository.
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=30s
+
+# Catch up after the machine was off rather than waiting a full interval, so a
+# reboot does not silently widen the recovery window.
+Persistent=true
+
+[Install]
+WantedBy=timers.target
